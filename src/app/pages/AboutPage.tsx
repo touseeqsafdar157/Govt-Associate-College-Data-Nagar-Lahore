@@ -1,11 +1,17 @@
 import { CheckCircle, Target, Eye, Award } from "lucide-react";
 import { useAdmin } from "../context/AdminContext";
+import { Helmet } from "react-helmet-async";
 
 export function AboutPage() {
   const { settings } = useAdmin();
+  const collegeName = settings?.collegeName || "Govt Associate College Data Nagar Lahore";
 
   return (
     <div className="bg-white">
+      <Helmet>
+        <title>About Us | {collegeName}</title>
+        <meta name="description" content={`Learn about the history, vision, and mission of ${collegeName}. Established in 1981.`} />
+      </Helmet>
       {/* Page Header */}
       <section className="bg-gradient-to-r from-[#006B3F] to-[#004d2d] text-white py-16">
         <div className="container mx-auto px-4">

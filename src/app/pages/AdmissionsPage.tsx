@@ -1,12 +1,15 @@
 import { useState } from "react";
 import { X, Upload, Check, AlertCircle, ChevronRight } from "lucide-react";
 import { useAdmin } from "../context/AdminContext";
+import { Helmet } from "react-helmet-async";
 
 const API = "https://govt-associate-college-data-nagar-lahore.onrender.com/api";
 const PROGRAMS = ["FSc Pre-Medical","FSc Pre-Engineering","ICS","FA","I.Com","ADP Science","ADP Arts","ADP Commerce"];
 
 export function AdmissionsPage() {
   const { settings } = useAdmin();
+  const collegeName = settings?.collegeName || "Govt Associate College Data Nagar Lahore";
+
   const [showModal, setShowModal] = useState(false);
   const [step, setStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
@@ -50,6 +53,10 @@ export function AdmissionsPage() {
 
   return (
     <div className="bg-white">
+      <Helmet>
+        <title>Admissions 2026-27 | {collegeName}</title>
+        <meta name="description" content={`Apply for admissions at ${collegeName}. Check eligibility criteria, required documents, and fill the online application form.`} />
+      </Helmet>
       <section className="bg-gradient-to-r from-[#006B3F] to-[#004d2d] text-white py-16">
         <div className="container mx-auto px-4">
           <h1 className="text-5xl font-bold mb-4" style={{fontFamily:"Playfair Display,serif"}}>Admissions</h1>

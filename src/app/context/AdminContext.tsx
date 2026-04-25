@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+﻿import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
 const API_URL = "https://govt-associate-college-data-nagar-lahore.onrender.com/api";
 
@@ -93,12 +93,7 @@ export interface FacilityItem {
   equipmentList: string[];
 }
 
-export interface EligibilityRow {
-  program: string;
-  qualification: string;
-  marks: string;
-  ageLimit: string;
-}
+
 
 export interface SiteSettings {
   admissionsOpen: boolean;

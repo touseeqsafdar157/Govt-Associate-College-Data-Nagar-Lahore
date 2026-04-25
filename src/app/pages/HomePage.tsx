@@ -11,13 +11,15 @@ import courtyardPhoto from "../../imports/WhatsApp_Image_2026-04-07_at_11.52.03_
 
 const iconMap: Record<string, any> = { Users, BookOpen, GraduationCap, Award, Shield, Clock, Phone, Mail, Star, Calendar };
 
-
-
 export function HomePage() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const { news, events, settings } = useAdmin();
-  console.log(settings, 'settings')
+  
+  const collegeName = settings?.collegeName || "Govt Associate College Data Nagar Lahore";
+  const pageTitle = `${collegeName} | Official Website`;
+  const pageDesc = settings?.collegeShortHistory || "Official website of Govt Associate College Data Nagar Lahore. Check admissions, faculty, programs and latest updates.";
+
   const heroSlides = [
     {
       img: gatePhoto,
@@ -72,13 +74,16 @@ export function HomePage() {
   const slide = heroSlides[currentSlide];
 
   return (
-    <>  <Helmet>
-      <title>Government Associate College Data Nagar Lahore</title>
-      <meta
-        name="description"
-        content="Official website of Govt Associate College Data Nagar Lahore - Admissions, Programs, Faculty and Updates."
-      />
-    </Helmet>
+    <>  
+      <Helmet>
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDesc} />
+        <link rel="canonical" href="https://govt-associate-college-data-nagar.netlify.app/" />
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={pageDesc} />
+        <meta property="og:url" content="https://govt-associate-college-data-nagar.netlify.app/" />
+        <meta name="keywords" content="Data Nagar College Lahore, Govt College Lahore, Academics Lahore College, Pakistan College Data Nagar, Admissions 2026" />
+      </Helmet>
     <div className="bg-white">
       {/* ── HERO SLIDER ── */}
       <section className="relative h-[85vh] min-h-[500px] max-h-[750px] overflow-hidden">
