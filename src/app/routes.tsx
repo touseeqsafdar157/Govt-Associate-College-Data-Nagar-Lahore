@@ -18,9 +18,16 @@ import { AdminEvents } from "./pages/admin/AdminEvents";
 import { AdminAnnouncements } from "./pages/admin/AdminAnnouncements";
 import { AdminGallery } from "./pages/admin/AdminGallery";
 import { AdminSettings } from "./pages/admin/AdminSettings";
+import { AdminResults } from "./pages/admin/AdminResults";
+import { AdminApplications } from "./pages/admin/AdminApplications";
+import { AdminMessages } from "./pages/admin/AdminMessages";
+import { AdminCampusLife } from "./pages/admin/AdminCampusLife";
+import { AdminAcademics } from "./pages/admin/AdminAcademics";
+import { AdminFaculty } from "./pages/admin/AdminFaculty";
+import { AdminFacilities } from "./pages/admin/AdminFacilities";
+import { AdminUsers } from "./pages/admin/AdminUsers";
 
 export const router = createBrowserRouter([
-  // Public website
   {
     path: "/",
     Component: Root,
@@ -38,7 +45,6 @@ export const router = createBrowserRouter([
       { path: "contact", Component: ContactPage },
     ],
   },
-  // Admin panel — AdminRoot handles login gate internally
   {
     path: "/admin",
     Component: AdminRoot,
@@ -49,7 +55,15 @@ export const router = createBrowserRouter([
       { path: "events", Component: AdminEvents },
       { path: "announcements", Component: AdminAnnouncements },
       { path: "gallery", Component: AdminGallery },
+      { path: "campus-life", Component: AdminCampusLife },
+      { path: "academics", Component: AdminAcademics },
+      { path: "faculty", Component: AdminFaculty },
+      { path: "facilities", Component: AdminFacilities },
       { path: "settings", Component: AdminSettings },
+      { path: "results", Component: AdminResults },
+      { path: "applications", Component: AdminApplications },
+      { path: "messages", Component: AdminMessages },
+      { path: "users", Component: AdminUsers },
     ],
   },
 ]);

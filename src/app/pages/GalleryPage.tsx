@@ -7,7 +7,7 @@ import courtyardPhoto from "../../imports/WhatsApp_Image_2026-04-07_at_11.52.03_
 const CATEGORIES = ["All", "Events", "Facilities", "Sports", "Academic", "Campus", "General"];
 
 export function GalleryPage() {
-  const { gallery } = useAdmin();
+  const { gallery, events } = useAdmin();
   const [activeCategory, setActiveCategory] = useState("All");
   const [lightbox, setLightbox] = useState<null | { url: string; title: string }>(null);
 
@@ -113,11 +113,10 @@ export function GalleryPage() {
       {/* Stats Strip */}
       <section className="bg-gradient-to-r from-[#003D1F] to-[#006B3F] py-10">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center text-white">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center text-white">
             {[
-              { val: "500+", label: "Total Photos" },
-              { val: "50+", label: "Video Clips" },
-              { val: "30+", label: "Events Covered" },
+              { val: `${allPhotos.length}`, label: "Total Photos" },
+              { val: `${events.length}`, label: "Events Covered" },
               { val: "5+", label: "Years Archive" },
             ].map(({ val, label }) => (
               <div key={label}>

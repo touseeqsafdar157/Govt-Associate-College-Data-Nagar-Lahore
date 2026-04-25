@@ -10,17 +10,7 @@ export function NewsPage() {
 
   const filtered = activeCategory === "All" ? news : news.filter((n) => n.category === activeCategory);
 
-  const docs = [
-    "Examination Schedule 2026 – All Programs",
-    "Admission Policy 2026-27",
-    "Fee Concession Application Form",
-    "Code of Conduct for Students",
-    "Academic Calendar 2026-27",
-    "Sports Gala Registration Form",
-    "Scholarship Application Guidelines",
-    "Library Rules and Regulations",
-    "Anti-Ragging Policy Document",
-  ];
+  const docs = news.filter(n => n.fileUrl);
 
   return (
     <div className="bg-white">
@@ -83,11 +73,11 @@ export function NewsPage() {
                     </div>
                     <h3 className="font-bold text-gray-800 mb-1 hover:text-[#006B3F] cursor-pointer transition-colors">{item.title}</h3>
                     {item.content && <p className="text-gray-600 text-sm leading-relaxed">{item.content}</p>}
-                    {item.category === "Admissions" || item.category === "Results" ? (
-                      <button className="mt-3 flex items-center gap-1.5 text-xs text-[#006B3F] font-semibold hover:text-[#C8A951] transition-colors">
-                        <FileDown className="w-3.5 h-3.5" /> Download PDF
-                      </button>
-                    ) : null}
+                    {item.fileUrl && (
+                      <a href={item.fileUrl} target="_blank" rel="noreferrer" className="mt-3 flex items-center gap-1.5 text-xs text-[#006B3F] font-semibold hover:text-[#C8A951] transition-colors inline-block w-max">
+                        <FileDown className="w-3.5 h-3.5" /> Download Attachment
+                      </a>
+                    )}
                   </div>
                 ))}
               </div>
@@ -136,16 +126,23 @@ export function NewsPage() {
                 </h3>
               </div>
               <div className="p-3">
-                {docs.map((doc, i) => (
-                  <button
-                    key={i}
-                    className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-[#F8FCF9] transition-colors text-left group"
-                  >
-                    <FileDown className="w-4 h-4 text-[#006B3F] shrink-0" />
-                    <span className="text-sm text-gray-700 group-hover:text-[#006B3F] transition-colors leading-tight">{doc}</span>
-                    <span className="ml-auto text-[10px] bg-[#C8A951]/20 text-[#C8A951] px-1.5 py-0.5 rounded shrink-0">PDF</span>
-                  </button>
-                ))}
+                {docs.length === 0 ? (
+                  <p className="text-sm text-gray-500 p-2">No downloads available.</p>
+                ) : (
+                  docs.map((doc) => (
+                    <a
+                      key={doc.id}
+                      href={doc.fileUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-[#F8FCF9] transition-colors text-left group block"
+                    >
+                      <FileDown className="w-4 h-4 text-[#006B3F] shrink-0 inline-block" />
+                      <span className="text-sm text-gray-700 group-hover:text-[#006B3F] transition-colors leading-tight inline-block align-middle">{doc.title}</span>
+                      <span className="float-right mt-1 text-[10px] bg-[#C8A951]/20 text-[#C8A951] px-1.5 py-0.5 rounded shrink-0">DL</span>
+                    </a>
+                  ))
+                )}
               </div>
             </div>
 

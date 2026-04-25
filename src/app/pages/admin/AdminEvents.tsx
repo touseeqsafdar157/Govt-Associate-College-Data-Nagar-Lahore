@@ -2,39 +2,75 @@ import { useState } from "react";
 import { Plus, Pencil, Trash2, X, Check, AlertCircle, Calendar } from "lucide-react";
 import { useAdmin, EventItem } from "../../context/AdminContext";
 
-const MONTHS = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
-const blank = { date: "", month: "MAY", day: "", title: "", time: "", location: "" };
+const todayISO = () => new Date().toISOString().split("T")[0];
+
+const blank = { dateISO: todayISO(), title: "", time: "", location: "" };
+
+// Extract day ("5") and month ("MAY") from ISO date string
+const extractDayMonth = (iso: string) => {
+  if (!iso) return { day: "", month: "MAY" };
+  const d = new Date(iso + "T00:00:00");
+  const months = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+  return {
+    day: String(d.getDate()),
+    month: months[d.getMonth()],
+  };
+};
+
+const formatEventDate = (iso: string) => {
+  if (!iso) return "";
+  const { day, month } = extractDayMonth(iso);
+  const year = iso.split("-")[0];
+  return `${month.charAt(0) + month.slice(1).toLowerCase()} ${day}, ${year}`;
+};
+
+type FormState = { dateISO: string; title: string; time: string; location: string };
 
 export function AdminEvents() {
-  const { events, setEvents } = useAdmin();
+  const { events, addEvent, updateEvent, deleteEvent } = useAdmin();
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [form, setForm] = useState(blank);
+  const [form, setForm] = useState<FormState>({ ...blank, dateISO: todayISO() });
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
 
-  const openAdd = () => { setForm(blank); setEditingId(null); setShowForm(true); };
+  const openAdd = () => { setForm({ ...blank, dateISO: todayISO() }); setEditingId(null); setShowForm(true); };
   const openEdit = (item: EventItem) => {
-    setForm({ date: item.date, month: item.month, day: item.day, title: item.title, time: item.time, location: item.location });
+    // Try to reconstruct ISO date from stored day/month or use today
+    const months = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+    const mIdx = months.indexOf(item.month?.toUpperCase() ?? "");
+    const year = new Date().getFullYear();
+    const mm = String(mIdx >= 0 ? mIdx + 1 : new Date().getMonth() + 1).padStart(2, "0");
+    const dd = String(item.day || new Date().getDate()).padStart(2, "0");
+    const dateISO = `${year}-${mm}-${dd}`;
+    setForm({ dateISO, title: item.title, time: item.time, location: item.location });
     setEditingId(item.id);
     setShowForm(true);
   };
 
-  const handleSave = () => {
-    if (!form.title.trim() || !form.day.trim()) return;
-    const entry = { ...form, date: `${form.month.charAt(0) + form.month.slice(1).toLowerCase()} ${form.day}` };
+  const handleSave = async () => {
+    if (!form.title.trim() || !form.dateISO) return;
+    const { day, month } = extractDayMonth(form.dateISO);
+    const entry = {
+      date: formatEventDate(form.dateISO),
+      month,
+      day,
+      title: form.title,
+      time: form.time,
+      location: form.location,
+    };
     if (editingId) {
-      setEvents(events.map((e) => e.id === editingId ? { ...e, ...entry } : e));
+      await updateEvent(editingId, entry);
     } else {
-      setEvents([...events, { id: Date.now().toString(), ...entry }]);
+      await addEvent(entry);
     }
     setShowForm(false);
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };
 
-  const handleDelete = (id: string) => {
-    setEvents(events.filter((e) => e.id !== id));
+  const handleDelete = async (id: string) => {
+    await deleteEvent(id);
     setDeleteId(null);
   };
 
@@ -71,22 +107,25 @@ export function AdminEvents() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Event Title *</label>
                 <input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Event name" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#006B3F]" />
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Day *</label>
-                  <input value={form.day} onChange={(e) => setForm({ ...form, day: e.target.value })} placeholder="e.g. 5" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#006B3F]" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Month</label>
-                  <select value={form.month} onChange={(e) => setForm({ ...form, month: e.target.value })} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#006B3F]">
-                    {MONTHS.map((m) => <option key={m}>{m}</option>)}
-                  </select>
-                </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Event Date *</label>
+                <input
+                  type="date"
+                  value={form.dateISO}
+                  onChange={(e) => setForm({ ...form, dateISO: e.target.value })}
+                  max="2099-12-31"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#006B3F]"
+                />
+                {form.dateISO && (
+                  <p className="text-xs text-gray-400 mt-1">
+                    Will show as: <span className="text-[#006B3F] font-medium">{formatEventDate(form.dateISO)}</span>
+                  </p>
+                )}
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Time</label>
-                  <input value={form.time} onChange={(e) => setForm({ ...form, time: e.target.value })} placeholder="e.g. 9:00 AM" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#006B3F]" />
+                  <input value={form.time} type="time" onChange={(e) => setForm({ ...form, time: e.target.value })} placeholder="e.g. 9:00 AM" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#006B3F]" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
@@ -95,7 +134,7 @@ export function AdminEvents() {
               </div>
             </div>
             <div className="flex gap-3 p-5 border-t border-gray-100">
-              <button onClick={handleSave} disabled={!form.title.trim() || !form.day.trim()} className="flex-1 bg-[#006B3F] hover:bg-[#003D1F] text-white py-2.5 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50">
+              <button onClick={handleSave} disabled={!form.title.trim() || !form.dateISO} className="flex-1 bg-[#006B3F] hover:bg-[#003D1F] text-white py-2.5 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50">
                 {editingId ? "Save Changes" : "Add Event"}
               </button>
               <button onClick={() => setShowForm(false)} className="px-4 py-2.5 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">Cancel</button>

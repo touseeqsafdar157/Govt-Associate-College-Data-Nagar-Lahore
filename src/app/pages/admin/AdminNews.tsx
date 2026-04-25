@@ -1,40 +1,69 @@
 import { useState } from "react";
-import { Plus, Pencil, Trash2, X, Check, AlertCircle } from "lucide-react";
+import { Plus, Pencil, Trash2, X, Check, AlertCircle, Newspaper, Upload } from "lucide-react";
 import { useAdmin, NewsItem } from "../../context/AdminContext";
 
 const CATEGORIES = ["Admissions", "Results", "Sports", "Events", "Academic", "General"];
 
-const blankForm = { title: "", date: "", content: "", category: "General" };
+const todayISO = () => new Date().toISOString().split("T")[0];
+
+const blankForm = { title: "", date: todayISO(), content: "", category: "General", fileUrl: "" };
+
+// Format ISO date (yyyy-mm-dd) to readable string for display
+const formatDate = (iso: string) => {
+  if (!iso) return "";
+  const d = new Date(iso + "T00:00:00");
+  return d.toLocaleDateString("en-PK", { year: "numeric", month: "long", day: "numeric" });
+};
 
 export function AdminNews() {
-  const { news, setNews } = useAdmin();
+  const { news, addNews, updateNews, deleteNews } = useAdmin();
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(blankForm);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
 
-  const openAdd = () => { setForm(blankForm); setEditingId(null); setShowForm(true); };
+  const [fileToUpload, setFileToUpload] = useState<File | null>(null);
+
+  const openAdd = () => { setForm({ ...blankForm, date: todayISO() }); setEditingId(null); setFileToUpload(null); setShowForm(true); };
   const openEdit = (item: NewsItem) => {
-    setForm({ title: item.title, date: item.date, content: item.content, category: item.category });
+    setForm({ title: item.title, date: item.date, content: item.content, category: item.category, fileUrl: item.fileUrl || "" });
     setEditingId(item.id);
+    setFileToUpload(null);
     setShowForm(true);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!form.title.trim() || !form.date.trim()) return;
+    
+    let finalFileUrl = form.fileUrl;
+    if (fileToUpload) {
+      const fd = new FormData();
+      fd.append("image", fileToUpload); // Using "image" field as defined in backend/routes/uploadRoute.js
+      try {
+        const res = await fetch("https://govt-associate-college-data-nagar-lahore.onrender.com/api/upload", { method: "POST", body: fd });
+        if (res.ok) {
+          const data = await res.json();
+          finalFileUrl = data.url;
+        }
+      } catch (err) {
+        console.error("Upload failed", err);
+      }
+    }
+
+    const saveForm = { ...form, date: formatDate(form.date), fileUrl: finalFileUrl };
     if (editingId) {
-      setNews(news.map((n) => n.id === editingId ? { ...n, ...form } : n));
+      await updateNews(editingId, saveForm);
     } else {
-      setNews([{ id: Date.now().toString(), ...form }, ...news]);
+      await addNews(saveForm);
     }
     setShowForm(false);
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };
 
-  const handleDelete = (id: string) => {
-    setNews(news.filter((n) => n.id !== id));
+  const handleDelete = async (id: string) => {
+    await deleteNews(id);
     setDeleteId(null);
   };
 
@@ -83,9 +112,10 @@ export function AdminNews() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Date *</label>
                   <input
+                    type="date"
                     value={form.date}
                     onChange={(e) => setForm({ ...form, date: e.target.value })}
-                    placeholder="e.g. April 20, 2026"
+                    max="2099-12-31"
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#006B3F]"
                   />
                 </div>
@@ -109,6 +139,62 @@ export function AdminNews() {
                   rows={3}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#006B3F] resize-none"
                 />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Attachment (PDF/DOC/Image)</label>
+                <div className="flex items-center gap-3">
+                  {/* <label className="flex items-center gap-2 bg-gray-50 border border-gray-300 hover:border-[#006B3F] text-gray-700 px-3 py-2 rounded-lg cursor-pointer transition-colors text-sm">
+                    <Upload className="w-4 h-4 text-[#006B3F]" />
+                    <span>{fileToUpload ? fileToUpload.name : "Choose File"}</span>
+                    <input 
+                      type="file" 
+                      className="hidden" 
+                      accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" 
+                      onChange={(e) => {
+                        if (e.target.files && e.target.files[0]) {
+                          setFileToUpload(e.target.files[0]);
+                        }
+                      }} 
+                    />
+                  </label> */}
+                  <label className="flex flex-col gap-1">
+  
+  <div className="flex items-center gap-2 bg-gray-50 border border-gray-300 hover:border-[#006B3F] text-gray-700 px-3 py-2 rounded-lg cursor-pointer transition-colors text-sm">
+    <Upload className="w-4 h-4 text-[#006B3F]" />
+    <span>{fileToUpload ? fileToUpload.name : "Choose File"}</span>
+
+    <input 
+      type="file" 
+      className="hidden" 
+      accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" 
+      onChange={(e) => {
+        const file = e.target.files?.[0];
+
+        if (file) {
+          const maxSize = 350 * 1024;
+
+          if (file.size > maxSize) {
+            alert("File size must be less than 350KB");
+            e.target.value = "";
+            return;
+          }
+
+          setFileToUpload(file);
+        }
+      }} 
+    />
+  </div>
+
+  {/* 👇 Type B helper text */}
+  <span className="text-xs text-gray-500">
+    File size should be maximum 350KB
+  </span>
+
+</label>
+                  {!fileToUpload && form.fileUrl && (
+                    <span className="text-xs text-green-600 truncate max-w-[200px]">Current: {form.fileUrl.split("/").pop()}</span>
+                  )}
+                </div>
               </div>
             </div>
             <div className="flex gap-3 p-5 border-t border-gray-100">
@@ -157,6 +243,11 @@ export function AdminNews() {
                 </div>
                 <h3 className="font-semibold text-gray-800 text-sm">{item.title}</h3>
                 {item.content && <p className="text-gray-500 text-xs mt-1 line-clamp-2">{item.content}</p>}
+                {item.fileUrl && (
+                  <a href={item.fileUrl} target="_blank" rel="noreferrer" className="inline-block mt-2 text-xs text-[#006B3F] hover:underline font-medium">
+                    View Attachment
+                  </a>
+                )}
               </div>
               <div className="flex gap-2 shrink-0">
                 <button

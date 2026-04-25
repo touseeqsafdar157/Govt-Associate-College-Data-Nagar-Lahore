@@ -8,53 +8,50 @@ import { useAdmin } from "../context/AdminContext";
 import gatePhoto from "../../imports/WhatsApp_Image_2026-04-07_at_11.52.03_AM_(1).jpeg";
 import courtyardPhoto from "../../imports/WhatsApp_Image_2026-04-07_at_11.52.03_AM.jpeg";
 
-const heroSlides = [
-  {
-    img: gatePhoto,
-    title: "Government Associate College",
-    subtitle: "Data Nagar, Lahore",
-    tagline: "Empowering Minds · Building Futures · Serving the Nation",
-    cta: { label: "Apply Now", to: "/admissions" },
-    cta2: { label: "Explore Programs", to: "/academics" },
-  },
-  {
-    img: courtyardPhoto,
-    title: "Excellence in Education",
-    subtitle: "Since 1981",
-    tagline: "A Legacy of Academic Achievement & Character Development",
-    cta: { label: "View Results", to: "/results" },
-    cta2: { label: "Meet Our Faculty", to: "/faculty" },
-  },
-  {
-    img: "https://images.unsplash.com/photo-1681171575028-16aa7a6f063e?w=1400&q=80",
-    title: "Shaping Tomorrow's Leaders",
-    subtitle: "3,500+ Students · 120+ Faculty",
-    tagline: "Join a community dedicated to growth, innovation & excellence",
-    cta: { label: "Campus Life", to: "/campus-life" },
-    cta2: { label: "View Gallery", to: "/gallery" },
-  },
-];
+const iconMap: Record<string, any> = { Users, BookOpen, GraduationCap, Award, Shield, Clock, Phone, Mail, Star, Calendar };
 
-const stats = [
-  { icon: Users, value: "3,500+", label: "Enrolled Students", color: "#006B3F" },
-  { icon: BookOpen, value: "8", label: "Programs Offered", color: "#C8A951" },
-  { icon: GraduationCap, value: "120+", label: "Qualified Faculty", color: "#006B3F" },
-  { icon: Award, value: "45+", label: "Years of Excellence", color: "#C8A951" },
-];
 
-const features = [
-  { icon: GraduationCap, title: "Expert Faculty", desc: "Highly qualified professors with decades of teaching experience.", color: "#006B3F" },
-  { icon: BookOpen, title: "Modern Labs", desc: "State-of-the-art science, computer, and language laboratories.", color: "#C8A951" },
-  { icon: Users, title: "Sports Facilities", desc: "Cricket, football, volleyball, and indoor games courts.", color: "#006B3F" },
-  { icon: Award, title: "Scholarships", desc: "Merit-based and need-based financial assistance programs.", color: "#C8A951" },
-  { icon: Shield, title: "Safe Campus", desc: "Secure, monitored campus with female-only sections.", color: "#006B3F" },
-  { icon: Clock, title: "Regular Classes", desc: "Consistent academic schedule with tutorial & extra coaching.", color: "#C8A951" },
-];
 
 export function HomePage() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const { news, events, settings } = useAdmin();
+  console.log(settings, 'settings')
+  const heroSlides = [
+    {
+      img: gatePhoto,
+      title: "Government Associate College",
+      subtitle: "Data Nagar, Lahore",
+      tagline: "Empowering Minds · Building Futures · Serving the Nation",
+      cta: { label: "Apply Now", to: "/admissions" },
+      cta2: { label: "Explore Programs", to: "/academics" },
+    },
+    {
+      img: courtyardPhoto,
+      title: "Excellence in Education",
+      subtitle: settings?.collegeEstYear || "Since 1981",
+      tagline: "A Legacy of Academic Achievement & Character Development",
+      cta: { label: "View Results", to: "/results" },
+      cta2: { label: "Meet Our Faculty", to: "/faculty" },
+    },
+    {
+      img: "https://images.unsplash.com/photo-1681171575028-16aa7a6f063e?w=1400&q=80",
+      title: "Shaping Tomorrow's Leaders",
+      subtitle: "3,500+ Students · 120+ Faculty",
+      tagline: "Join a community dedicated to growth, innovation & excellence",
+      cta: { label: "Campus Life", to: "/campus-life" },
+      cta2: { label: "View Gallery", to: "/gallery" },
+    },
+  ];
+  const isAdmissionActive = () => {
+    if (!settings?.admissionsOpen) return false;
+    if (!settings?.lastDateAdmission) return true;
+    const lastDate = new Date(settings.lastDateAdmission);
+    if (isNaN(lastDate.getTime())) return true;
+    lastDate.setHours(23, 59, 59, 999);
+    return new Date() <= lastDate;
+  };
+  const admissionOpen = isAdmissionActive();
 
   const changeSlide = (index: number) => {
     if (isAnimating) return;
@@ -102,12 +99,21 @@ export function HomePage() {
               </h1>
               <p className="text-base sm:text-lg text-gray-200 mb-8 leading-relaxed">{slide.tagline}</p>
               <div className="flex flex-wrap gap-3">
-                <Link
-                  to={slide.cta.to}
-                  className="bg-[#C8A951] hover:bg-[#b89841] text-[#003D1F] px-7 py-3 rounded-lg font-bold transition-all hover:shadow-lg hover:-translate-y-0.5 text-sm"
-                >
-                  {slide.cta.label}
-                </Link>
+                {(!admissionOpen && slide.cta.label === "Apply Now") ? (
+                  <Link
+                    to="/admissions"
+                    className="bg-white/10 hover:bg-white/20 border border-white/40 text-white px-7 py-3 rounded-lg font-semibold transition-all backdrop-blur-sm text-sm"
+                  >
+                    View Admission Criteria
+                  </Link>
+                ) : (
+                  <Link
+                    to={slide.cta.to}
+                    className="bg-[#C8A951] hover:bg-[#b89841] text-[#003D1F] px-7 py-3 rounded-lg font-bold transition-all hover:shadow-lg hover:-translate-y-0.5 text-sm"
+                  >
+                    {slide.cta.label}
+                  </Link>
+                )}
                 <Link
                   to={slide.cta2.to}
                   className="bg-white/10 hover:bg-white/20 border border-white/40 text-white px-7 py-3 rounded-lg font-semibold transition-all backdrop-blur-sm text-sm"
@@ -139,9 +145,8 @@ export function HomePage() {
             <button
               key={i}
               onClick={() => changeSlide(i)}
-              className={`transition-all duration-300 rounded-full ${
-                i === currentSlide ? "w-8 h-2.5 bg-[#C8A951]" : "w-2.5 h-2.5 bg-white/50 hover:bg-white"
-              }`}
+              className={`transition-all duration-300 rounded-full ${i === currentSlide ? "w-8 h-2.5 bg-[#C8A951]" : "w-2.5 h-2.5 bg-white/50 hover:bg-white"
+                }`}
             />
           ))}
         </div>
@@ -151,17 +156,20 @@ export function HomePage() {
       <section className="bg-gradient-to-r from-[#003D1F] to-[#006B3F] py-8">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {stats.map(({ icon: Icon, value, label }, i) => (
-              <div key={i} className="text-center text-white group">
-                <div className="flex justify-center mb-2">
-                  <div className="w-12 h-12 bg-white/10 group-hover:bg-[#C8A951] rounded-xl flex items-center justify-center transition-all">
-                    <Icon className="w-6 h-6" />
+            {(settings.homeStats || []).map((stat: any, i: number) => {
+              const Icon = iconMap[stat.icon] || Award;
+              return (
+                <div key={i} className="text-center text-white group">
+                  <div className="flex justify-center mb-2">
+                    <div className="w-12 h-12 bg-white/10 group-hover:bg-[#C8A951] rounded-xl flex items-center justify-center transition-all">
+                      <Icon className="w-6 h-6" />
+                    </div>
                   </div>
+                  <p className="text-3xl font-bold text-[#C8A951]">{stat.value}</p>
+                  <p className="text-green-200 text-sm">{stat.label}</p>
                 </div>
-                <p className="text-3xl font-bold text-[#C8A951]">{value}</p>
-                <p className="text-green-200 text-sm">{label}</p>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
@@ -236,22 +244,26 @@ export function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {features.map(({ icon: Icon, title, desc, color }, i) => (
-              <div
-                key={i}
-                className="group bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-gray-100"
-              >
+            {(settings.homeFeatures || []).map((feat: any, i: number) => {
+              const Icon = iconMap[feat.icon] || Award;
+              const color = i % 2 === 0 ? "#006B3F" : "#C8A951";
+              return (
                 <div
-                  className="w-14 h-14 rounded-xl flex items-center justify-center mb-4 transition-all group-hover:scale-110"
-                  style={{ backgroundColor: `${color}18` }}
+                  key={i}
+                  className="group bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-gray-100"
                 >
-                  <Icon className="w-7 h-7" style={{ color }} />
+                  <div
+                    className="w-14 h-14 rounded-xl flex items-center justify-center mb-4 transition-all group-hover:scale-110"
+                    style={{ backgroundColor: `${color}18` }}
+                  >
+                    <Icon className="w-7 h-7" style={{ color }} />
+                  </div>
+                  <h3 className="font-bold text-[#003D1F] mb-2" style={{ fontFamily: "Playfair Display, serif" }}>{feat.title}</h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">{feat.desc}</p>
+                  <div className="w-8 h-0.5 mt-4 rounded-full transition-all group-hover:w-16" style={{ backgroundColor: color }} />
                 </div>
-                <h3 className="font-bold text-[#003D1F] mb-2" style={{ fontFamily: "Playfair Display, serif" }}>{title}</h3>
-                <p className="text-gray-600 text-sm leading-relaxed">{desc}</p>
-                <div className="w-8 h-0.5 mt-4 rounded-full transition-all group-hover:w-16" style={{ backgroundColor: color }} />
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
@@ -388,7 +400,7 @@ export function HomePage() {
               </div>
               <div>
                 <p className="text-xs text-gray-500 mb-0.5">Call Us</p>
-                <p className="font-bold text-[#003D1F] text-sm">04237602172</p>
+                <p className="font-bold text-[#003D1F] text-sm">{settings.phone}</p>
               </div>
             </div>
             <div className="flex items-center gap-4 bg-white p-5 rounded-xl shadow-sm border border-gray-100">
@@ -397,7 +409,7 @@ export function HomePage() {
               </div>
               <div>
                 <p className="text-xs text-gray-500 mb-0.5">Email Us</p>
-                <p className="font-bold text-[#003D1F] text-sm">datanagargacw@gmail.com</p>
+                <p className="font-bold text-[#003D1F] text-sm">{settings.email}</p>
               </div>
             </div>
             <Link

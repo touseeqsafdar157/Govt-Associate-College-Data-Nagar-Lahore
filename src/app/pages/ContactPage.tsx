@@ -1,7 +1,11 @@
 import { useState } from "react";
 import { MapPin, Phone, Mail, Clock, Send, Facebook, Youtube, MessageSquare } from "lucide-react";
+import { useAdmin } from "../context/AdminContext";
 
 export function ContactPage() {
+  const { settings, addMessage } = useAdmin();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -10,10 +14,47 @@ export function ContactPage() {
     message: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [showComplaintModal, setShowComplaintModal] = useState(false);
+  const [complaintForm, setComplaintForm] = useState({ name: "", email: "", phone: "", message: "" });
+  const [isSubmittingComplaint, setIsSubmittingComplaint] = useState(false);
+  const [complaintSuccess, setComplaintSuccess] = useState(false);
+
+  const handleComplaintSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert("Thank you for your message! We will get back to you soon.");
-    setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
+    setIsSubmittingComplaint(true);
+    try {
+      await addMessage({
+        ...complaintForm,
+        name: complaintForm.name || "Anonymous",
+        email: complaintForm.email || "anonymous@noreply.com",
+        subject: "complaint"
+      });
+      setComplaintSuccess(true);
+      setComplaintForm({ name: "", email: "", phone: "", message: "" });
+      setTimeout(() => {
+        setComplaintSuccess(false);
+        setShowComplaintModal(false);
+      }, 3000);
+    } catch (error) {
+      alert("Failed to submit complaint.");
+    } finally {
+      setIsSubmittingComplaint(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      await addMessage(formData);
+      setSubmitSuccess(true);
+      setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
+      setTimeout(() => setSubmitSuccess(false), 5000);
+    } catch (error) {
+      alert("Failed to send message. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -38,9 +79,9 @@ export function ContactPage() {
               </div>
               <h3 className="font-bold text-[#006B3F] mb-2">Address</h3>
               <p className="text-gray-600 text-sm">
-                Ilahi Bakhsh Road Data Nagar<br />
-                Data Nagar, Lahore<br />
-                Punjab, Pakistan
+                {settings.address.split(',').map((line, i) => (
+                  <span key={i}>{line.trim()}<br /></span>
+                ))}
               </p>
             </div>
 
@@ -50,9 +91,7 @@ export function ContactPage() {
               </div>
               <h3 className="font-bold text-[#006B3F] mb-2">Phone</h3>
               <p className="text-gray-600 text-sm">
-                Office: 04237602172<br />
-                Principal: 042-1234568<br />
-                Admission: 042-1234569
+                {settings.phone}
               </p>
             </div>
 
@@ -62,9 +101,7 @@ export function ContactPage() {
               </div>
               <h3 className="font-bold text-[#006B3F] mb-2">Email</h3>
               <p className="text-gray-600 text-sm">
-                datanagargacw@gmail.com<br />
-                principal@gacdatanagar.edu.pk<br />
-                admissions@gacdatanagar.edu.pk
+                {settings.email}
               </p>
             </div>
 
@@ -74,9 +111,9 @@ export function ContactPage() {
               </div>
               <h3 className="font-bold text-[#006B3F] mb-2">Office Hours</h3>
               <p className="text-gray-600 text-sm">
-                Monday - Friday<br />
-                8:00 AM - 4:00 PM<br />
-                Saturday: 8:00 AM - 1:00 PM
+                {(settings.officeHours || "Monday - Friday\n8:00 AM - 4:00 PM").split('\n').map((line, i) => (
+                  <span key={i}>{line.trim()}<br /></span>
+                ))}
               </p>
             </div>
           </div>
@@ -164,10 +201,19 @@ export function ContactPage() {
 
                 <button
                   type="submit"
-                  className="w-full bg-[#006B3F] hover:bg-[#004d2d] text-white py-4 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
+                  disabled={isSubmitting}
+                  className={`w-full text-white py-4 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 ${submitSuccess ? 'bg-green-600 hover:bg-green-700' : 'bg-[#006B3F] hover:bg-[#004d2d]'} ${isSubmitting ? 'opacity-75 cursor-not-allowed' : ''}`}
                 >
-                  <Send className="w-5 h-5" />
-                  Send Message
+                  {isSubmitting ? (
+                    "Sending..."
+                  ) : submitSuccess ? (
+                    "Message Sent Successfully!"
+                  ) : (
+                    <>
+                      <Send className="w-5 h-5" />
+                      Send Message
+                    </>
+                  )}
                 </button>
               </form>
 
@@ -188,7 +234,7 @@ export function ContactPage() {
               {/* Google Map */}
               <div className="w-full h-96 bg-gray-200 rounded-lg overflow-hidden mb-8 shadow-lg">
                 <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d54449.96683984406!2d74.30943!3d31.5204!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzHCsDMxJzEzLjQiTiA3NMKwMTgnMzMuOSJF!5e0!3m2!1sen!2s!4v1234567890"
+                  src="https://www.google.com/maps?q=31.6018268,74.3219354&z=17&output=embed"
                   width="100%"
                   height="100%"
                   style={{ border: 0 }}
@@ -238,7 +284,7 @@ export function ContactPage() {
                     className="w-12 h-12 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-colors"
                   >
                     <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
                     </svg>
                   </a>
                 </div>
@@ -257,14 +303,7 @@ export function ContactPage() {
           <div className="w-20 h-1 bg-[#C8A951] mx-auto mb-12" />
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-              { dept: "Principal Office", name: "Prof. Dr. Farzana Ashfaq", phone: "042-1234568", email: "principal@gacdatanagar.edu.pk" },
-              { dept: "Admissions Office", name: "Mr. Usman Farooq", phone: "042-1234569", email: "admissions@gacdatanagar.edu.pk" },
-              { dept: "Examination Section", name: "Ms. Nida Khan", phone: "042-1234570", email: "exams@gacdatanagar.edu.pk" },
-              { dept: "Accounts Office", name: "Mr. Hassan Raza", phone: "042-1234571", email: "accounts@gacdatanagar.edu.pk" },
-              { dept: "Library", name: "Mr. Khalid Javed", phone: "042-1234572", email: "library@gacdatanagar.edu.pk" },
-              { dept: "IT Department", name: "Professor Komal", phone: "042-1234573", email: "it@gacdatanagar.edu.pk" },
-            ].map((dept, index) => (
+            {(settings.departments || []).map((dept, index) => (
               <div key={index} className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
                 <h3 className="font-bold text-[#006B3F] text-lg mb-3">{dept.dept}</h3>
                 <div className="space-y-2 text-sm">
@@ -294,11 +333,73 @@ export function ContactPage() {
           <p className="mb-6 text-[#C8A951] max-w-2xl mx-auto">
             We value your feedback. If you have any complaints or suggestions to improve our services, please submit them anonymously or with your details.
           </p>
-          <button className="bg-[#C8A951] hover:bg-[#b89841] text-white px-8 py-3 rounded-lg font-semibold transition-colors">
+          <button
+            onClick={() => setShowComplaintModal(true)}
+            className="bg-[#C8A951] hover:bg-[#b89841] text-white px-8 py-3 rounded-lg font-semibold transition-colors"
+          >
             Submit Complaint / Suggestion
           </button>
         </div>
       </section>
+
+      {/* Complaint Modal */}
+      {showComplaintModal && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full p-6 relative">
+            <button
+              onClick={() => setShowComplaintModal(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+            >
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            <h2 className="text-2xl font-bold text-[#006B3F] mb-6" style={{ fontFamily: 'Playfair Display, serif' }}>
+              Submit a Complaint or Suggestion
+            </h2>
+            <form onSubmit={handleComplaintSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Name (Optional)</label>
+                <input
+                  type="text"
+                  value={complaintForm.name}
+                  onChange={(e) => setComplaintForm({ ...complaintForm, name: e.target.value })}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#006B3F]"
+                  placeholder="Anonymous"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Email (Optional)</label>
+                <input
+                  type="email"
+                  value={complaintForm.email}
+                  onChange={(e) => setComplaintForm({ ...complaintForm, email: e.target.value })}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#006B3F]"
+                  placeholder="For follow-up"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Message *</label>
+                <textarea
+                  required
+                  rows={5}
+                  value={complaintForm.message}
+                  onChange={(e) => setComplaintForm({ ...complaintForm, message: e.target.value })}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#006B3F]"
+                  placeholder="Describe your complaint or suggestion..."
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={isSubmittingComplaint}
+                className={`w-full text-white py-3 rounded-lg font-semibold transition-colors flex items-center justify-center ${complaintSuccess ? 'bg-green-600' : 'bg-[#006B3F] hover:bg-[#004d2d]'} ${isSubmittingComplaint ? 'opacity-75 cursor-not-allowed' : ''}`}
+              >
+                {isSubmittingComplaint ? "Submitting..." : complaintSuccess ? "Submitted Successfully!" : "Submit"}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

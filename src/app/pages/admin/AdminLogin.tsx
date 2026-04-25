@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import { GraduationCap, Lock, Eye, EyeOff, AlertCircle } from "lucide-react";
+import { GraduationCap, Lock, Eye, EyeOff, AlertCircle, Mail } from "lucide-react";
 import { useAdmin } from "../../context/AdminContext";
 
 export function AdminLogin() {
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
@@ -15,12 +16,11 @@ export function AdminLogin() {
     e.preventDefault();
     setLoading(true);
     setError("");
-    await new Promise((r) => setTimeout(r, 600));
-    const ok = login(password);
+    const ok = await login(email, password);
     if (ok) {
       navigate("/admin/dashboard");
     } else {
-      setError("Incorrect password. Please try again.");
+      setError("Invalid email or password. Please try again.");
       setLoading(false);
     }
   };
@@ -52,7 +52,7 @@ export function AdminLogin() {
           {/* Form */}
           <div className="p-8">
             <h2 className="text-gray-800 font-bold mb-1">Administrator Login</h2>
-            <p className="text-gray-500 text-sm mb-6">Enter your admin password to access the dashboard</p>
+            <p className="text-gray-500 text-sm mb-6">Enter your credentials to access the dashboard</p>
 
             {error && (
               <div className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 rounded-lg p-3 mb-5 text-sm">
@@ -64,15 +64,29 @@ export function AdminLogin() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  <Mail className="w-3.5 h-3.5 inline mr-1" />
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="admin@gac.edu.pk"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#006B3F] focus:border-transparent transition-all"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
                   <Lock className="w-3.5 h-3.5 inline mr-1" />
-                  Admin Password
+                  Password
                 </label>
                 <div className="relative">
                   <input
                     type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Enter admin password"
+                    placeholder="Enter your password"
                     className="w-full border border-gray-300 rounded-lg px-4 py-2.5 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-[#006B3F] focus:border-transparent transition-all"
                     required
                   />
@@ -84,7 +98,7 @@ export function AdminLogin() {
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
-                <p className="text-xs text-gray-400 mt-1">Default: admin@gac123</p>
+                <p className="text-xs text-gray-400 mt-1">Default: admin@gac.edu.pk / admin@gac123</p>
               </div>
 
               <button

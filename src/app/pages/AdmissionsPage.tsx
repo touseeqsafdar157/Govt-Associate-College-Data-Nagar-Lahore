@@ -1,261 +1,97 @@
-import { Calendar, FileText, DollarSign, HelpCircle, Award } from "lucide-react";
 import { useState } from "react";
+import { X, Upload, Check, AlertCircle, ChevronRight } from "lucide-react";
+import { useAdmin } from "../context/AdminContext";
+
+const API = "https://govt-associate-college-data-nagar-lahore.onrender.com/api";
+const PROGRAMS = ["FSc Pre-Medical","FSc Pre-Engineering","ICS","FA","I.Com","ADP Science","ADP Arts","ADP Commerce"];
 
 export function AdmissionsPage() {
-  const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const { settings } = useAdmin();
+  const [showModal, setShowModal] = useState(false);
+  const [step, setStep] = useState(1);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState("");
+  const [form, setForm] = useState({ name:"",fatherName:"",cnic:"",dob:"",gender:"Male",phone:"",email:"",address:"",program:"FSc Pre-Medical",previousInstitution:"",previousMarks:"" });
+  const [files, setFiles] = useState<{photo?:File,matricCert?:File,cnicCopy?:File,characterCert?:File}>({});
 
-  const faqs = [
-    {
-      q: "What is the admission process?",
-      a: "Submit the online application form along with required documents. After document verification, merit lists will be published. Selected candidates must complete fee submission within the given deadline.",
-    },
-    {
-      q: "Can I apply for multiple programs?",
-      a: "Yes, you can apply for up to two programs, but you must indicate your preference. Admission will be offered based on merit and program availability.",
-    },
-    {
-      q: "What documents are required for admission?",
-      a: "Original and photocopies of: Matric/FSc certificates and mark sheets, CNIC/B-Form, domicile, 4 passport-size photos, and migration certificate (if applicable).",
-    },
-    {
-      q: "Are there scholarships available?",
-      a: "Yes, we offer merit-based scholarships for position holders and need-based financial assistance for deserving students. Apply during the admission process.",
-    },
-    {
-      q: "What is the last date for admissions?",
-      a: "The last date for intermediate programs is August 15, 2026. For ADP programs, the deadline is August 20, 2026. Late admissions may be considered on a case-by-case basis.",
-    },
-  ];
+  const isAdmissionActive = () => {
+    if (!settings?.admissionsOpen) return false;
+    if (!settings?.lastDateAdmission) return true;
+    const lastDate = new Date(settings.lastDateAdmission);
+    if (isNaN(lastDate.getTime())) return true;
+    lastDate.setHours(23, 59, 59, 999);
+    return new Date() <= lastDate;
+  };
+  const admissionOpen = isAdmissionActive();
+
+  const f = (k:string) => (e:any) => setForm(p=>({...p,[k]:e.target.value}));
+  const setFile = (k:string) => (e:any) => { const f=e.target.files?.[0]; if(f) setFiles(p=>({...p,[k]:f})); };
+
+  const handleSubmit = async () => {
+    if (!form.name||!form.fatherName||!form.cnic||!form.phone||!form.program) { setError("Starred fields zaruri hain"); return; }
+    setSubmitting(true); setError("");
+    try {
+      const fd = new FormData();
+      Object.keys(form).forEach(k=>fd.append(k,(form as any)[k]));
+      if(files.photo) fd.append("photo",files.photo);
+      if(files.matricCert) fd.append("matricCert",files.matricCert);
+      if(files.cnicCopy) fd.append("cnicCopy",files.cnicCopy);
+      if(files.characterCert) fd.append("characterCert",files.characterCert);
+      const res = await fetch(`${API}/applications`,{method:"POST",body:fd});
+      if(!res.ok) throw new Error();
+      setSubmitted(true);
+    } catch { setError("Submit nahi hua. Backend chal raha hai?"); }
+    setSubmitting(false);
+  };
+
+  const inputCls = "w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#006B3F]";
+  const labelCls = "block text-xs font-semibold text-gray-700 mb-1";
 
   return (
     <div className="bg-white">
-      {/* Page Header */}
       <section className="bg-gradient-to-r from-[#006B3F] to-[#004d2d] text-white py-16">
         <div className="container mx-auto px-4">
-          <h1 className="text-5xl font-bold mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>
-            Admissions
-          </h1>
+          <h1 className="text-5xl font-bold mb-4" style={{fontFamily:"Playfair Display,serif"}}>Admissions</h1>
           <p className="text-xl text-[#C8A951]">Join our community of excellence</p>
         </div>
       </section>
 
-      {/* Admission Schedule */}
-      <section className="py-16">
+      {/* Eligibility Table */}
+      <section className="py-14">
         <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-[#006B3F] mb-6" style={{ fontFamily: 'Playfair Display, serif' }}>
-            Admission Schedule 2026-27
-          </h2>
-          <div className="w-20 h-1 bg-[#C8A951] mb-8" />
-
-          <div className="relative">
-            <div className="absolute left-0 md:left-1/2 h-full w-1 bg-[#C8A951]" />
-
-            {[
-              { date: "July 1, 2026", event: "Admissions Open", desc: "Online application portal opens" },
-              { date: "July 15, 2026", event: "Information Session", desc: "Open day for prospective students" },
-              { date: "August 10, 2026", event: "Application Deadline (Intermediate)", desc: "Last date for submission" },
-              { date: "August 15, 2026", event: "Application Deadline (ADP)", desc: "Last date for ADP programs" },
-              { date: "August 20, 2026", event: "Merit Lists Published", desc: "First merit list announcement" },
-              { date: "August 25, 2026", event: "Fee Submission Deadline", desc: "Confirm admission with fee payment" },
-              { date: "September 1, 2026", event: "Classes Commence", desc: "Academic session begins" },
-            ].map((item, index) => (
-              <div key={index} className="mb-8 flex items-center">
-                <div className={`flex-1 ${index % 2 === 0 ? 'md:text-right md:pr-12' : 'md:ml-auto md:pl-12'} ${index % 2 !== 0 ? 'md:order-2' : ''}`}>
-                  <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
-                    <p className="text-sm text-[#C8A951] mb-1">{item.date}</p>
-                    <h3 className="text-xl font-bold text-[#006B3F] mb-2">{item.event}</h3>
-                    <p className="text-gray-600">{item.desc}</p>
-                  </div>
-                </div>
-                <div className="absolute left-0 md:left-1/2 w-4 h-4 bg-[#006B3F] rounded-full border-4 border-white -ml-[7px]" />
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Eligibility Criteria */}
-      <section className="py-16 bg-[#F8F9FA]">
-        <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-[#006B3F] mb-6" style={{ fontFamily: 'Playfair Display, serif' }}>
-            Eligibility Criteria
-          </h2>
-          <div className="w-20 h-1 bg-[#C8A951] mb-8" />
-
+          <h2 className="text-3xl font-bold text-[#006B3F] mb-2" style={{fontFamily:"Playfair Display,serif"}}>Eligibility Criteria</h2>
+          <div className="w-16 h-1 bg-[#C8A951] mb-6"/>
           <div className="overflow-x-auto">
-            <table className="w-full bg-white rounded-lg shadow-md overflow-hidden">
+            <table className="w-full bg-white rounded-xl shadow-md overflow-hidden text-sm">
               <thead className="bg-[#006B3F] text-white">
-                <tr>
-                  <th className="px-6 py-4 text-left">Program</th>
-                  <th className="px-6 py-4 text-left">Minimum Qualification</th>
-                  <th className="px-6 py-4 text-left">Minimum Marks</th>
-                  <th className="px-6 py-4 text-left">Age Limit</th>
-                </tr>
+                <tr>{["Program","Min Qualification","Min Marks","Age Limit"].map(h=><th key={h} className="px-4 py-3 text-left">{h}</th>)}</tr>
               </thead>
               <tbody>
-                {[
-                  { program: "FSc (Pre-Medical/Engineering)", qualification: "Matric (Science)", marks: "60%", age: "Under 20 years" },
-                  { program: "ICS", qualification: "Matric (Science)", marks: "55%", age: "Under 20 years" },
-                  { program: "FA", qualification: "Matric (Any group)", marks: "50%", age: "Under 20 years" },
-                  { program: "I.Com", qualification: "Matric (Any group)", marks: "50%", age: "Under 20 years" },
-                  { program: "ADP (Science)", qualification: "FSc/ICS", marks: "45%", age: "Under 23 years" },
-                  { program: "ADP (Arts)", qualification: "FA/FSc/ICS", marks: "45%", age: "Under 23 years" },
-                  { program: "ADP (Commerce)", qualification: "I.Com/FSc/FA", marks: "45%", age: "Under 23 years" },
-                ].map((row, index) => (
-                  <tr key={index} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
-                    <td className="px-6 py-4 font-semibold text-gray-800">{row.program}</td>
-                    <td className="px-6 py-4 text-gray-600">{row.qualification}</td>
-                    <td className="px-6 py-4 text-gray-600">{row.marks}</td>
-                    <td className="px-6 py-4 text-gray-600">{row.age}</td>
+                {(settings?.eligibilityCriteria || []).map((r: any, i: number) => (
+                  <tr key={i} className={i%2===0?"bg-gray-50":"bg-white"}>
+                    <td className="px-4 py-3 text-gray-700">{r.program}</td>
+                    <td className="px-4 py-3 text-gray-700">{r.qualification}</td>
+                    <td className="px-4 py-3 text-gray-700">{r.marks}</td>
+                    <td className="px-4 py-3 text-gray-700">{r.ageLimit}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
-          </div>
-        </div>
-      </section>
-
-      {/* Fee Structure */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-[#006B3F] mb-6" style={{ fontFamily: 'Playfair Display, serif' }}>
-            Fee Structure 2026-27
-          </h2>
-          <div className="w-20 h-1 bg-[#C8A951] mb-8" />
-
-          <div className="overflow-x-auto">
-            <table className="w-full bg-white rounded-lg shadow-md overflow-hidden">
-              <thead className="bg-[#006B3F] text-white">
-                <tr>
-                  <th className="px-6 py-4 text-left">Program</th>
-                  <th className="px-6 py-4 text-right">Tuition Fee</th>
-                  <th className="px-6 py-4 text-right">Lab Fee</th>
-                  <th className="px-6 py-4 text-right">Admission Fee</th>
-                  <th className="px-6 py-4 text-right">Total (Annual)</th>
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  { program: "FSc Pre-Medical", tuition: "12,000", lab: "2,500", admission: "500", total: "15,000" },
-                  { program: "FSc Pre-Engineering", tuition: "12,000", lab: "2,500", admission: "500", total: "15,000" },
-                  { program: "ICS", tuition: "14,000", lab: "3,500", admission: "500", total: "18,000" },
-                  { program: "FA", tuition: "11,000", lab: "500", admission: "500", total: "12,000" },
-                  { program: "I.Com", tuition: "13,000", lab: "500", admission: "500", total: "14,000" },
-                  { program: "ADP Science", tuition: "20,000", lab: "4,500", admission: "500", total: "25,000" },
-                  { program: "ADP Arts", tuition: "21,000", lab: "500", admission: "500", total: "22,000" },
-                  { program: "ADP Commerce", tuition: "23,000", lab: "500", admission: "500", total: "24,000" },
-                ].map((row, index) => (
-                  <tr key={index} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
-                    <td className="px-6 py-4 font-semibold text-gray-800">{row.program}</td>
-                    <td className="px-6 py-4 text-right text-gray-600">PKR {row.tuition}</td>
-                    <td className="px-6 py-4 text-right text-gray-600">PKR {row.lab}</td>
-                    <td className="px-6 py-4 text-right text-gray-600">PKR {row.admission}</td>
-                    <td className="px-6 py-4 text-right font-bold text-[#006B3F]">PKR {row.total}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          <div className="mt-6 bg-[#F8F9FA] p-4 rounded-lg">
-            <p className="text-sm text-gray-600">
-              <strong>Note:</strong> Fee concessions and scholarships are available for deserving students. Government employees can avail special discounts. Fee can be paid in two installments.
-            </p>
           </div>
         </div>
       </section>
 
       {/* Required Documents */}
-      <section className="py-16 bg-[#F8F9FA]">
+      <section className="py-10 bg-[#F8F9FA]">
         <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-[#006B3F] mb-6" style={{ fontFamily: 'Playfair Display, serif' }}>
-            Required Documents
-          </h2>
-          <div className="w-20 h-1 bg-[#C8A951] mb-8" />
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {[
-              "Matric/Intermediate Certificate & Mark Sheets (Original + 2 Photocopies)",
-              "CNIC or B-Form (Original + 2 Photocopies)",
-              "Domicile Certificate (Original + 2 Photocopies)",
-              "4 Recent Passport-size Photographs",
-              "Character Certificate from Previous Institution",
-              "Migration Certificate (if from another board)",
-              "Hafiz-e-Quran Certificate (if applicable, for fee concession)",
-              "Income Certificate for Scholarship (if applying)",
-            ].map((doc, index) => (
-              <div key={index} className="flex items-start gap-3 bg-white p-4 rounded-lg shadow-sm">
-                <FileText className="w-6 h-6 text-[#006B3F] flex-shrink-0 mt-1" />
-                <span className="text-gray-700">{doc}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Scholarships */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-[#006B3F] mb-6" style={{ fontFamily: 'Playfair Display, serif' }}>
-            Scholarships & Fee Concessions
-          </h2>
-          <div className="w-20 h-1 bg-[#C8A951] mb-8" />
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              { title: "Merit Scholarships", desc: "100% fee waiver for position holders (1st-3rd position)", percent: "100%" },
-              { title: "Need-Based Aid", desc: "50-75% fee concession for financially deserving students", percent: "50-75%" },
-              { title: "Hafiz-e-Quran", desc: "50% fee concession for Hafiz-e-Quran students", percent: "50%" },
-              { title: "Orphan Students", desc: "100% fee waiver for orphan students with valid documentation", percent: "100%" },
-              { title: "Government Employees", desc: "20% discount for children of government employees", percent: "20%" },
-              { title: "Sports Quota", desc: "25% concession for district/provincial level players", percent: "25%" },
-            ].map((scholarship, index) => (
-              <div key={index} className="bg-white border-2 border-[#006B3F] rounded-lg p-6 hover:shadow-lg transition-shadow">
-                <div className="flex justify-between items-start mb-4">
-                  <Award className="w-10 h-10 text-[#C8A951]" />
-                  <span className="text-2xl font-bold text-[#006B3F]">{scholarship.percent}</span>
-                </div>
-                <h3 className="text-xl font-bold text-[#006B3F] mb-2">{scholarship.title}</h3>
-                <p className="text-gray-600 text-sm">{scholarship.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* FAQs */}
-      <section className="py-16 bg-[#F8F9FA]">
-        <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-[#006B3F] mb-6" style={{ fontFamily: 'Playfair Display, serif' }}>
-            Frequently Asked Questions
-          </h2>
-          <div className="w-20 h-1 bg-[#C8A951] mb-8" />
-
-          <div className="space-y-4 max-w-4xl">
-            {faqs.map((faq, index) => (
-              <div key={index} className="bg-white rounded-lg shadow-md overflow-hidden">
-                <button
-                  onClick={() => setOpenFaq(openFaq === index ? null : index)}
-                  className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-50 transition-colors"
-                >
-                  <span className="font-semibold text-gray-800 flex items-center gap-3">
-                    <HelpCircle className="w-5 h-5 text-[#006B3F]" />
-                    {faq.q}
-                  </span>
-                  <svg
-                    className={`w-5 h-5 text-[#006B3F] transition-transform ${openFaq === index ? 'rotate-180' : ''}`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
-                {openFaq === index && (
-                  <div className="px-6 pb-4 text-gray-600 border-t border-gray-100 pt-4">
-                    {faq.a}
-                  </div>
-                )}
+          <h2 className="text-3xl font-bold text-[#006B3F] mb-2" style={{fontFamily:"Playfair Display,serif"}}>Required Documents</h2>
+          <div className="w-16 h-1 bg-[#C8A951] mb-6"/>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {(settings?.requiredDocuments || []).map((d: string, i: number)=>(
+              <div key={i} className="flex items-start gap-3 bg-white p-4 rounded-xl shadow-sm">
+                <div className="w-6 h-6 rounded-full bg-[#006B3F]/10 flex items-center justify-center shrink-0 mt-0.5"><ChevronRight className="w-3 h-3 text-[#006B3F]"/></div>
+                <span className="text-gray-700 text-sm">{d}</span>
               </div>
             ))}
           </div>
@@ -263,17 +99,123 @@ export function AdmissionsPage() {
       </section>
 
       {/* CTA */}
-      <section className="py-16 bg-gradient-to-r from-[#006B3F] to-[#004d2d] text-white">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>
-            Ready to Apply?
-          </h2>
-          <p className="text-xl mb-8 text-[#C8A951]">Join us and start your journey to success</p>
-          <button className="bg-[#C8A951] hover:bg-[#b89841] text-white px-12 py-4 rounded-lg text-lg font-semibold transition-colors">
-            Apply Now Online
-          </button>
-        </div>
+      <section className="py-14 bg-gradient-to-r from-[#006B3F] to-[#004d2d] text-white text-center">
+        <h2 className="text-4xl font-bold mb-3" style={{fontFamily:"Playfair Display,serif"}}>Ready to Apply?</h2>
+        {admissionOpen ? (
+          <>
+            <p className="text-[#C8A951] mb-8 text-lg">Fill the online form and submit your documents</p>
+            <button onClick={()=>{setShowModal(true);setStep(1);setSubmitted(false);setError("");}}
+              className="bg-[#C8A951] hover:bg-[#b89841] text-white px-12 py-4 rounded-xl text-lg font-bold transition-all hover:scale-105 shadow-xl">
+              Apply Online Now
+            </button>
+          </>
+        ) : (
+          <>
+            <p className="text-red-300 mb-8 text-lg font-semibold">Admissions are currently closed.</p>
+            <button onClick={() => window.scrollTo({ top: 300, behavior: 'smooth' })} className="bg-white hover:bg-gray-100 text-[#006B3F] px-12 py-4 rounded-xl text-lg font-bold transition-all shadow-xl">
+              View Admission Criteria
+            </button>
+          </>
+        )}
       </section>
+
+      {/* Application Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[92vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-5 border-b border-gray-100 sticky top-0 bg-white z-10">
+              <div>
+                <h2 className="font-bold text-gray-800 text-lg">Online Admission Application</h2>
+                <p className="text-xs text-gray-500">Step {step} of 3</p>
+              </div>
+              <button onClick={()=>setShowModal(false)} className="p-2 hover:bg-gray-100 rounded-lg"><X className="w-4 h-4"/></button>
+            </div>
+
+            {/* Step indicator */}
+            <div className="flex px-5 pt-4 gap-2">
+              {["Personal Info","Academic Info","Documents"].map((s,i)=>(
+                <div key={i} className="flex-1">
+                  <div className={`h-1.5 rounded-full transition-colors ${step>i?"bg-[#006B3F]":"bg-gray-200"}`}/>
+                  <p className={`text-xs mt-1 font-medium ${step===i+1?"text-[#006B3F]":"text-gray-400"}`}>{s}</p>
+                </div>
+              ))}
+            </div>
+
+            {submitted ? (
+              <div className="p-10 text-center">
+                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4"><Check className="w-8 h-8 text-green-600"/></div>
+                <h3 className="text-xl font-bold text-gray-800 mb-2">Application Submitted!</h3>
+                <p className="text-gray-500 text-sm mb-6">Aapki application college administration ko mil gayi hai. Jaldi notification aayega.</p>
+                <button onClick={()=>setShowModal(false)} className="bg-[#006B3F] text-white px-8 py-2.5 rounded-lg font-semibold">Close</button>
+              </div>
+            ) : (
+              <div className="p-5">
+                {/* Step 1 */}
+                {step===1 && (
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="col-span-2 md:col-span-1"><label className={labelCls}>Full Name *</label><input value={form.name} onChange={f("name")} placeholder="Apna poora naam" className={inputCls}/></div>
+                      <div className="col-span-2 md:col-span-1"><label className={labelCls}>Father Name *</label><input value={form.fatherName} onChange={f("fatherName")} placeholder="Walid ka naam" className={inputCls}/></div>
+                      <div><label className={labelCls}>CNIC / B-Form *</label><input value={form.cnic} onChange={f("cnic")} placeholder="00000-0000000-0" className={inputCls}/></div>
+                      <div><label className={labelCls}>Date of Birth</label><input type="date" value={form.dob} onChange={f("dob")} className={inputCls}/></div>
+                      <div><label className={labelCls}>Gender</label><select value={form.gender} onChange={f("gender")} className={inputCls}><option>Male</option><option>Female</option></select></div>
+                      <div><label className={labelCls}>Phone *</label><input value={form.phone} onChange={f("phone")} placeholder="03XX-XXXXXXX" className={inputCls}/></div>
+                      <div><label className={labelCls}>Email</label><input value={form.email} onChange={f("email")} placeholder="email@example.com" className={inputCls}/></div>
+                      <div><label className={labelCls}>Address</label><input value={form.address} onChange={f("address")} placeholder="Ghar ka address" className={inputCls}/></div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Step 2 */}
+                {step===2 && (
+                  <div className="space-y-4">
+                    <div><label className={labelCls}>Program *</label>
+                      <select value={form.program} onChange={f("program")} className={inputCls}>
+                        {PROGRAMS.map(p=><option key={p}>{p}</option>)}
+                      </select>
+                    </div>
+                    <div><label className={labelCls}>Previous Institution</label><input value={form.previousInstitution} onChange={f("previousInstitution")} placeholder="School / College ka naam" className={inputCls}/></div>
+                    <div><label className={labelCls}>Previous Marks %</label><input value={form.previousMarks} onChange={f("previousMarks")} placeholder="e.g. 85%" className={inputCls}/></div>
+                  </div>
+                )}
+
+                {/* Step 3 */}
+                {step===3 && (
+                  <div className="space-y-4">
+                    <p className="text-sm text-gray-500">Documents upload karein (JPG/PNG/PDF, max 5MB)</p>
+                    {[
+                      {key:"photo",label:"Passport Size Photo *"},
+                      {key:"matricCert",label:"Matric Certificate"},
+                      {key:"cnicCopy",label:"CNIC / B-Form Copy"},
+                      {key:"characterCert",label:"Character Certificate"},
+                    ].map(({key,label})=>(
+                      <div key={key}>
+                        <label className={labelCls}>{label}</label>
+                        <label className="flex items-center gap-3 border-2 border-dashed border-gray-300 hover:border-[#006B3F] rounded-xl p-3 cursor-pointer transition-colors">
+                          <Upload className="w-5 h-5 text-gray-400"/>
+                          <span className="text-sm text-gray-500">{(files as any)[key]?.name || "Click to select file"}</span>
+                          <input type="file" accept="image/*,.pdf" onChange={setFile(key)} className="hidden"/>
+                        </label>
+                      </div>
+                    ))}
+                    {error && <div className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 rounded-lg p-3 text-xs"><AlertCircle className="w-4 h-4"/>{error}</div>}
+                  </div>
+                )}
+
+                <div className="flex gap-3 mt-6 pt-4 border-t border-gray-100">
+                  {step>1 && <button onClick={()=>setStep(s=>s-1)} className="px-5 py-2.5 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">Back</button>}
+                  {step<3
+                    ? <button onClick={()=>setStep(s=>s+1)} className="flex-1 bg-[#006B3F] hover:bg-[#003D1F] text-white py-2.5 rounded-lg text-sm font-semibold">Next Step</button>
+                    : <button onClick={handleSubmit} disabled={submitting} className="flex-1 bg-[#006B3F] hover:bg-[#003D1F] text-white py-2.5 rounded-lg text-sm font-semibold disabled:opacity-50">
+                        {submitting?"Submitting...":"Submit Application"}
+                      </button>
+                  }
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

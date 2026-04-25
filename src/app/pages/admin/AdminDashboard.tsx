@@ -11,13 +11,17 @@ const quickLinks = [
 ];
 
 export function AdminDashboard() {
-  const { news, events, announcements, gallery, settings } = useAdmin();
+  const { news, events, announcements, gallery, settings, messages, faculty, programs, facilities } = useAdmin();
 
   const stats = [
     { icon: Newspaper, label: "News Articles", value: news.length, color: "#006B3F" },
     { icon: Calendar, label: "Events", value: events.length, color: "#C8A951" },
     { icon: Bell, label: "Active Announcements", value: announcements.filter((a) => a.active).length, color: "#006B3F" },
     { icon: Image, label: "Gallery Photos", value: gallery.length, color: "#C8A951" },
+    { icon: GraduationCap, label: "Faculty Members", value: faculty.length, color: "#006B3F" },
+    { icon: BookOpen, label: "Programs", value: programs.length, color: "#C8A951" },
+    { icon: Award, label: "Facilities", value: facilities.length, color: "#006B3F" },
+    { icon: Users, label: "Messages", value: messages.length, color: "#C8A951" },
   ];
 
   return (

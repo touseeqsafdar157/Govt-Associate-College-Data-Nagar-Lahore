@@ -1,71 +1,20 @@
 import { useState } from "react";
 import { BookOpen, Calendar, FileDown, CheckCircle } from "lucide-react";
+import { useAdmin } from "../context/AdminContext";
 
 export function AcademicsPage() {
-  const [activeTab, setActiveTab] = useState("intermediate");
+  const { programs, settings } = useAdmin();
+  const [activeTab, setActiveTab] = useState("Intermediate");
 
-  const programs = {
-    intermediate: [
-      {
-        name: "FSc Pre-Medical",
-        duration: "2 Years",
-        subjects: "Physics, Chemistry, Biology, English, Urdu, Islamiyat, Pakistan Studies",
-        eligibility: "Matric with Science (Minimum 60% marks)",
-        fee: "PKR 15,000/year",
-      },
-      {
-        name: "FSc Pre-Engineering",
-        duration: "2 Years",
-        subjects: "Physics, Chemistry, Mathematics, English, Urdu, Islamiyat, Pakistan Studies",
-        eligibility: "Matric with Science (Minimum 60% marks)",
-        fee: "PKR 15,000/year",
-      },
-      {
-        name: "ICS (Computer Science)",
-        duration: "2 Years",
-        subjects: "Physics, Mathematics, Computer Science, English, Urdu, Islamiyat, Pakistan Studies",
-        eligibility: "Matric with Science (Minimum 55% marks)",
-        fee: "PKR 18,000/year",
-      },
-      {
-        name: "FA (Arts)",
-        duration: "2 Years",
-        subjects: "English, Urdu, Islamic Studies, Pakistan Studies, Economics, Civics",
-        eligibility: "Matric with any group (Minimum 50% marks)",
-        fee: "PKR 12,000/year",
-      },
-      {
-        name: "I.Com (Commerce)",
-        duration: "2 Years",
-        subjects: "Principles of Commerce, Accounting, Economics, Business Mathematics, English, Urdu",
-        eligibility: "Matric with any group (Minimum 50% marks)",
-        fee: "PKR 14,000/year",
-      },
-    ],
-    adp: [
-      {
-        name: "ADP in Sciences",
-        duration: "2 Years (4 Semesters)",
-        subjects: "Major: Physics/Chemistry/Biology + Electives",
-        eligibility: "FSc/FA/ICS (Minimum 45% marks)",
-        fee: "PKR 25,000/year",
-      },
-      {
-        name: "ADP in Arts",
-        duration: "2 Years (4 Semesters)",
-        subjects: "Major: English/Urdu/Islamic Studies + Electives",
-        eligibility: "FA/FSc/ICS (Minimum 45% marks)",
-        fee: "PKR 22,000/year",
-      },
-      {
-        name: "ADP in Commerce",
-        duration: "2 Years (4 Semesters)",
-        subjects: "Major: Accounting/Business Administration + Electives",
-        eligibility: "I.Com/FSc/FA (Minimum 45% marks)",
-        fee: "PKR 24,000/year",
-      },
-    ],
-  };
+  const intermediatePrograms = programs.filter(p => p.category === "Intermediate");
+  const adpPrograms = programs.filter(p => p.category === "ADP");
+  
+  const currentPrograms = activeTab === "Intermediate" ? intermediatePrograms : adpPrograms;
+
+  const firstYearEvents = settings?.academicCalendar?.firstYear || [];
+  const secondYearEvents = settings?.academicCalendar?.secondYear || [];
+
+  const syllabusPrograms = programs.filter(p => p.syllabusUrl && p.syllabusUrl.trim() !== "");
 
   return (
     <div className="bg-white">
@@ -90,9 +39,9 @@ export function AcademicsPage() {
           {/* Tabs */}
           <div className="flex gap-4 mb-8 border-b border-gray-300">
             <button
-              onClick={() => setActiveTab("intermediate")}
+              onClick={() => setActiveTab("Intermediate")}
               className={`px-6 py-3 font-semibold transition-colors ${
-                activeTab === "intermediate"
+                activeTab === "Intermediate"
                   ? "border-b-4 border-[#006B3F] text-[#006B3F]"
                   : "text-gray-600 hover:text-[#006B3F]"
               }`}
@@ -100,9 +49,9 @@ export function AcademicsPage() {
               Intermediate Programs
             </button>
             <button
-              onClick={() => setActiveTab("adp")}
+              onClick={() => setActiveTab("ADP")}
               className={`px-6 py-3 font-semibold transition-colors ${
-                activeTab === "adp"
+                activeTab === "ADP"
                   ? "border-b-4 border-[#006B3F] text-[#006B3F]"
                   : "text-gray-600 hover:text-[#006B3F]"
               }`}
@@ -113,8 +62,8 @@ export function AcademicsPage() {
 
           {/* Program Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {programs[activeTab as keyof typeof programs].map((program, index) => (
-              <div key={index} className="bg-white border border-gray-200 rounded-lg p-6 shadow-md hover:shadow-xl transition-shadow">
+            {currentPrograms.map((program) => (
+              <div key={program.id} className="bg-white border border-gray-200 rounded-lg p-6 shadow-md hover:shadow-xl transition-shadow">
                 <h3 className="text-2xl font-bold text-[#006B3F] mb-4">{program.name}</h3>
                 <div className="space-y-3">
                   <div className="flex gap-2">
@@ -136,6 +85,11 @@ export function AcademicsPage() {
                 </div>
               </div>
             ))}
+            {currentPrograms.length === 0 && (
+              <div className="col-span-1 md:col-span-2 bg-gray-50 p-8 text-center text-gray-500 rounded-xl border border-gray-100">
+                Loading academic programs or none available yet...
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -155,30 +109,12 @@ export function AcademicsPage() {
                 First Year / Semester 1 & 2
               </h3>
               <ul className="space-y-3">
-                <li className="flex justify-between border-b pb-2">
-                  <span className="font-semibold">Admissions Open:</span>
-                  <span className="text-gray-600">July 1 - August 15</span>
-                </li>
-                <li className="flex justify-between border-b pb-2">
-                  <span className="font-semibold">Classes Begin:</span>
-                  <span className="text-gray-600">September 1</span>
-                </li>
-                <li className="flex justify-between border-b pb-2">
-                  <span className="font-semibold">Mid-Term Exams:</span>
-                  <span className="text-gray-600">November 15-30</span>
-                </li>
-                <li className="flex justify-between border-b pb-2">
-                  <span className="font-semibold">Winter Break:</span>
-                  <span className="text-gray-600">December 20 - January 5</span>
-                </li>
-                <li className="flex justify-between border-b pb-2">
-                  <span className="font-semibold">Final Exams:</span>
-                  <span className="text-gray-600">March 1-20</span>
-                </li>
-                <li className="flex justify-between">
-                  <span className="font-semibold">Summer Vacation:</span>
-                  <span className="text-gray-600">June 15 - August 31</span>
-                </li>
+                {firstYearEvents.map((ev, i) => (
+                  <li key={i} className="flex justify-between border-b pb-2">
+                    <span className="font-semibold">{ev.event}:</span>
+                    <span className="text-gray-600">{ev.date}</span>
+                  </li>
+                ))}
               </ul>
             </div>
 
@@ -188,26 +124,12 @@ export function AcademicsPage() {
                 Second Year / Semester 3 & 4
               </h3>
               <ul className="space-y-3">
-                <li className="flex justify-between border-b pb-2">
-                  <span className="font-semibold">Classes Resume:</span>
-                  <span className="text-gray-600">September 1</span>
-                </li>
-                <li className="flex justify-between border-b pb-2">
-                  <span className="font-semibold">Pre-Board Exams:</span>
-                  <span className="text-gray-600">January 15 - February 5</span>
-                </li>
-                <li className="flex justify-between border-b pb-2">
-                  <span className="font-semibold">Annual Exams (BISE):</span>
-                  <span className="text-gray-600">April 20 - May 20</span>
-                </li>
-                <li className="flex justify-between border-b pb-2">
-                  <span className="font-semibold">Result Declaration:</span>
-                  <span className="text-gray-600">August 15</span>
-                </li>
-                <li className="flex justify-between">
-                  <span className="font-semibold">Convocation:</span>
-                  <span className="text-gray-600">September 15</span>
-                </li>
+                {secondYearEvents.map((ev, i) => (
+                  <li key={i} className="flex justify-between border-b pb-2">
+                    <span className="font-semibold">{ev.event}:</span>
+                    <span className="text-gray-600">{ev.date}</span>
+                  </li>
+                ))}
               </ul>
             </div>
           </div>
@@ -223,28 +145,23 @@ export function AcademicsPage() {
           <div className="w-20 h-1 bg-[#C8A951] mb-8" />
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              "FSc Pre-Medical Syllabus",
-              "FSc Pre-Engineering Syllabus",
-              "ICS Syllabus",
-              "FA Syllabus",
-              "I.Com Syllabus",
-              "ADP Science Curriculum",
-              "ADP Arts Curriculum",
-              "ADP Commerce Curriculum",
-              "Examination Scheme",
-            ].map((item, index) => (
-              <div
-                key={index}
-                className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-lg transition-shadow cursor-pointer flex items-center justify-between"
+            {syllabusPrograms.length > 0 ? syllabusPrograms.map((program) => (
+              <a
+                href={program.syllabusUrl}
+                target="_blank"
+                rel="noreferrer"
+                key={program.id}
+                className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-lg transition-shadow cursor-pointer flex items-center justify-between group"
               >
                 <div className="flex items-center gap-3">
-                  <FileDown className="w-8 h-8 text-[#006B3F]" />
-                  <span className="font-semibold text-gray-700">{item}</span>
+                  <FileDown className="w-8 h-8 text-[#006B3F] group-hover:-translate-y-1 transition-transform" />
+                  <span className="font-semibold text-gray-700">{program.name} Syllabus</span>
                 </div>
-                <span className="text-xs text-gray-500">PDF</span>
-              </div>
-            ))}
+                <span className="text-xs text-gray-500 border border-gray-200 px-2 py-1 rounded">View</span>
+              </a>
+            )) : (
+              <p className="text-gray-500 italic col-span-3">No syllabus files have been uploaded yet.</p>
+            )}
           </div>
         </div>
       </section>

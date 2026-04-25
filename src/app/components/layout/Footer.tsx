@@ -1,9 +1,27 @@
+import { useEffect, useRef } from "react";
 import { Link } from "react-router";
 import { Phone, Mail, MapPin, Facebook, Youtube, ArrowRight, GraduationCap } from "lucide-react";
 import { useAdmin } from "../../context/AdminContext";
 
 export function Footer() {
-  const { settings } = useAdmin();
+  const { settings, incrementVisitor } = useAdmin();
+  const visitCounted = useRef(false);
+
+  useEffect(() => {
+    if (!visitCounted.current) {
+      visitCounted.current = true;
+      // Only count once per session
+      const visited = sessionStorage.getItem("visitorCounted");
+      if (!visited) {
+        incrementVisitor();
+        sessionStorage.setItem("visitorCounted", "true");
+      }
+    }
+  }, []);
+
+  const formatNumber = (num: number) => {
+    return num?.toLocaleString('en-IN') || '0';
+  };
 
   return (
     <footer className="bg-[#0D2B1F] text-white">
@@ -40,13 +58,13 @@ export function Footer() {
               </div>
               <div>
                 <p className="font-bold text-white text-sm leading-tight" style={{ fontFamily: "Playfair Display, serif" }}>
-                  Govt. Associate College
+                  {settings.collegeName || "Govt. Associate College"}
                 </p>
-                <p className="text-[#C8A951] text-xs">Data Nagar, Lahore</p>
+                <p className="text-[#C8A951] text-xs">{settings.collegeLocation || "Data Nagar, Lahore"}</p>
               </div>
             </div>
             <p className="text-gray-400 text-sm leading-relaxed mb-4">
-              Established in 1981, GAC Data Nagar has been a beacon of quality education and academic excellence in Punjab for over four decades.
+              {settings.collegeShortHistory || "Established in 1981, GAC Data Nagar has been a beacon of quality education and academic excellence in Punjab for over four decades."}
             </p>
             <div className="flex gap-2">
               {[
@@ -114,7 +132,7 @@ export function Footer() {
             {/* Visitor Counter */}
             <div className="mt-5 bg-[#1a4d35] rounded-lg p-3 text-center border border-[#006B3F]/30">
               <p className="text-gray-400 text-xs mb-0.5">Total Visitors</p>
-              <p className="text-[#C8A951] text-xl font-bold">1,25,847</p>
+              <p className="text-[#C8A951] text-xl font-bold">{formatNumber(settings.totalVisitors)}</p>
             </div>
           </div>
 
@@ -152,7 +170,7 @@ export function Footer() {
 
         {/* Copyright */}
         <div className="border-t border-[#1a4d35] pt-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-gray-500">
-          <p>&copy; 2026 Government Associate College, Data Nagar. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} {settings.collegeName || "Government Associate College"}, {settings.collegeLocation || "Data Nagar"}. All rights reserved.</p>
           <p>Designed for <span className="text-[#C8A951]">GAC Data Nagar</span></p>
         </div>
       </div>
