@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router";
+import { Helmet } from "react-helmet-async";
 import {
   ChevronLeft, ChevronRight, Users, BookOpen, GraduationCap, Award,
   Calendar, ArrowRight, Phone, Mail, Star, Shield, Clock,
@@ -71,6 +72,13 @@ export function HomePage() {
   const slide = heroSlides[currentSlide];
 
   return (
+    <>  <Helmet>
+      <title>Government Associate College Data Nagar Lahore</title>
+      <meta
+        name="description"
+        content="Official website of Govt Associate College Data Nagar Lahore - Admissions, Programs, Faculty and Updates."
+      />
+    </Helmet>
     <div className="bg-white">
       {/* ── HERO SLIDER ── */}
       <section className="relative h-[85vh] min-h-[500px] max-h-[750px] overflow-hidden">
@@ -422,5 +430,6 @@ export function HomePage() {
         </div>
       </section>
     </div>
+    </>
   );
 }
