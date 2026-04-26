@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Plus, Trash2, X, Check, AlertCircle, Upload, UserCircle } from "lucide-react";
+import { Skeleton } from "../../components/ui/skeleton";
 
 const CLASSES = ["FSc Pre-Medical","FSc Pre-Engineering","ICS","FA","I.Com","ADP Science","ADP Arts","ADP Commerce"];
 const YEARS = ["2026","2025","2024","2023"];
@@ -9,6 +10,7 @@ const blankForm = { name:"", rollNumber:"", class:"FSc Pre-Medical", year:"2026"
 
 export function AdminResults() {
   const [results, setResults] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [filterClass, setFilterClass] = useState("FSc Pre-Medical");
   const [filterYear, setFilterYear] = useState("2026");
   const [showForm, setShowForm] = useState(false);
@@ -24,11 +26,16 @@ export function AdminResults() {
   useEffect(() => { fetchResults(); }, [filterClass, filterYear]);
 
   const fetchResults = async () => {
+    setLoading(true);
     try {
       const res = await fetch(`${API}/results?class=${encodeURIComponent(filterClass)}&year=${filterYear}`);
       const data = await res.json();
       setResults(Array.isArray(data) ? data : []);
-    } catch { setResults([]); }
+    } catch { 
+      setResults([]); 
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handlePhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -46,7 +53,6 @@ export function AdminResults() {
       if (photoFile) fd.append("photo", photoFile);
       const res = await fetch(`${API}/results`, { method:"POST", body: fd });
       if (!res.ok) throw new Error("Failed");
-      setResults(prev => [...prev]);
       await fetchResults();
       setShowForm(false); setForm(blankForm); setPhotoFile(null); setPhotoPreview(null);
       setSaved(true); setTimeout(() => setSaved(false), 2000);
@@ -64,7 +70,7 @@ export function AdminResults() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-xl font-bold text-gray-800" style={{fontFamily:"Playfair Display,serif"}}>Results Management</h1>
-          <p className="text-gray-500 text-sm mt-0.5">{results.length} students in selected class/year</p>
+          <p className="text-gray-500 text-sm mt-0.5">{loading ? "Loading..." : `${results.length} students in selected class/year`}</p>
         </div>
         <button onClick={() => { setForm(blankForm); setPhotoFile(null); setPhotoPreview(null); setError(null); setShowForm(true); }}
           className="flex items-center gap-2 bg-[#006B3F] hover:bg-[#003D1F] text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors">
@@ -100,24 +106,41 @@ export function AdminResults() {
             </tr>
           </thead>
           <tbody>
-            {results.map((r, i) => (
-              <tr key={r._id} className={i%2===0?"bg-gray-50":"bg-white"}>
-                <td className="px-4 py-3">
-                  {r.photo ? <img src={r.photo} alt={r.name} className="w-10 h-10 rounded-full object-cover border-2 border-[#006B3F]/20"/>
-                  : <div className="w-10 h-10 rounded-full bg-[#006B3F]/10 flex items-center justify-center"><UserCircle className="w-6 h-6 text-[#006B3F]/40"/></div>}
-                </td>
-                <td className="px-4 py-3 font-semibold text-gray-700">{r.rollNumber}</td>
-                <td className="px-4 py-3 text-gray-800 font-medium">{r.name}</td>
-                <td className="px-4 py-3 text-center font-semibold">{r.marks}/{r.totalMarks}</td>
-                <td className="px-4 py-3 text-center"><span className="bg-[#C8A951] text-white px-2 py-0.5 rounded font-bold text-xs">{r.grade}</span></td>
-                <td className="px-4 py-3 text-center text-[#006B3F] font-semibold">{r.position||"-"}</td>
-                <td className="px-4 py-3 text-center"><span className={`px-2 py-0.5 rounded text-xs font-semibold ${r.status==="Pass"?"bg-green-100 text-green-700":"bg-red-100 text-red-700"}`}>{r.status}</span></td>
-                <td className="px-4 py-3 text-center">
-                  <button onClick={() => setDeleteId(r._id)} className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg"><Trash2 className="w-4 h-4"/></button>
-                </td>
-              </tr>
-            ))}
-            {results.length===0 && <tr><td colSpan={8} className="text-center py-12 text-gray-400">Koi result nahi mila. Upar filter check karein ya Add karein.</td></tr>}
+            {loading ? (
+              [...Array(5)].map((_, i) => (
+                <tr key={i} className={i%2===0?"bg-gray-50":"bg-white"}>
+                  <td className="px-4 py-3"><Skeleton className="w-10 h-10 rounded-full" /></td>
+                  <td className="px-4 py-3"><Skeleton className="h-4 w-24" /></td>
+                  <td className="px-4 py-3"><Skeleton className="h-4 w-32" /></td>
+                  <td className="px-4 py-3 text-center"><Skeleton className="h-4 w-16 mx-auto" /></td>
+                  <td className="px-4 py-3 text-center"><Skeleton className="h-4 w-8 mx-auto" /></td>
+                  <td className="px-4 py-3 text-center"><Skeleton className="h-4 w-12 mx-auto" /></td>
+                  <td className="px-4 py-3 text-center"><Skeleton className="h-4 w-12 mx-auto" /></td>
+                  <td className="px-4 py-3 text-center"><Skeleton className="h-8 w-8 rounded-lg mx-auto" /></td>
+                </tr>
+              ))
+            ) : (
+              <>
+                {results?.map((r, i) => (
+                  <tr key={r?._id} className={i%2===0?"bg-gray-50":"bg-white"}>
+                    <td className="px-4 py-3">
+                      {r?.photo ? <img src={r?.photo} alt={r?.name} className="w-10 h-10 rounded-full object-cover border-2 border-[#006B3F]/20"/>
+                      : <div className="w-10 h-10 rounded-full bg-[#006B3F]/10 flex items-center justify-center"><UserCircle className="w-6 h-6 text-[#006B3F]/40"/></div>}
+                    </td>
+                    <td className="px-4 py-3 font-semibold text-gray-700">{r?.rollNumber}</td>
+                    <td className="px-4 py-3 text-gray-800 font-medium">{r?.name}</td>
+                    <td className="px-4 py-3 text-center font-semibold">{r?.marks}/{r?.totalMarks}</td>
+                    <td className="px-4 py-3 text-center"><span className="bg-[#C8A951] text-white px-2 py-0.5 rounded font-bold text-xs">{r?.grade}</span></td>
+                    <td className="px-4 py-3 text-center text-[#006B3F] font-semibold">{r?.position||"-"}</td>
+                    <td className="px-4 py-3 text-center"><span className={`px-2 py-0.5 rounded text-xs font-semibold ${r?.status==="Pass"?"bg-green-100 text-green-700":"bg-red-100 text-red-700"}`}>{r?.status}</span></td>
+                    <td className="px-4 py-3 text-center">
+                      <button onClick={() => setDeleteId(r?._id)} className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg"><Trash2 className="w-4 h-4"/></button>
+                    </td>
+                  </tr>
+                ))}
+                {results?.length===0 && <tr><td colSpan={8} className="text-center py-12 text-gray-400">Koi result nahi mila. Upar filter check karein ya Add karein.</td></tr>}
+              </>
+            )}
           </tbody>
         </table>
       </div>
@@ -206,7 +229,7 @@ export function AdminResults() {
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 text-center">
             <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-3"/>
             <h3 className="font-bold text-gray-800 mb-1">Delete Result?</h3>
-            <p className="text-gray-500 text-sm mb-5">This cannot be undone.</p>
+            <p className="text-gray-500 text-sm mb-5">Are you sure you want to delete this result? This cannot be undone.</p>
             <div className="flex gap-3">
               <button onClick={() => handleDelete(deleteId)} className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg text-sm font-semibold">Delete</button>
               <button onClick={() => setDeleteId(null)} className="flex-1 border border-gray-300 py-2 rounded-lg text-sm">Cancel</button>
@@ -217,3 +240,4 @@ export function AdminResults() {
     </div>
   );
 }
+

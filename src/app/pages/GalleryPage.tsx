@@ -1,13 +1,14 @@
 import { useState } from "react";
-import { X } from "lucide-react";
+import { X, Image as ImageIcon } from "lucide-react";
 import { useAdmin } from "../context/AdminContext";
+import { Skeleton } from "../components/ui/skeleton";
 import gatePhoto from "../../imports/WhatsApp_Image_2026-04-07_at_11.52.03_AM_(1).jpeg";
 import courtyardPhoto from "../../imports/WhatsApp_Image_2026-04-07_at_11.52.03_AM.jpeg";
 
 const CATEGORIES = ["All", "Events", "Facilities", "Sports", "Academic", "Campus", "General"];
 
 export function GalleryPage() {
-  const { gallery, events } = useAdmin();
+  const { gallery, events, loading } = useAdmin();
   const [activeCategory, setActiveCategory] = useState("All");
   const [lightbox, setLightbox] = useState<null | { url: string; title: string }>(null);
 
@@ -15,10 +16,10 @@ export function GalleryPage() {
   const allPhotos = [
     { id: "static-1", title: "College Gate", url: gatePhoto, category: "Campus" },
     { id: "static-2", title: "College Courtyard", url: courtyardPhoto, category: "Campus" },
-    ...gallery,
+    ...(gallery || []),
   ];
 
-  const filtered = activeCategory === "All" ? allPhotos : allPhotos.filter((p) => p.category === activeCategory);
+  const filtered = activeCategory === "All" ? allPhotos : allPhotos?.filter((p) => p?.category === activeCategory);
 
   return (
     <div className="bg-white">
@@ -55,10 +56,19 @@ export function GalleryPage() {
       </section>
 
       {/* Photo Grid */}
-      <section className="py-12">
+      <section className="py-12 min-h-[400px]">
         <div className="container mx-auto px-4">
-          {filtered.length === 0 ? (
+          {loading ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+              {[...Array(8)].map((_, i) => (
+                <div key={i} className="aspect-square rounded-xl overflow-hidden">
+                  <Skeleton className="w-full h-full" />
+                </div>
+              ))}
+            </div>
+          ) : filtered.length === 0 ? (
             <div className="text-center py-16 text-gray-400">
+              <ImageIcon className="w-16 h-16 mx-auto mb-4 opacity-20" />
               <p className="text-lg">No photos in this category.</p>
             </div>
           ) : (
@@ -130,3 +140,4 @@ export function GalleryPage() {
     </div>
   );
 }
+

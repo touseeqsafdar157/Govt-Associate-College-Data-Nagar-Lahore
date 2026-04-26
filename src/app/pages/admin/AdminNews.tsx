@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Plus, Pencil, Trash2, X, Check, AlertCircle, Newspaper, Upload } from "lucide-react";
 import { useAdmin, NewsItem } from "../../context/AdminContext";
+import { Skeleton } from "../../components/ui/skeleton";
 
 const CATEGORIES = ["Admissions", "Results", "Sports", "Events", "Academic", "General"];
 
@@ -16,7 +17,7 @@ const formatDate = (iso: string) => {
 };
 
 export function AdminNews() {
-  const { news, addNews, updateNews, deleteNews } = useAdmin();
+  const { news, addNews, updateNews, deleteNews, loading } = useAdmin();
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(blankForm);
@@ -72,7 +73,7 @@ export function AdminNews() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-xl font-bold text-gray-800" style={{ fontFamily: "Playfair Display, serif" }}>News Management</h1>
-          <p className="text-gray-500 text-sm mt-0.5">{news.length} articles total</p>
+          <p className="text-gray-500 text-sm mt-0.5">{loading ? "Loading articles..." : `${news.length} articles total`}</p>
         </div>
         <button
           onClick={openAdd}
@@ -87,6 +88,68 @@ export function AdminNews() {
           <Check className="w-4 h-4" /> Changes saved successfully!
         </div>
       )}
+
+      {/* News List */}
+      <div className="space-y-3">
+        {loading ? (
+          [...Array(5)].map((_, i) => (
+            <div key={i} className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+              <div className="space-y-2">
+                <div className="flex gap-2">
+                  <Skeleton className="h-4 w-16" />
+                  <Skeleton className="h-4 w-24" />
+                </div>
+                <Skeleton className="h-6 w-3/4" />
+                <Skeleton className="h-4 w-full" />
+              </div>
+            </div>
+          ))
+        ) : (
+          <>
+            {news.map((item) => (
+              <div key={item.id} className="bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition-all">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-wrap items-center gap-2 mb-1">
+                      <span className="text-xs bg-[#006B3F]/10 text-[#006B3F] px-2 py-0.5 rounded-full font-medium">{item.category}</span>
+                      <span className="text-xs text-[#C8A951] font-medium">{item.date}</span>
+                    </div>
+                    <h3 className="font-semibold text-gray-800 text-sm">{item.title}</h3>
+                    {item.content && <p className="text-gray-500 text-xs mt-1 line-clamp-2">{item.content}</p>}
+                    {item.fileUrl && (
+                      <a href={item.fileUrl} target="_blank" rel="noreferrer" className="inline-block mt-2 text-xs text-[#006B3F] hover:underline font-medium">
+                        View Attachment
+                      </a>
+                    )}
+                  </div>
+                  <div className="flex gap-2 shrink-0">
+                    <button
+                      onClick={() => openEdit(item)}
+                      className="p-2 text-[#006B3F] hover:bg-[#006B3F]/10 rounded-lg transition-colors"
+                      title="Edit"
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => setDeleteId(item.id)}
+                      className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                      title="Delete"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+            {news.length === 0 && (
+              <div className="text-center py-12 text-gray-400">
+                <Newspaper className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                <p className="text-sm">No news articles yet. Add one!</p>
+              </div>
+            )}
+          </>
+        )}
+      </div>
 
       {/* Form Modal */}
       {showForm && (
@@ -143,54 +206,30 @@ export function AdminNews() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Attachment (PDF/DOC/Image)</label>
                 <div className="flex items-center gap-3">
-                  {/* <label className="flex items-center gap-2 bg-gray-50 border border-gray-300 hover:border-[#006B3F] text-gray-700 px-3 py-2 rounded-lg cursor-pointer transition-colors text-sm">
-                    <Upload className="w-4 h-4 text-[#006B3F]" />
-                    <span>{fileToUpload ? fileToUpload.name : "Choose File"}</span>
-                    <input 
-                      type="file" 
-                      className="hidden" 
-                      accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" 
-                      onChange={(e) => {
-                        if (e.target.files && e.target.files[0]) {
-                          setFileToUpload(e.target.files[0]);
-                        }
-                      }} 
-                    />
-                  </label> */}
                   <label className="flex flex-col gap-1">
-  
-  <div className="flex items-center gap-2 bg-gray-50 border border-gray-300 hover:border-[#006B3F] text-gray-700 px-3 py-2 rounded-lg cursor-pointer transition-colors text-sm">
-    <Upload className="w-4 h-4 text-[#006B3F]" />
-    <span>{fileToUpload ? fileToUpload.name : "Choose File"}</span>
-
-    <input 
-      type="file" 
-      className="hidden" 
-      accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" 
-      onChange={(e) => {
-        const file = e.target.files?.[0];
-
-        if (file) {
-          const maxSize = 350 * 1024;
-
-          if (file.size > maxSize) {
-            alert("File size must be less than 350KB");
-            e.target.value = "";
-            return;
-          }
-
-          setFileToUpload(file);
-        }
-      }} 
-    />
-  </div>
-
-  {/* 👇 Type B helper text */}
-  <span className="text-xs text-gray-500">
-    File size should be maximum 350KB
-  </span>
-
-</label>
+                    <div className="flex items-center gap-2 bg-gray-50 border border-gray-300 hover:border-[#006B3F] text-gray-700 px-3 py-2 rounded-lg cursor-pointer transition-colors text-sm">
+                      <Upload className="w-4 h-4 text-[#006B3F]" />
+                      <span>{fileToUpload ? fileToUpload.name : "Choose File"}</span>
+                      <input 
+                        type="file" 
+                        className="hidden" 
+                        accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" 
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            const maxSize = 350 * 1024;
+                            if (file.size > maxSize) {
+                              alert("File size must be less than 350KB");
+                              e.target.value = "";
+                              return;
+                            }
+                            setFileToUpload(file);
+                          }
+                        }} 
+                      />
+                    </div>
+                    <span className="text-xs text-gray-500">File size should be maximum 350KB</span>
+                  </label>
                   {!fileToUpload && form.fileUrl && (
                     <span className="text-xs text-green-600 truncate max-w-[200px]">Current: {form.fileUrl.split("/").pop()}</span>
                   )}
@@ -230,51 +269,7 @@ export function AdminNews() {
           </div>
         </div>
       )}
-
-      {/* News List */}
-      <div className="space-y-3">
-        {news.map((item) => (
-          <div key={item.id} className="bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition-all">
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex-1 min-w-0">
-                <div className="flex flex-wrap items-center gap-2 mb-1">
-                  <span className="text-xs bg-[#006B3F]/10 text-[#006B3F] px-2 py-0.5 rounded-full font-medium">{item.category}</span>
-                  <span className="text-xs text-[#C8A951] font-medium">{item.date}</span>
-                </div>
-                <h3 className="font-semibold text-gray-800 text-sm">{item.title}</h3>
-                {item.content && <p className="text-gray-500 text-xs mt-1 line-clamp-2">{item.content}</p>}
-                {item.fileUrl && (
-                  <a href={item.fileUrl} target="_blank" rel="noreferrer" className="inline-block mt-2 text-xs text-[#006B3F] hover:underline font-medium">
-                    View Attachment
-                  </a>
-                )}
-              </div>
-              <div className="flex gap-2 shrink-0">
-                <button
-                  onClick={() => openEdit(item)}
-                  className="p-2 text-[#006B3F] hover:bg-[#006B3F]/10 rounded-lg transition-colors"
-                  title="Edit"
-                >
-                  <Pencil className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => setDeleteId(item.id)}
-                  className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                  title="Delete"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          </div>
-        ))}
-        {news.length === 0 && (
-          <div className="text-center py-12 text-gray-400">
-            <Newspaper className="w-12 h-12 mx-auto mb-3 opacity-30" />
-            <p className="text-sm">No news articles yet. Add one!</p>
-          </div>
-        )}
-      </div>
     </div>
   );
 }
+

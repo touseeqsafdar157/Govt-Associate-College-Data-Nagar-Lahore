@@ -2,12 +2,13 @@ import { useState } from "react";
 import { X, Upload, Check, AlertCircle, ChevronRight } from "lucide-react";
 import { useAdmin } from "../context/AdminContext";
 import { Helmet } from "react-helmet-async";
+import { Skeleton } from "../components/ui/skeleton";
 
 const API = "https://govt-associate-college-data-nagar-lahore.onrender.com/api";
 const PROGRAMS = ["FSc Pre-Medical","FSc Pre-Engineering","ICS","FA","I.Com","ADP Science","ADP Arts","ADP Commerce"];
 
 export function AdmissionsPage() {
-  const { settings } = useAdmin();
+  const { settings, loading } = useAdmin();
   const collegeName = settings?.collegeName || "Govt Associate College Data Nagar Lahore";
 
   const [showModal, setShowModal] = useState(false);
@@ -21,7 +22,7 @@ export function AdmissionsPage() {
   const isAdmissionActive = () => {
     if (!settings?.admissionsOpen) return false;
     if (!settings?.lastDateAdmission) return true;
-    const lastDate = new Date(settings.lastDateAdmission);
+    const lastDate = new Date(settings?.lastDateAdmission);
     if (isNaN(lastDate.getTime())) return true;
     lastDate.setHours(23, 59, 59, 999);
     return new Date() <= lastDate;
@@ -32,15 +33,15 @@ export function AdmissionsPage() {
   const setFile = (k:string) => (e:any) => { const f=e.target.files?.[0]; if(f) setFiles(p=>({...p,[k]:f})); };
 
   const handleSubmit = async () => {
-    if (!form.name||!form.fatherName||!form.cnic||!form.phone||!form.program) { setError("Starred fields zaruri hain"); return; }
+    if (!form?.name||!form?.fatherName||!form?.cnic||!form?.phone||!form?.program) { setError("Starred fields zaruri hain"); return; }
     setSubmitting(true); setError("");
     try {
       const fd = new FormData();
       Object.keys(form).forEach(k=>fd.append(k,(form as any)[k]));
-      if(files.photo) fd.append("photo",files.photo);
-      if(files.matricCert) fd.append("matricCert",files.matricCert);
-      if(files.cnicCopy) fd.append("cnicCopy",files.cnicCopy);
-      if(files.characterCert) fd.append("characterCert",files.characterCert);
+      if(files?.photo) fd.append("photo",files?.photo);
+      if(files?.matricCert) fd.append("matricCert",files?.matricCert);
+      if(files?.cnicCopy) fd.append("cnicCopy",files?.cnicCopy);
+      if(files?.characterCert) fd.append("characterCert",files?.characterCert);
       const res = await fetch(`${API}/applications`,{method:"POST",body:fd});
       if(!res.ok) throw new Error();
       setSubmitted(true);
@@ -75,12 +76,18 @@ export function AdmissionsPage() {
                 <tr>{["Program","Min Qualification","Min Marks","Age Limit"].map(h=><th key={h} className="px-4 py-3 text-left">{h}</th>)}</tr>
               </thead>
               <tbody>
-                {(settings?.eligibilityCriteria || []).map((r: any, i: number) => (
+                {loading ? (
+                  [...Array(3)].map((_, i) => (
+                    <tr key={i}>
+                      {[...Array(4)].map((__, j) => <td key={j} className="px-4 py-3"><Skeleton className="h-5 w-full" /></td>)}
+                    </tr>
+                  ))
+                ) : (settings?.eligibilityCriteria || [])?.map((r: any, i: number) => (
                   <tr key={i} className={i%2===0?"bg-gray-50":"bg-white"}>
-                    <td className="px-4 py-3 text-gray-700">{r.program}</td>
-                    <td className="px-4 py-3 text-gray-700">{r.qualification}</td>
-                    <td className="px-4 py-3 text-gray-700">{r.marks}</td>
-                    <td className="px-4 py-3 text-gray-700">{r.ageLimit}</td>
+                    <td className="px-4 py-3 text-gray-700">{r?.program}</td>
+                    <td className="px-4 py-3 text-gray-700">{r?.qualification}</td>
+                    <td className="px-4 py-3 text-gray-700">{r?.marks}</td>
+                    <td className="px-4 py-3 text-gray-700">{r?.ageLimit}</td>
                   </tr>
                 ))}
               </tbody>
@@ -95,7 +102,9 @@ export function AdmissionsPage() {
           <h2 className="text-3xl font-bold text-[#006B3F] mb-2" style={{fontFamily:"Playfair Display,serif"}}>Required Documents</h2>
           <div className="w-16 h-1 bg-[#C8A951] mb-6"/>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {(settings?.requiredDocuments || []).map((d: string, i: number)=>(
+            {loading ? (
+              [...Array(4)].map((_, i) => <Skeleton key={i} className="h-14 w-full rounded-xl" />)
+            ) : (settings?.requiredDocuments || []).map((d: string, i: number)=>(
               <div key={i} className="flex items-start gap-3 bg-white p-4 rounded-xl shadow-sm">
                 <div className="w-6 h-6 rounded-full bg-[#006B3F]/10 flex items-center justify-center shrink-0 mt-0.5"><ChevronRight className="w-3 h-3 text-[#006B3F]"/></div>
                 <span className="text-gray-700 text-sm">{d}</span>
@@ -108,7 +117,9 @@ export function AdmissionsPage() {
       {/* CTA */}
       <section className="py-14 bg-gradient-to-r from-[#006B3F] to-[#004d2d] text-white text-center">
         <h2 className="text-4xl font-bold mb-3" style={{fontFamily:"Playfair Display,serif"}}>Ready to Apply?</h2>
-        {admissionOpen ? (
+        {loading ? (
+          <div className="flex justify-center"><Skeleton className="h-16 w-64 rounded-xl opacity-20" /></div>
+        ) : admissionOpen ? (
           <>
             <p className="text-[#C8A951] mb-8 text-lg">Fill the online form and submit your documents</p>
             <button onClick={()=>{setShowModal(true);setStep(1);setSubmitted(false);setError("");}}
@@ -226,3 +237,4 @@ export function AdmissionsPage() {
     </div>
   );
 }
+

@@ -1,13 +1,16 @@
 import { useState, useEffect } from "react";
 import { useAdmin } from "../../context/AdminContext";
 import { Users, Plus, Trash2, AlertCircle, Check, Mail, Lock, User } from "lucide-react";
+import { Skeleton } from "../../components/ui/skeleton";
 
 export function AdminUsers() {
-  const { adminUsers, fetchUsers, addUser, deleteUser, currentUser } = useAdmin();
+  const { adminUsers, fetchUsers, addUser, deleteUser, currentUser, loading } = useAdmin();
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", password: "" });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [deleteName, setDeleteName] = useState("");
 
   useEffect(() => { fetchUsers(); }, []);
 
@@ -26,15 +29,18 @@ export function AdminUsers() {
     }
   };
 
-  const handleDelete = async (id: string, name: string) => {
-    if (!confirm(`Are you sure you want to delete "${name}"?`)) return;
+  const handleDelete = async () => {
+    if (!deleteId) return;
     try {
-      await deleteUser(id);
+      await deleteUser(deleteId);
       setSuccess("User deleted");
       setTimeout(() => setSuccess(""), 3000);
     } catch (err: any) {
       setError(err.message || "Cannot delete user");
       setTimeout(() => setError(""), 3000);
+    } finally {
+      setDeleteId(null);
+      setDeleteName("");
     }
   };
 
@@ -124,43 +130,77 @@ export function AdminUsers() {
       {/* Users List */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-100">
-          <h2 className="font-bold text-gray-800 text-sm">All Admin Users ({adminUsers.length})</h2>
+          <h2 className="font-bold text-gray-800 text-sm">{loading ? <Skeleton className="h-4 w-32" /> : `All Admin Users (${adminUsers.length})`}</h2>
         </div>
         <div className="divide-y divide-gray-100">
-          {adminUsers.map((user) => (
-            <div key={user.id} className="px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 bg-gradient-to-br from-[#006B3F] to-[#003D1F] rounded-full flex items-center justify-center">
-                  <span className="text-white text-sm font-bold">{user.name?.[0]?.toUpperCase() || "A"}</span>
+          {loading ? (
+            [...Array(3)].map((_, i) => (
+              <div key={i} className="px-6 py-4 flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <Skeleton className="w-10 h-10 rounded-full" />
+                  <div className="space-y-1">
+                    <Skeleton className="h-4 w-32" />
+                    <Skeleton className="h-3 w-40" />
+                  </div>
                 </div>
-                <div>
-                  <p className="font-semibold text-gray-800 text-sm">
-                    {user.name}
-                    {currentUser?.id === user.id && (
-                      <span className="ml-2 text-xs bg-[#C8A951]/20 text-[#C8A951] px-2 py-0.5 rounded-full">You</span>
-                    )}
-                  </p>
-                  <p className="text-gray-500 text-xs">{user.email}</p>
+                <div className="flex items-center gap-3">
+                  <Skeleton className="h-6 w-16 rounded-full" />
+                  <Skeleton className="w-8 h-8 rounded-lg" />
                 </div>
               </div>
-              <div className="flex items-center gap-3">
-                <span className="text-xs bg-green-50 text-green-700 px-2 py-1 rounded-full border border-green-200">{user.role}</span>
-                {currentUser?.id !== user.id && (
-                  <button
-                    onClick={() => handleDelete(user.id, user.name)}
-                    className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                )}
+            ))
+          ) : (
+            adminUsers.map((user) => (
+              <div key={user.id} className="px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 bg-gradient-to-br from-[#006B3F] to-[#003D1F] rounded-full flex items-center justify-center">
+                    <span className="text-white text-sm font-bold">{user.name?.[0]?.toUpperCase() || "A"}</span>
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-800 text-sm">
+                      {user.name}
+                      {currentUser?.id === user.id && (
+                        <span className="ml-2 text-xs bg-[#C8A951]/20 text-[#C8A951] px-2 py-0.5 rounded-full">You</span>
+                      )}
+                    </p>
+                    <p className="text-gray-500 text-xs">{user.email}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-xs bg-green-50 text-green-700 px-2 py-1 rounded-full border border-green-200">{user.role}</span>
+                  {currentUser?.id !== user.id && (
+                    <button
+                      onClick={() => { setDeleteId(user.id); setDeleteName(user.name); }}
+                      className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
-          {adminUsers.length === 0 && (
+            ))
+          )}
+          {!loading && adminUsers.length === 0 && (
             <div className="px-6 py-10 text-center text-gray-400 text-sm">No admin users found. Create one to get started.</div>
           )}
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {deleteId && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 text-center">
+            <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-3"/>
+            <h3 className="font-bold text-gray-800 mb-1">Delete User?</h3>
+            <p className="text-gray-500 text-sm mb-5">Are you sure you want to delete admin user <b>"{deleteName}"</b>? This action cannot be undone.</p>
+            <div className="flex gap-3">
+              <button onClick={handleDelete} className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg text-sm font-semibold">Delete</button>
+              <button onClick={() => { setDeleteId(null); setDeleteName(""); }} className="flex-1 border border-gray-300 py-2 rounded-lg text-sm">Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+

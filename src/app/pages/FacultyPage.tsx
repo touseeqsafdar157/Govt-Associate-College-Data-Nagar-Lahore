@@ -1,36 +1,37 @@
 import { useState, useMemo } from "react";
 import { Mail, GraduationCap, Building2 } from "lucide-react";
 import { useAdmin } from "../context/AdminContext";
+import { Skeleton } from "../components/ui/skeleton";
 
 export function FacultyPage() {
-  const { faculty } = useAdmin();
+  const { faculty, loading } = useAdmin();
   const [activeTab, setActiveTab] = useState<"Teaching" | "Non-Teaching">("Teaching");
   const [selectedDept, setSelectedDept] = useState("All");
 
-  const teachingStaff = useMemo(() => faculty.filter(f => f.staffType === "Teaching"), [faculty]);
-  const nonTeachingStaff = useMemo(() => faculty.filter(f => f.staffType === "Non-Teaching"), [faculty]);
+  const teachingStaff = useMemo(() => (faculty || [])?.filter(f => f?.staffType === "Teaching"), [faculty]);
+  const nonTeachingStaff = useMemo(() => (faculty || [])?.filter(f => f?.staffType === "Non-Teaching"), [faculty]);
 
   // Extract unique departments dynamically from teaching staff
   const departments = useMemo(() => {
     const depts = new Set<string>();
-    teachingStaff.forEach(f => {
-      if (f.dept) depts.add(f.dept);
+    teachingStaff?.forEach(f => {
+      if (f?.dept) depts.add(f?.dept);
     });
     return ["All", ...Array.from(depts)];
   }, [teachingStaff]);
 
-  const hods = useMemo(() => teachingStaff.filter(f => f.isHOD), [teachingStaff]);
+  const hods = useMemo(() => teachingStaff?.filter(f => f?.isHOD), [teachingStaff]);
   
   const filteredHods = useMemo(() => {
     if (selectedDept === "All") return hods;
-    return hods.filter(h => h.dept === selectedDept);
+    return hods?.filter(h => h?.dept === selectedDept);
   }, [hods, selectedDept]);
 
   const filteredTeachingStaff = useMemo(() => {
     // Exclude HODs from the main list so they don't appear twice if they are already in the HOD section
-    const nonHods = teachingStaff.filter(f => !f.isHOD);
+    const nonHods = teachingStaff?.filter(f => !f?.isHOD);
     if (selectedDept === "All") return nonHods;
-    return nonHods.filter(f => f.dept === selectedDept);
+    return nonHods?.filter(f => f?.dept === selectedDept);
   }, [teachingStaff, selectedDept]);
 
   return (
@@ -67,26 +68,43 @@ export function FacultyPage() {
             {/* Department Filter at the Top */}
             <div className="mb-12 flex flex-wrap gap-2 items-center">
               <span className="font-semibold text-gray-700 mr-2">Filter by Department:</span>
-              {departments.map((dept) => (
-                <button
-                  key={dept}
-                  onClick={() => setSelectedDept(dept)}
-                  className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                    selectedDept === dept ? "bg-[#006B3F] text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                  }`}
-                >
-                  {dept}
-                </button>
-              ))}
+              {loading ? (
+                <div className="flex gap-2">
+                  <Skeleton className="h-8 w-16 rounded-full" />
+                  <Skeleton className="h-8 w-24 rounded-full" />
+                  <Skeleton className="h-8 w-20 rounded-full" />
+                </div>
+              ) : (
+                departments.map((dept) => (
+                  <button
+                    key={dept}
+                    onClick={() => setSelectedDept(dept)}
+                    className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                      selectedDept === dept ? "bg-[#006B3F] text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    }`}
+                  >
+                    {dept}
+                  </button>
+                ))
+              )}
             </div>
 
             {/* Heads of Departments Section */}
-            {filteredHods.length > 0 && (
+            {(loading || filteredHods.length > 0) && (
               <section className="mb-16">
                 <h2 className="text-3xl font-bold text-[#006B3F] mb-2" style={{fontFamily:"Playfair Display,serif"}}>Heads of Departments</h2>
                 <div className="w-20 h-1 bg-[#C8A951] mb-8"/>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {filteredHods.map((hod, idx) => (
+                  {loading ? (
+                    [1, 2, 3].map(i => (
+                      <div key={i} className="bg-gray-50 rounded-xl overflow-hidden shadow-md border border-gray-100 p-6">
+                        <Skeleton className="h-48 w-full rounded-lg mb-4" />
+                        <Skeleton className="h-4 w-24 mb-2" />
+                        <Skeleton className="h-6 w-3/4 mb-1" />
+                        <Skeleton className="h-4 w-1/2" />
+                      </div>
+                    ))
+                  ) : filteredHods.map((hod, idx) => (
                     <div key={idx} className="bg-gray-50 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow border border-gray-100 group">
                       <div className="h-48 bg-[#006B3F]/10 flex items-center justify-center relative overflow-hidden">
                         <GraduationCap className="w-20 h-20 text-[#006B3F]/20 group-hover:scale-110 transition-transform duration-500"/>
@@ -116,7 +134,18 @@ export function FacultyPage() {
                 <div className="w-20 h-1 bg-[#C8A951]"/>
               </div>
 
-              {filteredTeachingStaff.length > 0 ? (
+              {loading ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
+                    <div key={i} className="bg-white border border-gray-100 rounded-xl p-5 shadow-sm">
+                      <Skeleton className="h-6 w-3/4 mb-2" />
+                      <Skeleton className="h-4 w-1/2 mb-3" />
+                      <Skeleton className="h-3 w-full mb-1" />
+                      <Skeleton className="h-3 w-full" />
+                    </div>
+                  ))}
+                </div>
+              ) : filteredTeachingStaff.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                   {filteredTeachingStaff.map((member, idx) => (
                     <div key={idx} className="bg-white border border-gray-100 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
@@ -142,7 +171,19 @@ export function FacultyPage() {
           <section>
             <h2 className="text-3xl font-bold text-[#006B3F] mb-2" style={{fontFamily:"Playfair Display,serif"}}>Administrative & Support Staff</h2>
             <div className="w-20 h-1 bg-[#C8A951] mb-8"/>
-            {nonTeachingStaff.length > 0 ? (
+            {loading ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[1, 2, 3].map(i => (
+                  <div key={i} className="bg-white border border-gray-100 rounded-xl p-6 shadow-sm flex items-start gap-4">
+                    <Skeleton className="w-12 h-12 rounded-full shrink-0" />
+                    <div className="w-full">
+                      <Skeleton className="h-6 w-3/4 mb-1" />
+                      <Skeleton className="h-4 w-1/2" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : nonTeachingStaff.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {nonTeachingStaff.map((staff, idx) => (
                   <div key={idx} className="bg-white border border-gray-100 rounded-xl p-6 shadow-sm flex items-start gap-4">
@@ -168,3 +209,4 @@ export function FacultyPage() {
     </div>
   );
 }
+

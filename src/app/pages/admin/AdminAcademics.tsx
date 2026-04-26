@@ -1,14 +1,16 @@
 import { useState } from "react";
-import { Plus, Edit2, Trash2, Save, X, BookOpen, Calendar, Upload } from "lucide-react";
+import { Plus, Edit2, Trash2, Save, X, BookOpen, Calendar, Upload, AlertCircle } from "lucide-react";
 import { useAdmin, ProgramItem } from "../../context/AdminContext";
+import { Skeleton } from "../../components/ui/skeleton";
 
 export function AdminAcademics() {
-  const { programs, addProgram, updateProgram, deleteProgram, settings, updateSettings } = useAdmin();
+  const { programs, addProgram, updateProgram, deleteProgram, settings, updateSettings, loading } = useAdmin();
 
   const [activeTab, setActiveTab] = useState<"programs" | "calendar">("programs");
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   // Program Form
   const [form, setForm] = useState<Omit<ProgramItem, "id">>({
@@ -16,7 +18,7 @@ export function AdminAcademics() {
   });
 
   // Calendar Form
-  const [calendarForm, setCalendarForm] = useState(settings.academicCalendar || {
+  const [calendarForm, setCalendarForm] = useState(settings?.academicCalendar || {
     firstYear: [{ event: "", date: "" }],
     secondYear: [{ event: "", date: "" }]
   });
@@ -33,7 +35,6 @@ export function AdminAcademics() {
   const [uploading, setUploading] = useState(false);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-
     if (!e.target.files || e.target.files.length === 0) return;
     const file = e.target.files[0];
 
@@ -99,6 +100,11 @@ export function AdminAcademics() {
     setTimeout(() => setCalendarSaved(false), 2500);
   };
 
+  const handleDelete = async (id: string) => {
+    await deleteProgram(id);
+    setDeleteId(null);
+  };
+
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
@@ -151,24 +157,38 @@ export function AdminAcademics() {
                 </tr>
               </thead>
               <tbody>
-                {programs.map((p) => (
-                  <tr key={p.id} className="border-b border-gray-50 hover:bg-gray-50">
-                    <td className="p-4 font-medium text-gray-800">{p.name}</td>
-                    <td className="p-4 text-gray-600"><span className="bg-gray-200 px-2 py-1 rounded text-xs">{p.category}</span></td>
-                    <td className="p-4 text-gray-600">{p.duration}</td>
-                    <td className="p-4 text-[#C8A951] font-medium">{p.fee}</td>
-                    <td className="p-4">
-                      <div className="flex justify-end gap-2">
-                        <button onClick={() => handleEdit(p)} className="p-1.5 text-blue-600 hover:bg-blue-50 rounded"><Edit2 className="w-4 h-4" /></button>
-                        <button onClick={() => deleteProgram(p.id)} className="p-1.5 text-red-600 hover:bg-red-50 rounded"><Trash2 className="w-4 h-4" /></button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-                {programs.length === 0 && (
-                  <tr>
-                    <td colSpan={5} className="p-8 text-center text-gray-500">No programs found. Add a new program.</td>
-                  </tr>
+                {loading ? (
+                  [...Array(5)].map((_, i) => (
+                    <tr key={i} className="border-b border-gray-50">
+                      <td className="p-4"><Skeleton className="h-5 w-32" /></td>
+                      <td className="p-4"><Skeleton className="h-5 w-24" /></td>
+                      <td className="p-4"><Skeleton className="h-5 w-20" /></td>
+                      <td className="p-4"><Skeleton className="h-5 w-24" /></td>
+                      <td className="p-4"><div className="flex justify-end gap-2"><Skeleton className="w-8 h-8 rounded" /><Skeleton className="w-8 h-8 rounded" /></div></td>
+                    </tr>
+                  ))
+                ) : (
+                  <>
+                    {programs.map((p) => (
+                      <tr key={p.id} className="border-b border-gray-50 hover:bg-gray-50">
+                        <td className="p-4 font-medium text-gray-800">{p.name}</td>
+                        <td className="p-4 text-gray-600"><span className="bg-gray-200 px-2 py-1 rounded text-xs">{p.category}</span></td>
+                        <td className="p-4 text-gray-600">{p.duration}</td>
+                        <td className="p-4 text-[#C8A951] font-medium">{p.fee}</td>
+                        <td className="p-4">
+                          <div className="flex justify-end gap-2">
+                            <button onClick={() => handleEdit(p)} className="p-1.5 text-blue-600 hover:bg-blue-50 rounded"><Edit2 className="w-4 h-4" /></button>
+                            <button onClick={() => setDeleteId(p.id)} className="p-1.5 text-red-600 hover:bg-red-50 rounded"><Trash2 className="w-4 h-4" /></button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                    {programs.length === 0 && (
+                      <tr>
+                        <td colSpan={5} className="p-8 text-center text-gray-500">No programs found. Add a new program.</td>
+                      </tr>
+                    )}
+                  </>
                 )}
               </tbody>
             </table>
@@ -327,6 +347,23 @@ export function AdminAcademics() {
           </div>
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteId && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 text-center">
+            <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-3" />
+            <h3 className="font-bold text-gray-800 mb-1">Delete Program?</h3>
+            <p className="text-gray-500 text-sm mb-5">This will permanently remove this program and its syllabus. This cannot be undone.</p>
+            <div className="flex gap-3">
+              <button onClick={() => handleDelete(deleteId)} className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg text-sm font-semibold transition-colors">Delete</button>
+              <button onClick={() => setDeleteId(null)} className="flex-1 border border-gray-300 py-2 rounded-lg text-sm hover:bg-gray-50 transition-colors">Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+
+

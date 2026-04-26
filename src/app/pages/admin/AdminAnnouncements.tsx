@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Plus, Trash2, Check, ToggleLeft, ToggleRight, Bell } from "lucide-react";
 import { useAdmin } from "../../context/AdminContext";
+import { Skeleton } from "../../components/ui/skeleton";
 
 export function AdminAnnouncements() {
-  const { announcements, addAnnouncement, updateAnnouncement, deleteAnnouncement } = useAdmin();
+  const { announcements, addAnnouncement, updateAnnouncement, deleteAnnouncement, loading } = useAdmin();
   const [newText, setNewText] = useState("");
   const [saved, setSaved] = useState(false);
 
@@ -63,39 +64,54 @@ export function AdminAnnouncements() {
 
       {/* List */}
       <div className="space-y-3">
-        {announcements.map((item) => (
-          <div key={item.id} className={`bg-white rounded-xl p-4 shadow-sm border transition-all ${item.active ? "border-[#006B3F]/20" : "border-gray-100 opacity-60"}`}>
-            <div className="flex items-center gap-3">
-              <Bell className={`w-4 h-4 shrink-0 ${item.active ? "text-[#C8A951]" : "text-gray-300"}`} />
-              <p className="flex-1 text-sm text-gray-700 min-w-0">{item.content || item.text}</p>
-              <div className="flex items-center gap-2 shrink-0">
-                <span className={`text-xs px-2 py-0.5 rounded-full ${item.active ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>
-                  {item.active ? "Active" : "Hidden"}
-                </span>
-                <button
-                  onClick={() => toggleActive(item)}
-                  className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
-                  title={item.active ? "Deactivate" : "Activate"}
-                >
-                  {item.active
-                    ? <ToggleRight className="w-5 h-5 text-[#006B3F]" />
-                    : <ToggleLeft className="w-5 h-5 text-gray-400" />
-                  }
-                </button>
-                <button onClick={() => handleDelete(item.id)} className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors">
-                  <Trash2 className="w-4 h-4" />
-                </button>
+        {loading ? (
+          [...Array(3)].map((_, i) => (
+            <div key={i} className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+              <div className="flex items-center gap-3">
+                <Skeleton className="w-4 h-4 rounded-full" />
+                <Skeleton className="flex-1 h-4" />
+                <Skeleton className="w-24 h-8 rounded-lg" />
               </div>
             </div>
-          </div>
-        ))}
-        {announcements.length === 0 && (
-          <div className="text-center py-12 text-gray-400">
-            <Bell className="w-12 h-12 mx-auto mb-3 opacity-30" />
-            <p className="text-sm">No announcements yet.</p>
-          </div>
+          ))
+        ) : (
+          <>
+            {announcements.map((item) => (
+              <div key={item.id} className={`bg-white rounded-xl p-4 shadow-sm border transition-all ${item.active ? "border-[#006B3F]/20" : "border-gray-100 opacity-60"}`}>
+                <div className="flex items-center gap-3">
+                  <Bell className={`w-4 h-4 shrink-0 ${item.active ? "text-[#C8A951]" : "text-gray-300"}`} />
+                  <p className="flex-1 text-sm text-gray-700 min-w-0">{item.content || item.text}</p>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className={`text-xs px-2 py-0.5 rounded-full ${item.active ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>
+                      {item.active ? "Active" : "Hidden"}
+                    </span>
+                    <button
+                      onClick={() => toggleActive(item)}
+                      className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
+                      title={item.active ? "Deactivate" : "Activate"}
+                    >
+                      {item.active
+                        ? <ToggleRight className="w-5 h-5 text-[#006B3F]" />
+                        : <ToggleLeft className="w-5 h-5 text-gray-400" />
+                      }
+                    </button>
+                    <button onClick={() => handleDelete(item.id)} className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors">
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+            {announcements.length === 0 && (
+              <div className="text-center py-12 text-gray-400">
+                <Bell className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                <p className="text-sm">No announcements yet.</p>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
   );
 }
+

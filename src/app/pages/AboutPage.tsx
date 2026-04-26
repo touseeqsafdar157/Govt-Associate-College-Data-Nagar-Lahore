@@ -31,14 +31,14 @@ export function AboutPage() {
           <div className="w-20 h-1 bg-[#C8A951] mb-8" />
 
           <div className="space-y-8">
-            {(settings.aboutHistory || []).map((item, index) => (
+            {(settings?.aboutHistory || [])?.map((item: any, index: number) => (
               <div key={index} className="flex gap-4">
-                <div className={`${index === (settings.aboutHistory || []).length - 1 ? 'bg-[#C8A951]' : 'bg-[#006B3F]'} text-white font-bold px-4 py-2 rounded-lg h-fit`}>
-                  {item.year}
+                <div className={`${index === (settings?.aboutHistory || [])?.length - 1 ? 'bg-[#C8A951]' : 'bg-[#006B3F]'} text-white font-bold px-4 py-2 rounded-lg h-fit`}>
+                  {item?.year}
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-xl font-bold text-gray-800 mb-2">{item.title}</h3>
-                  <p className="text-gray-700">{item.description}</p>
+                  <h3 className="text-xl font-bold text-gray-800 mb-2">{item?.title}</h3>
+                  <p className="text-gray-700">{item?.description}</p>
                 </div>
               </div>
             ))}
@@ -56,7 +56,7 @@ export function AboutPage() {
                 Our Vision
               </h2>
               <p className="text-gray-700 leading-relaxed">
-                {settings.aboutVision}
+                {settings?.aboutVision}
               </p>
             </div>
 
@@ -66,7 +66,7 @@ export function AboutPage() {
                 Our Mission
               </h2>
               <ul className="space-y-3 text-gray-700">
-                {(settings.aboutMission || []).map((point, index) => (
+                {(settings?.aboutMission || [])?.map((point: any, index: number) => (
                   <li key={index} className="flex gap-2">
                     <CheckCircle className="w-5 h-5 text-[#C8A951] flex-shrink-0 mt-1" />
                     <span>{point}</span>
@@ -92,18 +92,18 @@ export function AboutPage() {
                 <div className="w-48 h-48 bg-white/10 rounded-full mx-auto mb-4 flex items-center justify-center">
                   <Award className="w-24 h-24" />
                 </div>
-                <h3 className="text-xl font-bold mb-2">{settings.principalName}</h3>
+                <h3 className="text-xl font-bold mb-2">{settings?.principalName}</h3>
                 <p className="text-[#C8A951]">Principal</p>
-                <p className="text-sm mt-2">{settings.principalTitle}</p>
-                <p className="text-sm">{settings.principalExperience}</p>
+                <p className="text-sm mt-2">{settings?.principalTitle}</p>
+                <p className="text-sm">{settings?.principalExperience}</p>
               </div>
             </div>
 
             <div className="lg:col-span-2 space-y-4 text-gray-700">
-              {(settings.principalFullMessage || "").split('\n').filter(p => p.trim()).map((paragraph, index) => (
-                <p key={index} className={`leading-relaxed ${index === 0 || paragraph.startsWith('With best wishes') ? '' : ''} ${paragraph.startsWith('With best wishes') ? 'italic' : ''}`}>
-                  {paragraph.startsWith('With best wishes') ? (
-                    <span dangerouslySetInnerHTML={{ __html: paragraph.replace(/\n/g, '<br />') }} />
+              {(settings?.principalFullMessage || "")?.split('\n')?.filter((p: any) => p?.trim())?.map((paragraph: any, index: number) => (
+                <p key={index} className={`leading-relaxed ${index === 0 || paragraph?.startsWith('With best wishes') ? '' : ''} ${paragraph?.startsWith('With best wishes') ? 'italic' : ''}`}>
+                  {paragraph?.startsWith('With best wishes') ? (
+                    <span dangerouslySetInnerHTML={{ __html: paragraph?.replace(/\n/g, '<br />') }} />
                   ) : paragraph}
                 </p>
               ))}
@@ -121,11 +121,11 @@ export function AboutPage() {
           <div className="w-20 h-1 bg-[#C8A951] mx-auto mb-12" />
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {(settings.achievements || []).map((achievement, index) => (
+            {(settings?.achievements || [])?.map((achievement: any, index: number) => (
               <div key={index} className="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow text-center">
                 <Award className="w-12 h-12 text-[#C8A951] mx-auto mb-4" />
-                <h3 className="text-xl font-bold text-[#006B3F] mb-2">{achievement.title}</h3>
-                <p className="text-gray-600">{achievement.description}</p>
+                <h3 className="text-xl font-bold text-[#006B3F] mb-2">{achievement?.title}</h3>
+                <p className="text-gray-600">{achievement?.description}</p>
               </div>
             ))}
           </div>
@@ -144,7 +144,7 @@ export function AboutPage() {
             <div className="bg-[#F8F9FA] p-6 rounded-lg">
               <h3 className="text-xl font-bold text-[#006B3F] mb-4">Campus Facilities</h3>
               <ul className="space-y-2 text-gray-700">
-                {(settings.infrastructureCampus || []).map((item, index) => (
+                {(settings?.infrastructureCampus || [])?.map((item: any, index: number) => (
                   <li key={index} className="flex gap-2">
                     <CheckCircle className="w-5 h-5 text-[#C8A951] flex-shrink-0 mt-1" /> {item}
                   </li>
@@ -155,7 +155,7 @@ export function AboutPage() {
             <div className="bg-[#F8F9FA] p-6 rounded-lg">
               <h3 className="text-xl font-bold text-[#006B3F] mb-4">Support Facilities</h3>
               <ul className="space-y-2 text-gray-700">
-                {(settings.infrastructureSupport || []).map((item, index) => (
+                {(settings?.infrastructureSupport || [])?.map((item: any, index: number) => (
                   <li key={index} className="flex gap-2">
                     <CheckCircle className="w-5 h-5 text-[#C8A951] flex-shrink-0 mt-1" /> {item}
                   </li>

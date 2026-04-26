@@ -1,18 +1,19 @@
 import { useState, useMemo } from "react";
 import { Microscope, Database, Network, Building2, BookOpen, Clock, Users, BookMarked, Monitor, Wifi, Trophy, Dumbbell, Target } from "lucide-react";
 import { useAdmin } from "../context/AdminContext";
+import { Skeleton } from "../components/ui/skeleton";
 
 const ICONS: Record<string, any> = {
   Microscope, Trophy, BookOpen, Network, Database, Dumbbell, Target, Monitor, Wifi, Building2, Users
 };
 
 export function LabsPage() {
-  const { facilities, settings } = useAdmin();
+  const { facilities, settings, loading } = useAdmin();
   const [activeTab, setActiveTab] = useState<"Laboratory" | "Library" | "Sports" | "Other">("Laboratory");
 
-  const labs = useMemo(() => facilities.filter(f => f.category === "Laboratory"), [facilities]);
-  const sports = useMemo(() => facilities.filter(f => f.category === "Sports"), [facilities]);
-  const others = useMemo(() => facilities.filter(f => f.category === "Other"), [facilities]);
+  const labs = useMemo(() => (facilities || [])?.filter(f => f?.category === "Laboratory"), [facilities]);
+  const sports = useMemo(() => (facilities || [])?.filter(f => f?.category === "Sports"), [facilities]);
+  const others = useMemo(() => (facilities || [])?.filter(f => f?.category === "Other"), [facilities]);
   
   const libraryStats = settings?.libraryStats;
   const libTiming = settings?.libraryInfo?.timing || ["Monday - Friday: 8:00 AM - 4:00 PM", "Saturday: 8:00 AM - 1:00 PM"];
@@ -68,30 +69,46 @@ export function LabsPage() {
                 <p className="text-gray-600 max-w-3xl">Our college features modern, well-equipped laboratories designed to provide students with hands-on practical experience aligned with the latest curriculum requirements.</p>
               </div>
 
-              {labs.length > 0 ? (
+              {loading ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  {labs.map((lab) => {
-                    const IconComp = ICONS[lab.iconName] || Microscope;
+                  {[...Array(4)].map((_, i) => (
+                    <div key={i} className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
+                      <div className="flex items-start gap-4 mb-6">
+                        <Skeleton className="w-14 h-14 rounded-xl" />
+                        <div className="flex-1">
+                          <Skeleton className="h-7 w-1/2 mb-2" />
+                          <Skeleton className="h-4 w-1/4" />
+                        </div>
+                      </div>
+                      <Skeleton className="h-20 w-full mb-6" />
+                      <Skeleton className="h-32 w-full rounded-xl" />
+                    </div>
+                  ))}
+                </div>
+              ) : (labs?.length || 0) > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {labs?.map((lab) => {
+                    const IconComp = ICONS[lab?.iconName] || Microscope;
                     return (
-                      <div key={lab.id} className="bg-white border border-gray-100 rounded-2xl p-6 shadow-md hover:shadow-xl transition-shadow group">
+                      <div key={lab?.id} className="bg-white border border-gray-100 rounded-2xl p-6 shadow-md hover:shadow-xl transition-shadow group">
                         <div className="flex items-start gap-4 mb-6">
                           <div className="w-14 h-14 rounded-xl bg-[#006B3F]/10 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
                             <IconComp className="w-7 h-7 text-[#006B3F]" />
                           </div>
                           <div>
-                            <h3 className="text-2xl font-bold text-gray-800 mb-1">{lab.title}</h3>
-                            {lab.capacity && <p className="text-sm text-[#C8A951] font-semibold">{lab.capacity}</p>}
+                            <h3 className="text-2xl font-bold text-gray-800 mb-1">{lab?.title}</h3>
+                            {lab?.capacity && <p className="text-sm text-[#C8A951] font-semibold">{lab?.capacity}</p>}
                           </div>
                         </div>
-                        <p className="text-gray-600 mb-6">{lab.description}</p>
+                        <p className="text-gray-600 mb-6">{lab?.description}</p>
                         
-                        {lab.equipmentList && lab.equipmentList.length > 0 && (
+                        {lab?.equipmentList && (lab?.equipmentList?.length || 0) > 0 && (
                           <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
                             <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
                               <Database className="w-4 h-4 text-[#006B3F]" /> Key Equipment
                             </h4>
                             <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                              {lab.equipmentList.map((item, idx) => (
+                              {lab?.equipmentList?.map((item: any, idx: number) => (
                                 <li key={idx} className="flex items-center gap-2 text-sm text-gray-600">
                                   <div className="w-1.5 h-1.5 rounded-full bg-[#C8A951]" />
                                   {item}
@@ -128,28 +145,34 @@ export function LabsPage() {
                 <div className="lg:col-span-2 space-y-6">
                   <div className="bg-white border border-gray-100 rounded-2xl p-8 shadow-md">
                     <h3 className="text-2xl font-bold text-gray-800 mb-6">Library Resources</h3>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                      <div className="text-center p-4 bg-[#006B3F]/5 rounded-xl border border-[#006B3F]/10">
-                        <BookMarked className="w-8 h-8 text-[#006B3F] mx-auto mb-3" />
-                        <h4 className="font-bold text-2xl text-gray-800 mb-1">{libraryStats?.totalBooks || "0"}</h4>
-                        <p className="text-xs text-gray-600 uppercase tracking-wider font-semibold">Total Books</p>
+                    {loading ? (
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                        {[...Array(4)].map((_, i) => <Skeleton key={i} className="h-32 w-full rounded-xl" />)}
                       </div>
-                      <div className="text-center p-4 bg-[#C8A951]/5 rounded-xl border border-[#C8A951]/10">
-                        <BookOpen className="w-8 h-8 text-[#C8A951] mx-auto mb-3" />
-                        <h4 className="font-bold text-2xl text-gray-800 mb-1">{libraryStats?.journals || "0"}</h4>
-                        <p className="text-xs text-gray-600 uppercase tracking-wider font-semibold">Journals</p>
+                    ) : (
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                        <div className="text-center p-4 bg-[#006B3F]/5 rounded-xl border border-[#006B3F]/10">
+                          <BookMarked className="w-8 h-8 text-[#006B3F] mx-auto mb-3" />
+                          <h4 className="font-bold text-2xl text-gray-800 mb-1">{libraryStats?.totalBooks || "0"}</h4>
+                          <p className="text-xs text-gray-600 uppercase tracking-wider font-semibold">Total Books</p>
+                        </div>
+                        <div className="text-center p-4 bg-[#C8A951]/5 rounded-xl border border-[#C8A951]/10">
+                          <BookOpen className="w-8 h-8 text-[#C8A951] mx-auto mb-3" />
+                          <h4 className="font-bold text-2xl text-gray-800 mb-1">{libraryStats?.journals || "0"}</h4>
+                          <p className="text-xs text-gray-600 uppercase tracking-wider font-semibold">Journals</p>
+                        </div>
+                        <div className="text-center p-4 bg-blue-50 rounded-xl border border-blue-100">
+                          <Monitor className="w-8 h-8 text-blue-600 mx-auto mb-3" />
+                          <h4 className="font-bold text-2xl text-gray-800 mb-1">{libraryStats?.digitalResources || "N/A"}</h4>
+                          <p className="text-xs text-gray-600 uppercase tracking-wider font-semibold">Digital Access</p>
+                        </div>
+                        <div className="text-center p-4 bg-orange-50 rounded-xl border border-orange-100">
+                          <Users className="w-8 h-8 text-orange-600 mx-auto mb-3" />
+                          <h4 className="font-bold text-2xl text-gray-800 mb-1">{libraryStats?.seatingCapacity || "0"}</h4>
+                          <p className="text-xs text-gray-600 uppercase tracking-wider font-semibold">Seating</p>
+                        </div>
                       </div>
-                      <div className="text-center p-4 bg-blue-50 rounded-xl border border-blue-100">
-                        <Monitor className="w-8 h-8 text-blue-600 mx-auto mb-3" />
-                        <h4 className="font-bold text-2xl text-gray-800 mb-1">{libraryStats?.digitalResources || "N/A"}</h4>
-                        <p className="text-xs text-gray-600 uppercase tracking-wider font-semibold">Digital Access</p>
-                      </div>
-                      <div className="text-center p-4 bg-orange-50 rounded-xl border border-orange-100">
-                        <Users className="w-8 h-8 text-orange-600 mx-auto mb-3" />
-                        <h4 className="font-bold text-2xl text-gray-800 mb-1">{libraryStats?.seatingCapacity || "0"}</h4>
-                        <p className="text-xs text-gray-600 uppercase tracking-wider font-semibold">Seating</p>
-                      </div>
-                    </div>
+                    )}
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -157,18 +180,26 @@ export function LabsPage() {
                       <h4 className="font-bold text-lg text-gray-800 mb-3 flex items-center gap-2">
                         <Clock className="w-5 h-5 text-[#006B3F]" /> Timing
                       </h4>
-                      {libTiming.map((time, idx) => (
-                        <p key={idx} className="text-gray-600">{time}</p>
-                      ))}
+                      {loading ? (
+                        <div className="space-y-2"><Skeleton className="h-5 w-full" /><Skeleton className="h-5 w-5/6" /></div>
+                      ) : (
+                        libTiming.map((time, idx) => (
+                          <p key={idx} className="text-gray-600 text-sm">{time}</p>
+                        ))
+                      )}
                     </div>
                     <div className="bg-white border border-gray-100 rounded-xl p-6 shadow-sm">
                       <h4 className="font-bold text-lg text-gray-800 mb-3 flex items-center gap-2">
                         <Wifi className="w-5 h-5 text-[#006B3F]" /> Facilities
                       </h4>
                       <ul className="space-y-1 text-gray-600 text-sm">
-                        {libFacilities.map((facility, idx) => (
-                          <li key={idx}>• {facility}</li>
-                        ))}
+                        {loading ? (
+                          [...Array(4)].map((_, i) => <Skeleton key={i} className="h-4 w-full" />)
+                        ) : (
+                          libFacilities.map((facility, idx) => (
+                            <li key={idx}>• {facility}</li>
+                          ))
+                        )}
                       </ul>
                     </div>
                   </div>
@@ -177,14 +208,18 @@ export function LabsPage() {
                 <div className="bg-[#006B3F] rounded-2xl p-8 text-white shadow-xl">
                   <h3 className="text-xl font-bold mb-6 text-[#C8A951]">Rules & Regulations</h3>
                   <ul className="space-y-4">
-                    {libRules.map((rule, idx) => (
-                      <li key={idx} className="flex items-start gap-3">
-                        <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center shrink-0 mt-0.5">
-                          <span className="text-xs font-bold">{idx + 1}</span>
-                        </div>
-                        <p className="text-sm opacity-90">{rule}</p>
-                      </li>
-                    ))}
+                    {loading ? (
+                      [...Array(5)].map((_, i) => <Skeleton key={i} className="h-10 w-full opacity-20" />)
+                    ) : (
+                      libRules.map((rule, idx) => (
+                        <li key={idx} className="flex items-start gap-3">
+                          <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center shrink-0 mt-0.5">
+                            <span className="text-xs font-bold">{idx + 1}</span>
+                          </div>
+                          <p className="text-sm opacity-90">{rule}</p>
+                        </li>
+                      ))
+                    )}
                   </ul>
                 </div>
               </div>
@@ -200,7 +235,11 @@ export function LabsPage() {
                 <p className="text-gray-600 max-w-3xl">We believe in the holistic development of our students. Our extensive sports facilities encourage physical fitness, teamwork, and healthy competition.</p>
               </div>
 
-              {sports.length > 0 ? (
+              {loading ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-64 w-full rounded-2xl" />)}
+                </div>
+              ) : sports.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {sports.map(sport => {
                     const IconComp = ICONS[sport.iconName] || Trophy;
@@ -233,7 +272,11 @@ export function LabsPage() {
                 <p className="text-gray-600 max-w-3xl">Explore the various other facilities that make campus life convenient, safe, and enjoyable for our students.</p>
               </div>
 
-              {others.length > 0 ? (
+              {loading ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {[...Array(4)].map((_, i) => <Skeleton key={i} className="h-28 w-full rounded-xl" />)}
+                </div>
+              ) : others.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {others.map(item => {
                     const IconComp = ICONS[item.iconName] || Building2;
@@ -261,3 +304,4 @@ export function LabsPage() {
     </div>
   );
 }
+

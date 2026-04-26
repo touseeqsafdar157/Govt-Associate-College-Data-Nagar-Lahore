@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Trash2, X, Eye, Check, AlertCircle, ClipboardList, ChevronDown } from "lucide-react";
+import { Skeleton } from "../../components/ui/skeleton";
 
 const API = "https://govt-associate-college-data-nagar-lahore.onrender.com/api";
 const STATUSES = ["All","Pending","Reviewed","Accepted","Rejected"];
@@ -47,7 +48,7 @@ export function AdminApplications() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-xl font-bold text-gray-800" style={{fontFamily:"Playfair Display,serif"}}>Admission Applications</h1>
-          <p className="text-gray-500 text-sm mt-0.5">{apps.length} applications</p>
+          <p className="text-gray-500 text-sm mt-0.5">{loading ? "Loading applications..." : `${apps.length} applications`}</p>
         </div>
       </div>
 
@@ -62,41 +63,58 @@ export function AdminApplications() {
       </div>
 
       {/* Applications List */}
-      {loading ? <div className="text-center py-12 text-gray-400">Loading...</div> : (
-        <div className="space-y-3">
-          {apps.map(app => (
-            <div key={app._id} className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-all flex flex-wrap items-center gap-3">
-              {/* Photo */}
-              <div className="w-12 h-12 rounded-full bg-[#006B3F]/10 overflow-hidden border-2 border-[#006B3F]/10 shrink-0">
-                {app.photoUrl ? <img src={app.photoUrl} alt={app.name} className="w-full h-full object-cover"/> : <div className="w-full h-full flex items-center justify-center text-[#006B3F] font-bold text-lg">{app.name?.[0]}</div>}
+      <div className="space-y-3">
+        {loading ? (
+          [...Array(5)].map((_, i) => (
+            <div key={i} className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex items-center gap-3">
+              <Skeleton className="w-12 h-12 rounded-full" />
+              <div className="flex-1 space-y-2">
+                <Skeleton className="h-4 w-1/4" />
+                <Skeleton className="h-3 w-1/3" />
               </div>
-              {/* Info */}
-              <div className="flex-1 min-w-0">
-                <p className="font-semibold text-gray-800 text-sm">{app.name}</p>
-                <p className="text-xs text-gray-500">{app.program} · {app.phone}</p>
-                <p className="text-xs text-gray-400">{new Date(app.appliedAt).toLocaleDateString("en-PK",{day:"numeric",month:"short",year:"numeric"})}</p>
-              </div>
-              {/* Status badge */}
-              <span className={`text-xs font-semibold px-3 py-1 rounded-full ${STATUS_COLORS[app.status]||""}`}>{app.status}</span>
-              {/* Actions */}
+              <Skeleton className="w-20 h-6 rounded-full" />
               <div className="flex gap-2">
-                <button onClick={() => setViewApp(app)} className="p-2 text-[#006B3F] hover:bg-[#006B3F]/10 rounded-lg transition-colors" title="View">
-                  <Eye className="w-4 h-4"/>
-                </button>
-                <button onClick={() => setDeleteId(app._id)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Delete">
-                  <Trash2 className="w-4 h-4"/>
-                </button>
+                <Skeleton className="w-8 h-8 rounded-lg" />
+                <Skeleton className="w-8 h-8 rounded-lg" />
               </div>
             </div>
-          ))}
-          {apps.length===0 && (
-            <div className="text-center py-12 text-gray-400">
-              <ClipboardList className="w-12 h-12 mx-auto mb-3 opacity-30"/>
-              <p className="text-sm">Koi application nahi mili.</p>
-            </div>
-          )}
-        </div>
-      )}
+          ))
+        ) : (
+          <>
+            {apps.map(app => (
+              <div key={app._id} className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-all flex flex-wrap items-center gap-3">
+                {/* Photo */}
+                <div className="w-12 h-12 rounded-full bg-[#006B3F]/10 overflow-hidden border-2 border-[#006B3F]/10 shrink-0">
+                  {app.photoUrl ? <img src={app.photoUrl} alt={app.name} className="w-full h-full object-cover"/> : <div className="w-full h-full flex items-center justify-center text-[#006B3F] font-bold text-lg">{app.name?.[0]}</div>}
+                </div>
+                {/* Info */}
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-gray-800 text-sm">{app.name}</p>
+                  <p className="text-xs text-gray-500">{app.program} · {app.phone}</p>
+                  <p className="text-xs text-gray-400">{new Date(app.appliedAt).toLocaleDateString("en-PK",{day:"numeric",month:"short",year:"numeric"})}</p>
+                </div>
+                {/* Status badge */}
+                <span className={`text-xs font-semibold px-3 py-1 rounded-full ${STATUS_COLORS[app.status]||""}`}>{app.status}</span>
+                {/* Actions */}
+                <div className="flex gap-2">
+                  <button onClick={() => setViewApp(app)} className="p-2 text-[#006B3F] hover:bg-[#006B3F]/10 rounded-lg transition-colors" title="View">
+                    <Eye className="w-4 h-4"/>
+                  </button>
+                  <button onClick={() => setDeleteId(app._id)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Delete">
+                    <Trash2 className="w-4 h-4"/>
+                  </button>
+                </div>
+              </div>
+            ))}
+            {apps.length===0 && (
+              <div className="text-center py-12 text-gray-400">
+                <ClipboardList className="w-12 h-12 mx-auto mb-3 opacity-30"/>
+                <p className="text-sm">Koi application nahi mili.</p>
+              </div>
+            )}
+          </>
+        )}
+      </div>
 
       {/* View Application Modal */}
       {viewApp && (
@@ -205,7 +223,7 @@ export function AdminApplications() {
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 text-center">
             <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-3"/>
             <h3 className="font-bold text-gray-800 mb-1">Delete Application?</h3>
-            <p className="text-gray-500 text-sm mb-5">This cannot be undone.</p>
+            <p className="text-gray-500 text-sm mb-5">Are you sure you want to delete this application? This cannot be undone.</p>
             <div className="flex gap-3">
               <button onClick={() => handleDelete(deleteId)} className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg text-sm font-semibold">Delete</button>
               <button onClick={() => setDeleteId(null)} className="flex-1 border border-gray-300 py-2 rounded-lg text-sm">Cancel</button>
@@ -216,3 +234,4 @@ export function AdminApplications() {
     </div>
   );
 }
+

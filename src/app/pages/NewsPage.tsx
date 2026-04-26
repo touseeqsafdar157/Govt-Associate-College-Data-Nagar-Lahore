@@ -1,16 +1,17 @@
 import { useState } from "react";
 import { Calendar, FileDown, Bell, Award, Clock, MapPin } from "lucide-react";
 import { useAdmin } from "../context/AdminContext";
+import { Skeleton } from "../components/ui/skeleton";
 
 const CATEGORIES = ["All", "Admissions", "Results", "Sports", "Events", "Academic", "General"];
 
 export function NewsPage() {
-  const { news, events } = useAdmin();
+  const { news, events, loading } = useAdmin();
   const [activeCategory, setActiveCategory] = useState("All");
 
-  const filtered = activeCategory === "All" ? news : news.filter((n) => n.category === activeCategory);
+  const filtered = activeCategory === "All" ? (news || []) : news?.filter((n) => n?.category === activeCategory);
 
-  const docs = news.filter(n => n.fileUrl);
+  const docs = news?.filter(n => n?.fileUrl) || [];
 
   return (
     <div className="bg-white">
@@ -52,10 +53,20 @@ export function NewsPage() {
           <div className="lg:col-span-2">
             <h2 className="text-2xl font-bold text-[#003D1F] mb-6" style={{ fontFamily: "Playfair Display, serif" }}>
               {activeCategory === "All" ? "All News & Announcements" : `${activeCategory} News`}
-              <span className="ml-2 text-sm font-normal text-gray-500">({filtered.length})</span>
+              <span className="ml-2 text-sm font-normal text-gray-500">({loading ? "..." : filtered.length})</span>
             </h2>
 
-            {filtered.length === 0 ? (
+            {loading ? (
+              <div className="space-y-4">
+                {[1, 2, 3, 4].map(i => (
+                  <div key={i} className="bg-white rounded-xl p-5 shadow-sm border border-gray-100 border-l-4 border-l-gray-200">
+                    <Skeleton className="h-4 w-24 mb-2" />
+                    <Skeleton className="h-6 w-3/4 mb-2" />
+                    <Skeleton className="h-4 w-full" />
+                  </div>
+                ))}
+              </div>
+            ) : filtered.length === 0 ? (
               <div className="text-center py-12 text-gray-400">
                 <Bell className="w-12 h-12 mx-auto mb-3 opacity-30" />
                 <p>No news in this category.</p>
@@ -94,27 +105,41 @@ export function NewsPage() {
                 </h3>
               </div>
               <div className="p-4 space-y-3">
-                {events.map((event) => (
-                  <div key={event.id} className="flex gap-3 pb-3 border-b border-gray-50 last:border-0 last:pb-0">
-                    <div className="bg-gradient-to-br from-[#006B3F] to-[#003D1F] text-white text-center p-2 rounded-lg min-w-[44px] shrink-0">
-                      <p className="text-base font-bold leading-none">{event.day}</p>
-                      <p className="text-[9px] mt-0.5 opacity-80">{event.month}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-gray-800 leading-tight">{event.title}</p>
-                      <div className="flex flex-wrap gap-2 mt-0.5">
-                        <span className="flex items-center gap-0.5 text-xs text-gray-500">
-                          <Clock className="w-3 h-3" /> {event.time}
-                        </span>
-                        {event.location && event.location !== "–" && (
-                          <span className="flex items-center gap-0.5 text-xs text-gray-500">
-                            <MapPin className="w-3 h-3" /> {event.location}
-                          </span>
-                        )}
+                {loading ? (
+                   [1, 2, 3].map(i => (
+                    <div key={i} className="flex gap-3 pb-3 border-b border-gray-50 last:border-0 last:pb-0">
+                      <Skeleton className="h-11 w-11 rounded-lg shrink-0" />
+                      <div className="w-full">
+                        <Skeleton className="h-4 w-full mb-1" />
+                        <Skeleton className="h-3 w-1/2" />
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))
+                ) : events.length === 0 ? (
+                  <p className="text-sm text-gray-500 text-center py-2">No upcoming events.</p>
+                ) : (
+                  events.map((event) => (
+                    <div key={event.id} className="flex gap-3 pb-3 border-b border-gray-50 last:border-0 last:pb-0">
+                      <div className="bg-gradient-to-br from-[#006B3F] to-[#003D1F] text-white text-center p-2 rounded-lg min-w-[44px] shrink-0">
+                        <p className="text-base font-bold leading-none">{event.day}</p>
+                        <p className="text-[9px] mt-0.5 opacity-80">{event.month}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-gray-800 leading-tight">{event.title}</p>
+                        <div className="flex flex-wrap gap-2 mt-0.5">
+                          <span className="flex items-center gap-0.5 text-xs text-gray-500">
+                            <Clock className="w-3 h-3" /> {event.time}
+                          </span>
+                          {event.location && event.location !== "–" && (
+                            <span className="flex items-center gap-0.5 text-xs text-gray-500">
+                              <MapPin className="w-3 h-3" /> {event.location}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
 
@@ -126,7 +151,11 @@ export function NewsPage() {
                 </h3>
               </div>
               <div className="p-3">
-                {docs.length === 0 ? (
+                {loading ? (
+                  <div className="space-y-2">
+                    {[1, 2, 3].map(i => <Skeleton key={i} className="h-8 w-full" />)}
+                  </div>
+                ) : docs.length === 0 ? (
                   <p className="text-sm text-gray-500 p-2">No downloads available.</p>
                 ) : (
                   docs.map((doc) => (
@@ -158,3 +187,4 @@ export function NewsPage() {
     </div>
   );
 }
+

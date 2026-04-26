@@ -1,11 +1,13 @@
 import { useState } from "react";
-import { Mail, MailOpen, Trash2, Search, CheckCircle } from "lucide-react";
+import { Mail, MailOpen, Trash2, Search, CheckCircle, AlertCircle } from "lucide-react";
 import { useAdmin } from "../../context/AdminContext";
+import { Skeleton } from "../../components/ui/skeleton";
 
 export function AdminMessages() {
-  const { messages, deleteMessage, markMessageRead } = useAdmin();
+  const { messages, deleteMessage, markMessageRead, loading } = useAdmin();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedMessage, setSelectedMessage] = useState<string | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const filteredMessages = messages.filter(
     (m) =>
@@ -19,12 +21,11 @@ export function AdminMessages() {
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm("Are you sure you want to delete this message?")) {
-      await deleteMessage(id);
-      if (selectedMessage === id) {
-        setSelectedMessage(null);
-      }
+    await deleteMessage(id);
+    if (selectedMessage === id) {
+      setSelectedMessage(null);
     }
+    setDeleteId(null);
   };
 
   return (
@@ -53,7 +54,20 @@ export function AdminMessages() {
           </div>
           
           <div className="overflow-y-auto flex-1">
-            {filteredMessages.length === 0 ? (
+            {loading ? (
+              <div className="space-y-0">
+                {[...Array(6)].map((_, i) => (
+                  <div key={i} className="p-4 border-b border-gray-100 space-y-2">
+                    <div className="flex justify-between">
+                      <Skeleton className="h-4 w-1/3" />
+                      <Skeleton className="h-2 w-2 rounded-full" />
+                    </div>
+                    <Skeleton className="h-3 w-3/4" />
+                    <Skeleton className="h-2 w-1/4 mt-2" />
+                  </div>
+                ))}
+              </div>
+            ) : filteredMessages.length === 0 ? (
               <div className="p-8 text-center text-gray-500">
                 <p className="text-sm">No messages found.</p>
               </div>
@@ -91,7 +105,23 @@ export function AdminMessages() {
 
         {/* Message Details */}
         <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 flex flex-col overflow-hidden h-full">
-          {selectedMessage ? (
+          {loading ? (
+            <div className="p-6 space-y-6">
+              <div className="space-y-4">
+                <Skeleton className="h-8 w-2/3" />
+                <div className="flex gap-4">
+                  <Skeleton className="h-4 w-20" />
+                  <Skeleton className="h-4 w-40" />
+                </div>
+                <Skeleton className="h-3 w-32" />
+              </div>
+              <div className="space-y-2 mt-8">
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-3/4" />
+              </div>
+            </div>
+          ) : selectedMessage ? (
             (() => {
               const msg = messages.find((m) => m.id === selectedMessage);
               if (!msg) return null;
@@ -117,7 +147,7 @@ export function AdminMessages() {
                     </div>
                     <div className="flex items-center gap-2">
                       <button
-                        onClick={() => handleDelete(msg.id)}
+                        onClick={() => setDeleteId(msg.id)}
                         className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                         title="Delete Message"
                       >
@@ -141,6 +171,22 @@ export function AdminMessages() {
           )}
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {deleteId && (
+        <div className="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 text-center">
+            <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-3"/>
+            <h3 className="font-bold text-gray-800 mb-1">Delete Message?</h3>
+            <p className="text-gray-500 text-sm mb-5">Are you sure you want to delete this message? This action cannot be undone.</p>
+            <div className="flex gap-3">
+              <button onClick={() => handleDelete(deleteId)} className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg text-sm font-semibold">Delete</button>
+              <button onClick={() => setDeleteId(null)} className="flex-1 border border-gray-300 py-2 rounded-lg text-sm">Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+

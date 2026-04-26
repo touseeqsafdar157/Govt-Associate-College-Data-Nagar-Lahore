@@ -49,7 +49,7 @@ export function HomePage() {
   const isAdmissionActive = () => {
     if (!settings?.admissionsOpen) return false;
     if (!settings?.lastDateAdmission) return true;
-    const lastDate = new Date(settings.lastDateAdmission);
+    const lastDate = new Date(settings?.lastDateAdmission);
     if (isNaN(lastDate.getTime())) return true;
     lastDate.setHours(23, 59, 59, 999);
     return new Date() <= lastDate;
@@ -63,8 +63,8 @@ export function HomePage() {
     setTimeout(() => setIsAnimating(false), 700);
   };
 
-  const nextSlide = () => changeSlide((currentSlide + 1) % heroSlides.length);
-  const prevSlide = () => changeSlide((currentSlide - 1 + heroSlides.length) % heroSlides.length);
+  const nextSlide = () => changeSlide((currentSlide + 1) % heroSlides?.length);
+  const prevSlide = () => changeSlide((currentSlide - 1 + heroSlides?.length) % heroSlides?.length);
 
   useEffect(() => {
     const t = setInterval(nextSlide, 6000);
@@ -87,12 +87,12 @@ export function HomePage() {
     <div className="bg-white">
       {/* ── HERO SLIDER ── */}
       <section className="relative h-[85vh] min-h-[500px] max-h-[750px] overflow-hidden">
-        {heroSlides.map((s, i) => (
+        {heroSlides?.map((s, i) => (
           <div
             key={i}
             className={`absolute inset-0 transition-opacity duration-700 ${i === currentSlide ? "opacity-100" : "opacity-0"}`}
           >
-            <img src={s.img} alt={s.title} className="w-full h-full object-cover" />
+            <img src={s?.img} alt={s?.title} className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-r from-[#002A15]/90 via-[#003D1F]/70 to-transparent" />
           </div>
         ))}
@@ -102,17 +102,17 @@ export function HomePage() {
           <div className="container mx-auto px-4 sm:px-8">
             <div className="max-w-2xl">
               <span className="inline-block bg-[#C8A951] text-[#003D1F] text-xs font-bold px-3 py-1 rounded mb-4 uppercase tracking-widest">
-                {slide.subtitle}
+                {slide?.subtitle}
               </span>
               <h1
                 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-4 leading-tight"
                 style={{ fontFamily: "Playfair Display, serif" }}
               >
-                {slide.title}
+                {slide?.title}
               </h1>
-              <p className="text-base sm:text-lg text-gray-200 mb-8 leading-relaxed">{slide.tagline}</p>
+              <p className="text-base sm:text-lg text-gray-200 mb-8 leading-relaxed">{slide?.tagline}</p>
               <div className="flex flex-wrap gap-3">
-                {(!admissionOpen && slide.cta.label === "Apply Now") ? (
+                {(!admissionOpen && slide?.cta?.label === "Apply Now") ? (
                   <Link
                     to="/admissions"
                     className="bg-white/10 hover:bg-white/20 border border-white/40 text-white px-7 py-3 rounded-lg font-semibold transition-all backdrop-blur-sm text-sm"
@@ -121,17 +121,17 @@ export function HomePage() {
                   </Link>
                 ) : (
                   <Link
-                    to={slide.cta.to}
+                    to={slide?.cta?.to}
                     className="bg-[#C8A951] hover:bg-[#b89841] text-[#003D1F] px-7 py-3 rounded-lg font-bold transition-all hover:shadow-lg hover:-translate-y-0.5 text-sm"
                   >
-                    {slide.cta.label}
+                    {slide?.cta?.label}
                   </Link>
                 )}
                 <Link
-                  to={slide.cta2.to}
+                  to={slide?.cta2?.to}
                   className="bg-white/10 hover:bg-white/20 border border-white/40 text-white px-7 py-3 rounded-lg font-semibold transition-all backdrop-blur-sm text-sm"
                 >
-                  {slide.cta2.label}
+                  {slide?.cta2?.label}
                 </Link>
               </div>
             </div>
@@ -154,7 +154,7 @@ export function HomePage() {
 
         {/* Dots */}
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex gap-2">
-          {heroSlides.map((_, i) => (
+          {heroSlides?.map((_, i) => (
             <button
               key={i}
               onClick={() => changeSlide(i)}
@@ -169,8 +169,8 @@ export function HomePage() {
       <section className="bg-gradient-to-r from-[#003D1F] to-[#006B3F] py-8">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {(settings.homeStats || []).map((stat: any, i: number) => {
-              const Icon = iconMap[stat.icon] || Award;
+            {(settings?.homeStats || [])?.map((stat: any, i: number) => {
+              const Icon = iconMap[stat?.icon] || Award;
               return (
                 <div key={i} className="text-center text-white group">
                   <div className="flex justify-center mb-2">
@@ -178,8 +178,8 @@ export function HomePage() {
                       <Icon className="w-6 h-6" />
                     </div>
                   </div>
-                  <p className="text-3xl font-bold text-[#C8A951]">{stat.value}</p>
-                  <p className="text-green-200 text-sm">{stat.label}</p>
+                  <p className="text-3xl font-bold text-[#C8A951]">{stat?.value}</p>
+                  <p className="text-green-200 text-sm">{stat?.label}</p>
                 </div>
               );
             })}
@@ -228,7 +228,7 @@ export function HomePage() {
               <div className="w-16 h-1 bg-[#C8A951] mb-6 rounded-full" />
               <div className="bg-[#F0F7F4] rounded-xl p-6 border-l-4 border-[#006B3F] mb-6">
                 <p className="text-gray-700 leading-relaxed text-sm italic">
-                  "{settings.principalMessage}"
+                  "{settings?.principalMessage}"
                 </p>
               </div>
               <div className="flex items-center gap-3">
@@ -236,7 +236,7 @@ export function HomePage() {
                   <Star className="w-5 h-5 text-[#C8A951]" />
                 </div>
                 <div>
-                  <p className="font-bold text-[#003D1F] text-sm">{settings.principalName}</p>
+                  <p className="font-bold text-[#003D1F] text-sm">{settings?.principalName}</p>
                   <p className="text-[#006B3F] text-xs">Principal, GAC Data Nagar</p>
                 </div>
               </div>
@@ -257,8 +257,8 @@ export function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {(settings.homeFeatures || []).map((feat: any, i: number) => {
-              const Icon = iconMap[feat.icon] || Award;
+            {(settings?.homeFeatures || [])?.map((feat: any, i: number) => {
+              const Icon = iconMap[feat?.icon] || Award;
               const color = i % 2 === 0 ? "#006B3F" : "#C8A951";
               return (
                 <div
@@ -271,8 +271,8 @@ export function HomePage() {
                   >
                     <Icon className="w-7 h-7" style={{ color }} />
                   </div>
-                  <h3 className="font-bold text-[#003D1F] mb-2" style={{ fontFamily: "Playfair Display, serif" }}>{feat.title}</h3>
-                  <p className="text-gray-600 text-sm leading-relaxed">{feat.desc}</p>
+                  <h3 className="font-bold text-[#003D1F] mb-2" style={{ fontFamily: "Playfair Display, serif" }}>{feat?.title}</h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">{feat?.desc}</p>
                   <div className="w-8 h-0.5 mt-4 rounded-full transition-all group-hover:w-16" style={{ backgroundColor: color }} />
                 </div>
               );
@@ -299,18 +299,18 @@ export function HomePage() {
                 </Link>
               </div>
               <div className="space-y-3">
-                {news.slice(0, 4).map((item) => (
+                {news?.slice(0, 4)?.map((item) => (
                   <div
-                    key={item.id}
+                    key={item?.id}
                     className="group flex gap-4 bg-[#F8FCF9] hover:bg-white hover:shadow-md p-4 rounded-xl transition-all border border-transparent hover:border-[#006B3F]/10 cursor-pointer"
                   >
                     <div className="shrink-0">
                       <div className="w-2 h-2 rounded-full bg-[#C8A951] mt-2" />
                     </div>
                     <div>
-                      <span className="text-xs text-[#C8A951] font-semibold">{item.date}</span>
-                      <p className="text-gray-800 text-sm font-medium group-hover:text-[#006B3F] transition-colors mt-0.5">{item.title}</p>
-                      <span className="inline-block mt-1 text-xs bg-[#006B3F]/10 text-[#006B3F] px-2 py-0.5 rounded-full">{item.category}</span>
+                      <span className="text-xs text-[#C8A951] font-semibold">{item?.date}</span>
+                      <p className="text-gray-800 text-sm font-medium group-hover:text-[#006B3F] transition-colors mt-0.5">{item?.title}</p>
+                      <span className="inline-block mt-1 text-xs bg-[#006B3F]/10 text-[#006B3F] px-2 py-0.5 rounded-full">{item?.category}</span>
                     </div>
                   </div>
                 ))}
@@ -331,21 +331,21 @@ export function HomePage() {
                 </Link>
               </div>
               <div className="space-y-3">
-                {events.slice(0, 4).map((event) => (
+                {events?.slice(0, 4)?.map((event) => (
                   <div
-                    key={event.id}
+                    key={event?.id}
                     className="group flex gap-4 bg-white hover:bg-[#F8FCF9] p-4 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-100"
                   >
                     <div className="shrink-0 bg-gradient-to-br from-[#006B3F] to-[#003D1F] text-white text-center p-3 rounded-xl min-w-[52px]">
-                      <p className="text-xl font-bold leading-none">{event.day}</p>
-                      <p className="text-[10px] font-semibold mt-0.5 opacity-80">{event.month}</p>
+                      <p className="text-xl font-bold leading-none">{event?.day}</p>
+                      <p className="text-[10px] font-semibold mt-0.5 opacity-80">{event?.month}</p>
                     </div>
                     <div>
-                      <p className="font-semibold text-gray-800 text-sm group-hover:text-[#006B3F] transition-colors">{event.title}</p>
+                      <p className="font-semibold text-gray-800 text-sm group-hover:text-[#006B3F] transition-colors">{event?.title}</p>
                       <div className="flex items-center gap-3 mt-1">
-                        <span className="flex items-center gap-1 text-xs text-gray-500"><Clock className="w-3 h-3" />{event.time}</span>
+                        <span className="flex items-center gap-1 text-xs text-gray-500"><Clock className="w-3 h-3" />{event?.time}</span>
                         <span className="text-gray-300">|</span>
-                        <span className="text-xs text-gray-500">{event.location}</span>
+                        <span className="text-xs text-gray-500">{event?.location}</span>
                       </div>
                     </div>
                   </div>
@@ -381,12 +381,12 @@ export function HomePage() {
                 className="group relative aspect-video overflow-hidden rounded-xl cursor-pointer"
               >
                 <img
-                  src={item.img}
-                  alt={item.title}
+                  src={item?.img}
+                  alt={item?.title}
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#003D1F]/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-3">
-                  <p className="text-white text-sm font-semibold">{item.title}</p>
+                  <p className="text-white text-sm font-semibold">{item?.title}</p>
                 </div>
               </div>
             ))}
@@ -413,7 +413,7 @@ export function HomePage() {
               </div>
               <div>
                 <p className="text-xs text-gray-500 mb-0.5">Call Us</p>
-                <p className="font-bold text-[#003D1F] text-sm">{settings.phone}</p>
+                <p className="font-bold text-[#003D1F] text-sm">{settings?.phone}</p>
               </div>
             </div>
             <div className="flex items-center gap-4 bg-white p-5 rounded-xl shadow-sm border border-gray-100">
@@ -422,7 +422,7 @@ export function HomePage() {
               </div>
               <div>
                 <p className="text-xs text-gray-500 mb-0.5">Email Us</p>
-                <p className="font-bold text-[#003D1F] text-sm">{settings.email}</p>
+                <p className="font-bold text-[#003D1F] text-sm">{settings?.email}</p>
               </div>
             </div>
             <Link

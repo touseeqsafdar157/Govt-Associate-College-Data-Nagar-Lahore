@@ -1,20 +1,21 @@
 import { useState } from "react";
 import { BookOpen, Calendar, FileDown, CheckCircle } from "lucide-react";
 import { useAdmin } from "../context/AdminContext";
+import { Skeleton } from "../components/ui/skeleton";
 
 export function AcademicsPage() {
-  const { programs, settings } = useAdmin();
+  const { programs, settings, loading } = useAdmin();
   const [activeTab, setActiveTab] = useState("Intermediate");
 
-  const intermediatePrograms = programs.filter(p => p.category === "Intermediate");
-  const adpPrograms = programs.filter(p => p.category === "ADP");
+  const intermediatePrograms = programs?.filter(p => p?.category === "Intermediate") || [];
+  const adpPrograms = programs?.filter(p => p?.category === "ADP") || [];
   
   const currentPrograms = activeTab === "Intermediate" ? intermediatePrograms : adpPrograms;
 
   const firstYearEvents = settings?.academicCalendar?.firstYear || [];
   const secondYearEvents = settings?.academicCalendar?.secondYear || [];
 
-  const syllabusPrograms = programs.filter(p => p.syllabusUrl && p.syllabusUrl.trim() !== "");
+  const syllabusPrograms = programs?.filter(p => p?.syllabusUrl && p?.syllabusUrl?.trim() !== "") || [];
 
   return (
     <div className="bg-white">
@@ -62,7 +63,19 @@ export function AcademicsPage() {
 
           {/* Program Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {currentPrograms.map((program) => (
+            {loading ? (
+              [...Array(4)].map((_, i) => (
+                <div key={i} className="bg-white border border-gray-100 rounded-lg p-6 shadow-sm">
+                  <Skeleton className="h-8 w-3/4 mb-4" />
+                  <div className="space-y-3">
+                    <Skeleton className="h-5 w-full" />
+                    <Skeleton className="h-5 w-5/6" />
+                    <Skeleton className="h-5 w-4/6" />
+                    <Skeleton className="h-8 w-1/3 mt-2" />
+                  </div>
+                </div>
+              ))
+            ) : currentPrograms.map((program) => (
               <div key={program.id} className="bg-white border border-gray-200 rounded-lg p-6 shadow-md hover:shadow-xl transition-shadow">
                 <h3 className="text-2xl font-bold text-[#006B3F] mb-4">{program.name}</h3>
                 <div className="space-y-3">
@@ -85,9 +98,9 @@ export function AcademicsPage() {
                 </div>
               </div>
             ))}
-            {currentPrograms.length === 0 && (
+            {!loading && currentPrograms.length === 0 && (
               <div className="col-span-1 md:col-span-2 bg-gray-50 p-8 text-center text-gray-500 rounded-xl border border-gray-100">
-                Loading academic programs or none available yet...
+                No academic programs available in this category.
               </div>
             )}
           </div>
@@ -109,12 +122,18 @@ export function AcademicsPage() {
                 First Year / Semester 1 & 2
               </h3>
               <ul className="space-y-3">
-                {firstYearEvents.map((ev, i) => (
-                  <li key={i} className="flex justify-between border-b pb-2">
-                    <span className="font-semibold">{ev.event}:</span>
-                    <span className="text-gray-600">{ev.date}</span>
-                  </li>
-                ))}
+                {loading ? (
+                  [...Array(5)].map((_, i) => <Skeleton key={i} className="h-6 w-full" />)
+                ) : firstYearEvents.length > 0 ? (
+                  firstYearEvents.map((ev, i) => (
+                    <li key={i} className="flex justify-between border-b pb-2">
+                      <span className="font-semibold">{ev.event}:</span>
+                      <span className="text-gray-600">{ev.date}</span>
+                    </li>
+                  ))
+                ) : (
+                  <p className="text-gray-400 italic">Calendar not updated yet.</p>
+                )}
               </ul>
             </div>
 
@@ -124,12 +143,18 @@ export function AcademicsPage() {
                 Second Year / Semester 3 & 4
               </h3>
               <ul className="space-y-3">
-                {secondYearEvents.map((ev, i) => (
-                  <li key={i} className="flex justify-between border-b pb-2">
-                    <span className="font-semibold">{ev.event}:</span>
-                    <span className="text-gray-600">{ev.date}</span>
-                  </li>
-                ))}
+                {loading ? (
+                  [...Array(5)].map((_, i) => <Skeleton key={i} className="h-6 w-full" />)
+                ) : secondYearEvents.length > 0 ? (
+                  secondYearEvents.map((ev, i) => (
+                    <li key={i} className="flex justify-between border-b pb-2">
+                      <span className="font-semibold">{ev.event}:</span>
+                      <span className="text-gray-600">{ev.date}</span>
+                    </li>
+                  ))
+                ) : (
+                  <p className="text-gray-400 italic">Calendar not updated yet.</p>
+                )}
               </ul>
             </div>
           </div>
@@ -145,7 +170,9 @@ export function AcademicsPage() {
           <div className="w-20 h-1 bg-[#C8A951] mb-8" />
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {syllabusPrograms.length > 0 ? syllabusPrograms.map((program) => (
+            {loading ? (
+              [...Array(3)].map((_, i) => <Skeleton key={i} className="h-16 w-full rounded-lg" />)
+            ) : syllabusPrograms.length > 0 ? syllabusPrograms.map((program) => (
               <a
                 href={program.syllabusUrl}
                 target="_blank"
@@ -193,3 +220,4 @@ export function AcademicsPage() {
     </div>
   );
 }
+

@@ -79,8 +79,8 @@ export function ContactPage() {
               </div>
               <h3 className="font-bold text-[#006B3F] mb-2">Address</h3>
               <p className="text-gray-600 text-sm">
-                {settings.address.split(',').map((line, i) => (
-                  <span key={i}>{line.trim()}<br /></span>
+                {(settings?.address || "").split(',')?.map((line: any, i: number) => (
+                  <span key={i}>{line?.trim()}<br /></span>
                 ))}
               </p>
             </div>
@@ -91,7 +91,7 @@ export function ContactPage() {
               </div>
               <h3 className="font-bold text-[#006B3F] mb-2">Phone</h3>
               <p className="text-gray-600 text-sm">
-                {settings.phone}
+                {settings?.phone}
               </p>
             </div>
 
@@ -101,7 +101,7 @@ export function ContactPage() {
               </div>
               <h3 className="font-bold text-[#006B3F] mb-2">Email</h3>
               <p className="text-gray-600 text-sm">
-                {settings.email}
+                {settings?.email}
               </p>
             </div>
 
@@ -111,8 +111,8 @@ export function ContactPage() {
               </div>
               <h3 className="font-bold text-[#006B3F] mb-2">Office Hours</h3>
               <p className="text-gray-600 text-sm">
-                {(settings.officeHours || "Monday - Friday\n8:00 AM - 4:00 PM").split('\n').map((line, i) => (
-                  <span key={i}>{line.trim()}<br /></span>
+                {(settings?.officeHours || "Monday - Friday\n8:00 AM - 4:00 PM")?.split('\n')?.map((line: any, i: number) => (
+                  <span key={i}>{line?.trim()}<br /></span>
                 ))}
               </p>
             </div>
@@ -303,18 +303,18 @@ export function ContactPage() {
           <div className="w-20 h-1 bg-[#C8A951] mx-auto mb-12" />
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {(settings.departments || []).map((dept, index) => (
+            {(settings?.departments || [])?.map((dept: any, index: number) => (
               <div key={index} className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
-                <h3 className="font-bold text-[#006B3F] text-lg mb-3">{dept.dept}</h3>
+                <h3 className="font-bold text-[#006B3F] text-lg mb-3">{dept?.dept}</h3>
                 <div className="space-y-2 text-sm">
-                  <p className="text-gray-700">{dept.name}</p>
+                  <p className="text-gray-700">{dept?.name}</p>
                   <p className="flex items-center gap-2 text-gray-600">
                     <Phone className="w-4 h-4 text-[#C8A951]" />
-                    {dept.phone}
+                    {dept?.phone}
                   </p>
                   <p className="flex items-center gap-2 text-gray-600">
                     <Mail className="w-4 h-4 text-[#C8A951]" />
-                    <a href={`mailto:${dept.email}`} className="hover:text-[#006B3F]">{dept.email}</a>
+                    <a href={`mailto:${dept?.email}`} className="hover:text-[#006B3F]">{dept?.email}</a>
                   </p>
                 </div>
               </div>
