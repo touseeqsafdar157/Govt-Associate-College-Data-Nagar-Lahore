@@ -34,6 +34,7 @@ export function AdminEvents() {
   const [form, setForm] = useState<FormState>({ ...blank, dateISO: todayISO() });
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const openAdd = () => { setForm({ ...blank, dateISO: todayISO() }); setEditingId(null); setShowForm(true); };
   const openEdit = (item: EventItem) => {
@@ -51,23 +52,30 @@ export function AdminEvents() {
 
   const handleSave = async () => {
     if (!form.title.trim() || !form.dateISO) return;
-    const { day, month } = extractDayMonth(form.dateISO);
-    const entry = {
-      date: formatEventDate(form.dateISO),
-      month,
-      day,
-      title: form.title,
-      time: form.time,
-      location: form.location,
-    };
-    if (editingId) {
-      await updateEvent(editingId, entry);
-    } else {
-      await addEvent(entry);
+    setIsSaving(true);
+    try {
+      const { day, month } = extractDayMonth(form.dateISO);
+      const entry = {
+        date: formatEventDate(form.dateISO),
+        month,
+        day,
+        title: form.title,
+        time: form.time,
+        location: form.location,
+      };
+      if (editingId) {
+        await updateEvent(editingId, entry);
+      } else {
+        await addEvent(entry);
+      }
+      setShowForm(false);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    } catch (err: any) {
+      alert("Failed to save event: " + (err.message || "Unknown error"));
+    } finally {
+      setIsSaving(false);
     }
-    setShowForm(false);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
   };
 
   const handleDelete = async (id: string) => {
@@ -135,8 +143,8 @@ export function AdminEvents() {
               </div>
             </div>
             <div className="flex gap-3 p-5 border-t border-gray-100">
-              <button onClick={handleSave} disabled={!form.title.trim() || !form.dateISO} className="flex-1 bg-[#006B3F] hover:bg-[#003D1F] text-white py-2.5 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50">
-                {editingId ? "Save Changes" : "Add Event"}
+              <button onClick={handleSave} disabled={isSaving || !form.title.trim() || !form.dateISO} className="flex-1 bg-[#006B3F] hover:bg-[#003D1F] text-white py-2.5 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50">
+                {isSaving ? "Saving..." : (editingId ? "Save Changes" : "Add Event")}
               </button>
               <button onClick={() => setShowForm(false)} className="px-4 py-2.5 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">Cancel</button>
             </div>

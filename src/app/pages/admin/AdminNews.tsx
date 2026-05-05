@@ -23,6 +23,7 @@ export function AdminNews() {
   const [form, setForm] = useState(blankForm);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const [fileToUpload, setFileToUpload] = useState<File | null>(null);
 
@@ -36,31 +37,35 @@ export function AdminNews() {
 
   const handleSave = async () => {
     if (!form.title.trim() || !form.date.trim()) return;
-    
-    let finalFileUrl = form.fileUrl;
-    if (fileToUpload) {
-      const fd = new FormData();
-      fd.append("image", fileToUpload); // Using "image" field as defined in backend/routes/uploadRoute.js
-      try {
+    setIsSaving(true);
+    try {
+      let finalFileUrl = form.fileUrl;
+      if (fileToUpload) {
+        const fd = new FormData();
+        fd.append("image", fileToUpload);
         const res = await fetch("https://govt-associate-college-data-nagar-lahore.onrender.com/api/upload", { method: "POST", body: fd });
         if (res.ok) {
           const data = await res.json();
           finalFileUrl = data.url;
+        } else {
+          throw new Error("Upload failed");
         }
-      } catch (err) {
-        console.error("Upload failed", err);
       }
-    }
 
-    const saveForm = { ...form, date: formatDate(form.date), fileUrl: finalFileUrl };
-    if (editingId) {
-      await updateNews(editingId, saveForm);
-    } else {
-      await addNews(saveForm);
+      const saveForm = { ...form, date: formatDate(form.date), fileUrl: finalFileUrl };
+      if (editingId) {
+        await updateNews(editingId, saveForm);
+      } else {
+        await addNews(saveForm);
+      }
+      setShowForm(false);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    } catch (err: any) {
+      alert("Failed to save: " + (err.message || "Unknown error"));
+    } finally {
+      setIsSaving(false);
     }
-    setShowForm(false);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
   };
 
   const handleDelete = async (id: string) => {
@@ -239,10 +244,10 @@ export function AdminNews() {
             <div className="flex gap-3 p-5 border-t border-gray-100">
               <button
                 onClick={handleSave}
-                disabled={!form.title.trim() || !form.date.trim()}
+                disabled={isSaving || !form.title.trim() || !form.date.trim()}
                 className="flex-1 bg-[#006B3F] hover:bg-[#003D1F] text-white py-2.5 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
               >
-                {editingId ? "Save Changes" : "Add Article"}
+                {isSaving ? "Saving..." : (editingId ? "Save Changes" : "Add Article")}
               </button>
               <button
                 onClick={() => setShowForm(false)}

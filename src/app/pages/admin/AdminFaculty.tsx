@@ -11,6 +11,7 @@ export function AdminFaculty() {
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
   
   const [form, setForm] = useState<Omit<FacultyItem, "id">>({
     name: "", designation: "", qualification: "", dept: "Science",
@@ -24,13 +25,20 @@ export function AdminFaculty() {
   };
 
   const handleSave = async () => {
-    if (editingId) {
-      await updateFaculty(editingId, form);
-    } else {
-      await addFaculty(form);
+    setIsSaving(true);
+    try {
+      if (editingId) {
+        await updateFaculty(editingId, form);
+      } else {
+        await addFaculty(form);
+      }
+      setShowModal(false);
+      setEditingId(null);
+    } catch (err: any) {
+      alert("Failed to save: " + (err.message || "Unknown error"));
+    } finally {
+      setIsSaving(false);
     }
-    setShowModal(false);
-    setEditingId(null);
   };
 
   const handleDelete = async (id: string) => {
@@ -197,8 +205,8 @@ export function AdminFaculty() {
 
             <div className="p-4 border-t border-gray-100 flex justify-end gap-3 bg-gray-50">
               <button onClick={() => setShowModal(false)} className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 rounded-lg transition-colors">Cancel</button>
-              <button onClick={handleSave} className="px-6 py-2 text-sm font-bold text-white bg-[#006B3F] hover:bg-[#003D1F] rounded-lg transition-colors flex items-center gap-2">
-                <Save className="w-4 h-4" /> {editingId ? "Update" : "Save"} Member
+              <button onClick={handleSave} disabled={isSaving} className="px-6 py-2 text-sm font-bold text-white bg-[#006B3F] hover:bg-[#003D1F] rounded-lg transition-colors flex items-center gap-2 disabled:opacity-50">
+                <Save className="w-4 h-4" /> {isSaving ? "Saving..." : (editingId ? "Update Member" : "Save Member")}
               </button>
             </div>
           </div>

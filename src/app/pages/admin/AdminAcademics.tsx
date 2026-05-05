@@ -84,14 +84,21 @@ export function AdminAcademics() {
 
     const finalForm = { ...form, syllabusUrl: finalUrl };
 
-    if (editingId) {
-      await updateProgram(editingId, finalForm);
-    } else {
-      await addProgram(finalForm);
+    setUploading(true);
+    try {
+      if (editingId) {
+        await updateProgram(editingId, finalForm);
+      } else {
+        await addProgram(finalForm);
+      }
+      setShowModal(false);
+      setEditingId(null);
+      setSelectedFile(null);
+    } catch (err: any) {
+      alert("Failed to save: " + (err.message || "Unknown error"));
+    } finally {
+      setUploading(false);
     }
-    setShowModal(false);
-    setEditingId(null);
-    setSelectedFile(null);
   };
 
   const handleSaveCalendar = async () => {

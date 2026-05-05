@@ -13,6 +13,7 @@ export function AdminCampusLife() {
     studentCouncil: { year: "2026", members: [] }
   });
   const [saved, setSaved] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     if (settings.campusLife) {
@@ -21,9 +22,16 @@ export function AdminCampusLife() {
   }, [settings.campusLife]);
 
   const handleSave = async () => {
-    await updateSettings({ ...settings, campusLife: form });
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
+    setIsSaving(true);
+    try {
+      await updateSettings({ ...settings, campusLife: form });
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2500);
+    } catch (err: any) {
+      alert("Failed to save: " + (err.message || "Unknown error"));
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -35,10 +43,10 @@ export function AdminCampusLife() {
         </div>
         <button
           onClick={handleSave}
-          disabled={loading}
+          disabled={loading || isSaving}
           className="flex items-center gap-2 bg-[#006B3F] hover:bg-[#003D1F] text-white px-5 py-2 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
         >
-          {saved ? <><Check className="w-4 h-4" /> Saved!</> : <><Save className="w-4 h-4" /> Save Changes</>}
+          {isSaving ? "Saving..." : (saved ? <><Check className="w-4 h-4" /> Saved!</> : <><Save className="w-4 h-4" /> Save Changes</>)}
         </button>
       </div>
 
