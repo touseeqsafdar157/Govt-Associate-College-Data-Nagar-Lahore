@@ -25,13 +25,13 @@ export function AdminNews() {
   const [saved, setSaved] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
-  const [fileToUpload, setFileToUpload] = useState<File | null>(null);
+  const [filesToUpload, setFilesToUpload] = useState<File[]>([]);
 
-  const openAdd = () => { setForm({ ...blankForm, date: todayISO() }); setEditingId(null); setFileToUpload(null); setShowForm(true); };
+  const openAdd = () => { setForm({ ...blankForm, date: todayISO() }); setEditingId(null); setFilesToUpload([]); setShowForm(true); };
   const openEdit = (item: NewsItem) => {
     setForm({ title: item.title, date: item.date, content: item.content, category: item.category, fileUrl: item.fileUrl || "" });
     setEditingId(item.id);
-    setFileToUpload(null);
+    setFilesToUpload([]);
     setShowForm(true);
   };
 
@@ -40,13 +40,13 @@ export function AdminNews() {
     setIsSaving(true);
     try {
       let finalFileUrl = form.fileUrl;
-      if (fileToUpload) {
+      if (filesToUpload && filesToUpload.length > 0) {
         const fd = new FormData();
-        fd.append("image", fileToUpload);
-        const res = await fetch("https://govt-associate-college-data-nagar-lahore.onrender.com/api/upload", { method: "POST", body: fd });
+        filesToUpload.forEach(f => fd.append("image", f));
+        const res = await fetch("http://localhost:5000/api/upload", { method: "POST", body: fd });
         if (res.ok) {
           const data = await res.json();
-          finalFileUrl = data.url;
+          finalFileUrl = data.urls ? data.urls.join(',') : data.url;
         } else {
           throw new Error("Upload failed");
         }
@@ -111,7 +111,7 @@ export function AdminNews() {
           ))
         ) : (
           <>
-            {news.map((item) => (
+            {news.map((item: any) => (
               <div key={item.id} className="bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition-all">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">
@@ -121,11 +121,11 @@ export function AdminNews() {
                     </div>
                     <h3 className="font-semibold text-gray-800 text-sm">{item.title}</h3>
                     {item.content && <p className="text-gray-500 text-xs mt-1 line-clamp-2">{item.content}</p>}
-                    {item.fileUrl && (
-                      <a href={item.fileUrl} target="_blank" rel="noreferrer" className="inline-block mt-2 text-xs text-[#006B3F] hover:underline font-medium">
-                        View Attachment
+                    {item.fileUrl && item.fileUrl.split(',').map((url: any, idx: any) => (
+                      <a key={idx} href={url} target="_blank" rel="noreferrer" className="inline-block mt-2 mr-3 text-xs text-[#006B3F] hover:underline font-medium">
+                        View Attachment {item.fileUrl.split(',').length > 1 ? idx + 1 : ''}
                       </a>
-                    )}
+                    ))}
                   </div>
                   <div className="flex gap-2 shrink-0">
                     <button
@@ -214,29 +214,30 @@ export function AdminNews() {
                   <label className="flex flex-col gap-1">
                     <div className="flex items-center gap-2 bg-gray-50 border border-gray-300 hover:border-[#006B3F] text-gray-700 px-3 py-2 rounded-lg cursor-pointer transition-colors text-sm">
                       <Upload className="w-4 h-4 text-[#006B3F]" />
-                      <span>{fileToUpload ? fileToUpload.name : "Choose File"}</span>
-                      <input 
-                        type="file" 
-                        className="hidden" 
-                        accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" 
+                      <span>{filesToUpload.length ? filesToUpload.map(f => f.name).join(", ") : "Choose Files"}</span>
+                      <input
+                        type="file"
+                        className="hidden"
+                        accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
+                        multiple
                         onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
+                          const files = Array.from(e.target.files || []);
+                          if (files.length) {
                             const maxSize = 350 * 1024;
-                            if (file.size > maxSize) {
-                              alert("File size must be less than 350KB");
+                            if (files.some(f => f.size > maxSize)) {
+                              alert("Each file must be less than 350KB");
                               e.target.value = "";
                               return;
                             }
-                            setFileToUpload(file);
+                            setFilesToUpload(files);
                           }
-                        }} 
+                        }}
                       />
                     </div>
                     <span className="text-xs text-gray-500">File size should be maximum 350KB</span>
                   </label>
-                  {!fileToUpload && form.fileUrl && (
-                    <span className="text-xs text-green-600 truncate max-w-[200px]">Current: {form.fileUrl.split("/").pop()}</span>
+                  {!filesToUpload.length && form.fileUrl && (
+                    <span className="text-xs text-green-600 truncate max-w-[200px]">Current: {form.fileUrl.split(',').map(u => u.split('/').pop()).join(', ')}</span>
                   )}
                 </div>
               </div>

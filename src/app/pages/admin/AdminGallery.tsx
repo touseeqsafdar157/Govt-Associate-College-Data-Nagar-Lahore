@@ -6,7 +6,7 @@ import { Skeleton } from "../../components/ui/skeleton";
 const CATEGORIES = ["Events", "Facilities", "Sports", "Academic", "Campus", "General"];
 const blank = { title: "", url: "", category: "General" };
 
-const LOCAL_API = "https://govt-associate-college-data-nagar-lahore.onrender.com/api";
+const LOCAL_API = "http://localhost:5000/api";
 
 export function AdminGallery() {
   const { gallery, addGalleryItem, deleteGalleryItem, loading } = useAdmin();
@@ -15,46 +15,51 @@ export function AdminGallery() {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
 
     const maxSize = 1 * 1024 * 1024; // 1MB
 
-    if (file.size > maxSize) {
-      alert("Image size must be less than 1MB");
+    if (files.some(f => f.size > maxSize)) {
+      alert("Each image size must be less than 1MB");
       e.target.value = ""; // reset input
       return;
     }
 
-    setSelectedFile(file);
+    setSelectedFiles(files);
 
     const reader = new FileReader();
     reader.onloadend = () => setPreview(reader.result as string);
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(files[0]); // preview just the first one
   };
 
   const handleAdd = async () => {
-    if (!form.title.trim() || !selectedFile) return;
+    if (!form.title.trim() || !selectedFiles.length) return;
     setUploading(true);
     setError(null);
     try {
       const formData = new FormData();
-      formData.append("image", selectedFile);
+      selectedFiles.forEach(f => formData.append("image", f));
       const res = await fetch(`${LOCAL_API}/upload`, { method: "POST", body: formData });
       const data = await res.json();
-      if (!data.url) throw new Error("Upload failed");
+      if (!res.ok || (!data.url && !data.urls)) throw new Error("Upload failed");
 
-      await addGalleryItem({ ...form, url: data.url });
+      const urlsToSave = data.urls || [data.url];
+      
+      for (const url of urlsToSave) {
+        await addGalleryItem({ ...form, url });
+      }
+
       setShowForm(false);
       setForm(blank);
       setPreview(null);
-      setSelectedFile(null);
+      setSelectedFiles([]);
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
     } catch (err) {
@@ -73,7 +78,7 @@ export function AdminGallery() {
     setShowForm(false);
     setForm(blank);
     setPreview(null);
-    setSelectedFile(null);
+    setSelectedFiles([]);
     setError(null);
   };
 
@@ -85,7 +90,7 @@ export function AdminGallery() {
           <p className="text-gray-500 text-sm mt-0.5">{loading ? "Loading..." : `${gallery.length} photos in gallery`}</p>
         </div>
         <button
-          onClick={() => { setForm(blank); setPreview(null); setSelectedFile(null); setError(null); setShowForm(true); }}
+          onClick={() => { setForm(blank); setPreview(null); setSelectedFiles([]); setError(null); setShowForm(true); }}
           className="flex items-center gap-2 bg-[#006B3F] hover:bg-[#003D1F] text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
         >
           <Plus className="w-4 h-4" /> Add Photo
@@ -161,6 +166,7 @@ export function AdminGallery() {
                 <input
                   ref={fileInputRef}
                   type="file"
+                  multiple
                   accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
                   onChange={handleFileSelect}
                   className="hidden"
@@ -181,13 +187,13 @@ export function AdminGallery() {
                     <img src={preview} alt="Preview" className="w-full h-48 object-cover" />
                     <button
                       type="button"
-                      onClick={() => { setPreview(null); setSelectedFile(null); if (fileInputRef.current) fileInputRef.current.value = ""; }}
+                      onClick={() => { setPreview(null); setSelectedFiles([]); if (fileInputRef.current) fileInputRef.current.value = ""; }}
                       className="absolute top-2 right-2 w-7 h-7 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center shadow"
                     >
                       <X className="w-3.5 h-3.5" />
                     </button>
                     <div className="absolute bottom-0 left-0 right-0 bg-black/40 text-white text-xs px-3 py-1.5 flex justify-between">
-                      <span className="truncate">{selectedFile?.name}</span>
+                      <span className="truncate">{selectedFiles.length} file(s) selected</span>
                       <button type="button" onClick={() => fileInputRef.current?.click()} className="text-[#C8A951] ml-2 shrink-0">Change</button>
                     </div>
                   </div>
@@ -217,7 +223,7 @@ export function AdminGallery() {
             <div className="flex gap-3 p-5 border-t border-gray-100">
               <button
                 onClick={handleAdd}
-                disabled={!form.title.trim() || !selectedFile || uploading}
+                disabled={!form.title.trim() || !selectedFiles.length || uploading}
                 className="flex-1 bg-[#006B3F] hover:bg-[#003D1F] text-white py-2.5 rounded-lg text-sm font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {uploading ? (

@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { toast } from "sonner";
 
-const API_URL = "https://govt-associate-college-data-nagar-lahore.onrender.com/api";
+const API_URL = "http://localhost:5000/api";
 
 export interface NewsItem {
   id: string;
@@ -351,6 +351,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   const fetchUsers = async () => {
     try {
       const res = await fetch(`${API_URL}/users`);
+      if (!res.ok) throw new Error('Request failed');
       const data = await res.json();
       setAdminUsers(Array.isArray(data) ? data : []);
     } catch { setAdminUsers([]); }
@@ -386,6 +387,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   const addNews = async (item: Omit<NewsItem, "id">) => {
     try {
       const res = await fetch(`${API_URL}/news`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...item, summary: item.content.substring(0, 50) }) });
+      if (!res.ok) throw new Error('Request failed');
       const data = await res.json();
       setNewsState([data, ...news]);
       toast.success("News item saved and uploaded successfully!");
@@ -394,6 +396,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   const updateNews = async (id: string, item: Partial<NewsItem>) => {
     try {
       const res = await fetch(`${API_URL}/news/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(item) });
+      if (!res.ok) throw new Error('Request failed');
       const data = await res.json();
       setNewsState(news.map(n => n.id === id ? data : n));
       toast.success("News saved and updated successfully!");
@@ -410,6 +413,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   const addEvent = async (item: Omit<EventItem, "id">) => {
     try {
       const res = await fetch(`${API_URL}/events`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...item, description: item.title }) });
+      if (!res.ok) throw new Error('Request failed');
       const data = await res.json();
       setEventsState([data, ...events]);
       toast.success("Event saved and uploaded successfully!");
@@ -418,6 +422,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   const updateEvent = async (id: string, item: Partial<EventItem>) => {
     try {
       const res = await fetch(`${API_URL}/events/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(item) });
+      if (!res.ok) throw new Error('Request failed');
       const data = await res.json();
       setEventsState(events.map(e => e.id === id ? data : e));
       toast.success("Event saved and updated successfully!");
@@ -434,6 +439,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   const addAnnouncement = async (item: Omit<Announcement, "id">) => {
     try {
       const res = await fetch(`${API_URL}/announcements`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ title: item.text, content: item.text, type: "General", date: new Date().toISOString(), isNew: item.active }) });
+      if (!res.ok) throw new Error('Request failed');
       const data = await res.json();
       setAnnouncementsState([{ ...data, text: data.content, active: data.isNew }, ...announcements]);
       toast.success("Announcement saved and uploaded successfully!");
@@ -442,6 +448,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   const updateAnnouncement = async (id: string, item: Partial<Announcement>) => {
     try {
       const res = await fetch(`${API_URL}/announcements/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ isNew: item.active, content: item.text }) });
+      if (!res.ok) throw new Error('Request failed');
       const data = await res.json();
       const mapped = { ...data, text: data.content, active: data.isNew };
       setAnnouncementsState(announcements.map(a => a.id === id ? mapped : a));
@@ -459,8 +466,9 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   const addGalleryItem = async (item: Omit<GalleryItem, "id">) => {
     try {
       const res = await fetch(`${API_URL}/gallery`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(item) });
+      if (!res.ok) throw new Error('Request failed');
       const data = await res.json();
-      setGalleryState([data, ...gallery]);
+      setGalleryState(prev => [data, ...prev]);
       toast.success("Image saved and uploaded successfully!");
     } catch { toast.error("Failed to add gallery item"); }
   };
@@ -475,6 +483,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   const updateSettings = async (s: SiteSettings) => {
     try {
       const res = await fetch(`${API_URL}/settings`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(s) });
+      if (!res.ok) throw new Error('Request failed');
       const data = await res.json();
       setSettingsState(data);
       toast.success("Data saved and updated successfully!");
@@ -484,6 +493,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   const incrementVisitor = async () => {
     try {
       const res = await fetch(`${API_URL}/settings/visit`, { method: "POST" });
+      if (!res.ok) throw new Error('Request failed');
       const data = await res.json();
       if (data.totalVisitors) {
         setSettingsState(prev => ({ ...prev, totalVisitors: data.totalVisitors }));
@@ -496,6 +506,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   const addMessage = async (item: Omit<ContactMessage, "id" | "status" | "createdAt">) => {
     try {
       const res = await fetch(`${API_URL}/contact`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(item) });
+      if (!res.ok) throw new Error('Request failed');
       const data = await res.json();
       setMessagesState([data, ...messages]);
       toast.success("Message sent successfully!");
@@ -512,7 +523,8 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     try {
       const res = await fetch(`${API_URL}/contact/${id}/read`, { method: "PUT" });
       if (res.ok) {
-        const data = await res.json();
+        if (!res.ok) throw new Error('Request failed');
+      const data = await res.json();
         setMessagesState(messages.map(m => m.id === id ? data : m));
       }
     } catch (error) {
@@ -524,6 +536,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   const addProgram = async (item: Omit<ProgramItem, "id">) => {
     try {
       const res = await fetch(`${API_URL}/programs`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(item) });
+      if (!res.ok) throw new Error('Request failed');
       const data = await res.json();
       setProgramsState([data, ...programs]);
       toast.success("Program added!");
@@ -532,6 +545,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   const updateProgram = async (id: string, item: Partial<ProgramItem>) => {
     try {
       const res = await fetch(`${API_URL}/programs/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(item) });
+      if (!res.ok) throw new Error('Request failed');
       const data = await res.json();
       setProgramsState(programs.map(p => p.id === id ? data : p));
       toast.success("Program updated!");
@@ -548,6 +562,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   const addFaculty = async (item: Omit<FacultyItem, "id">) => {
     try {
       const res = await fetch(`${API_URL}/faculty`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(item) });
+      if (!res.ok) throw new Error('Request failed');
       const data = await res.json();
       setFacultyState([data, ...faculty]);
       toast.success("Faculty added!");
@@ -556,6 +571,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   const updateFaculty = async (id: string, item: Partial<FacultyItem>) => {
     try {
       const res = await fetch(`${API_URL}/faculty/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(item) });
+      if (!res.ok) throw new Error('Request failed');
       const data = await res.json();
       setFacultyState(faculty.map(f => f.id === id ? data : f));
       toast.success("Faculty updated!");
@@ -572,6 +588,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   const addFacility = async (item: Omit<FacilityItem, "id">) => {
     try {
       const res = await fetch(`${API_URL}/facilities`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(item) });
+      if (!res.ok) throw new Error('Request failed');
       const data = await res.json();
       setFacilitiesState([data, ...facilities]);
       toast.success("Facility added!");
@@ -580,6 +597,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   const updateFacility = async (id: string, item: Partial<FacilityItem>) => {
     try {
       const res = await fetch(`${API_URL}/facilities/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(item) });
+      if (!res.ok) throw new Error('Request failed');
       const data = await res.json();
       setFacilitiesState(facilities.map(f => f.id === id ? data : f));
       toast.success("Facility updated!");

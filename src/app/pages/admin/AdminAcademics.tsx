@@ -9,7 +9,7 @@ export function AdminAcademics() {
   const [activeTab, setActiveTab] = useState<"programs" | "calendar">("programs");
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
   // Program Form
@@ -28,7 +28,7 @@ export function AdminAcademics() {
   const handleEdit = (p: ProgramItem) => {
     setEditingId(p.id);
     setForm({ name: p.name, category: p.category, duration: p.duration, subjects: p.subjects, eligibility: p.eligibility, fee: p.fee, syllabusUrl: p.syllabusUrl });
-    setSelectedFile(null);
+    setSelectedFiles([]);
     setShowModal(true);
   };
 
@@ -36,38 +36,39 @@ export function AdminAcademics() {
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) return;
-    const file = e.target.files[0];
+    const files = Array.from(e.target.files);
 
     // Check if it's a PDF
-    if (file.type !== "application/pdf") {
-      alert("Please select a PDF file for the syllabus.");
+    if (files.some(file => file.type !== "application/pdf")) {
+      alert("Please select only PDF files for the syllabus.");
+      e.target.value = "";
       return;
     }
     const maxSize = 1 * 1024 * 1024;
 
-    if (file.size > maxSize) {
-      alert("File size must be less than 1MB");
+    if (files.some(file => file.size > maxSize)) {
+      alert("Each file size must be less than 1MB");
       e.target.value = ""; // reset input
       return;
     }
-    setSelectedFile(file);
+    setSelectedFiles(files);
   };
 
   const handleSaveProgram = async () => {
     let finalUrl = form.syllabusUrl;
 
-    if (selectedFile) {
+    if (selectedFiles && selectedFiles.length > 0) {
       setUploading(true);
       const formData = new FormData();
-      formData.append("image", selectedFile);
+      selectedFiles.forEach(f => formData.append("image", f));
       try {
-        const res = await fetch("https://govt-associate-college-data-nagar-lahore.onrender.com/api/upload", {
+        const res = await fetch("http://localhost:5000/api/upload", {
           method: "POST",
           body: formData,
         });
         const data = await res.json();
         if (res.ok) {
-          finalUrl = data.url;
+          finalUrl = data.urls ? data.urls.join(',') : data.url;
         } else {
           alert(data.message || data.error || "Upload failed");
           setUploading(false);
@@ -93,7 +94,7 @@ export function AdminAcademics() {
       }
       setShowModal(false);
       setEditingId(null);
-      setSelectedFile(null);
+      setSelectedFiles([]);
     } catch (err: any) {
       alert("Failed to save: " + (err.message || "Unknown error"));
     } finally {
@@ -144,7 +145,7 @@ export function AdminAcademics() {
               onClick={() => {
                 setEditingId(null);
                 setForm({ name: "", category: "Intermediate", duration: "", subjects: "", eligibility: "", fee: "", syllabusUrl: "" });
-                setSelectedFile(null);
+                setSelectedFiles([]);
                 setShowModal(true);
               }}
               className="flex items-center gap-2 bg-[#006B3F] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#003D1F]"
@@ -321,12 +322,12 @@ export function AdminAcademics() {
                 <div className="col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-1">Syllabus PDF (Optional)</label>
                   <div className="flex items-center gap-3">
-                    {(selectedFile || form.syllabusUrl) ? (
+                    {(selectedFiles.length > 0 || form.syllabusUrl) ? (
                       <div className="flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 px-3 py-2 rounded-lg text-sm flex-1">
                         <span className="truncate flex-1">
-                          {selectedFile ? `Selected: ${selectedFile.name}` : `Uploaded: ${form.syllabusUrl.split('/').pop()}`}
+                          {selectedFiles.length > 0 ? `Selected: ${selectedFiles.length} file(s)` : `Uploaded: ${form.syllabusUrl.split(',').length} file(s)`}
                         </span>
-                        <button onClick={() => { setForm({ ...form, syllabusUrl: "" }); setSelectedFile(null); }} className="text-red-500 font-bold px-2 py-0.5 hover:bg-red-50 rounded">Remove</button>
+                        <button onClick={() => { setForm({ ...form, syllabusUrl: "" }); setSelectedFiles([]); }} className="text-red-500 font-bold px-2 py-0.5 hover:bg-red-50 rounded">Remove</button>
                       </div>
                     ) : (
                       <label className={`flex-1 border-2 border-dashed border-gray-300 rounded-lg px-4 py-3 text-center cursor-pointer transition-colors ${uploading ? "bg-gray-50 opacity-50" : "hover:bg-gray-50"}`}>
@@ -336,7 +337,7 @@ export function AdminAcademics() {
                             {uploading ? "Uploading..." : "Click to select syllabus (PDF)"}
                           </span>
                         </div>
-                        <input type="file" accept="application/pdf" className="hidden" onChange={handleFileSelect} disabled={uploading} />
+                        <input type="file" multiple accept="application/pdf" className="hidden" onChange={handleFileSelect} disabled={uploading} />
                       </label>
                     )}
                   </div>
@@ -346,7 +347,7 @@ export function AdminAcademics() {
             </div>
 
             <div className="p-4 border-t border-gray-100 flex justify-end gap-3 bg-gray-50">
-              <button onClick={() => { setShowModal(false); setSelectedFile(null); }} className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 rounded-lg transition-colors">Cancel</button>
+              <button onClick={() => { setShowModal(false); setSelectedFiles([]); }} className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 rounded-lg transition-colors">Cancel</button>
               <button onClick={handleSaveProgram} disabled={uploading} className="px-6 py-2 text-sm font-bold text-white bg-[#006B3F] hover:bg-[#003D1F] rounded-lg transition-colors flex items-center gap-2 disabled:opacity-50">
                 {uploading ? "Uploading..." : <><Save className="w-4 h-4" /> {editingId ? "Update" : "Save"} Program</>}
               </button>
