@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { toast } from "sonner";
 
-const API_URL = "http://localhost:5000/api";
+const API_URL = "https://govt-associate-college-data-nagar-lahore.onrender.com/api";
 
 export interface NewsItem {
   id: string;

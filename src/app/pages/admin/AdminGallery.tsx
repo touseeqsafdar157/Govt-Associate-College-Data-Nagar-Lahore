@@ -6,7 +6,7 @@ import { Skeleton } from "../../components/ui/skeleton";
 const CATEGORIES = ["Events", "Facilities", "Sports", "Academic", "Campus", "General"];
 const blank = { title: "", url: "", category: "General" };
 
-const LOCAL_API = "http://localhost:5000/api";
+const LOCAL_API = "https://govt-associate-college-data-nagar-lahore.onrender.com/api";
 
 export function AdminGallery() {
   const { gallery, addGalleryItem, deleteGalleryItem, loading } = useAdmin();

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Trash2, X, Eye, Check, AlertCircle, ClipboardList, ChevronDown } from "lucide-react";
 import { Skeleton } from "../../components/ui/skeleton";
 
-const API = "http://localhost:5000/api";
+const API = "https://govt-associate-college-data-nagar-lahore.onrender.com/api";
 const STATUSES = ["All","Pending","Reviewed","Accepted","Rejected"];
 const STATUS_COLORS: Record<string,string> = {
   Pending:"bg-yellow-100 text-yellow-700",

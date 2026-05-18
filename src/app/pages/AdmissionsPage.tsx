@@ -4,7 +4,7 @@ import { useAdmin } from "../context/AdminContext";
 import { Helmet } from "react-helmet-async";
 import { Skeleton } from "../components/ui/skeleton";
 
-const API = "http://localhost:5000/api";
+const API = "https://govt-associate-college-data-nagar-lahore.onrender.com/api";
 const PROGRAMS = ["FSc Pre-Medical","FSc Pre-Engineering","ICS","FA","I.Com","ADP Science","ADP Arts","ADP Commerce"];
 
 export function AdmissionsPage() {

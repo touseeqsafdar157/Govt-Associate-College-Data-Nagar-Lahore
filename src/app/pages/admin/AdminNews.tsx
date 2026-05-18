@@ -43,7 +43,7 @@ export function AdminNews() {
       if (filesToUpload && filesToUpload.length > 0) {
         const fd = new FormData();
         filesToUpload.forEach(f => fd.append("image", f));
-        const res = await fetch("http://localhost:5000/api/upload", { method: "POST", body: fd });
+        const res = await fetch("https://govt-associate-college-data-nagar-lahore.onrender.com/api/upload", { method: "POST", body: fd });
         if (res.ok) {
           const data = await res.json();
           finalFileUrl = data.urls ? data.urls.join(',') : data.url;

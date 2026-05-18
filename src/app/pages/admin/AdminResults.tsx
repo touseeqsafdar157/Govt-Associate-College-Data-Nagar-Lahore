@@ -4,7 +4,7 @@ import { Skeleton } from "../../components/ui/skeleton";
 
 const CLASSES = ["FSc Pre-Medical","FSc Pre-Engineering","ICS","FA","I.Com","ADP Science","ADP Arts","ADP Commerce"];
 const YEARS = ["2026","2025","2024","2023"];
-const API = "http://localhost:5000/api";
+const API = "https://govt-associate-college-data-nagar-lahore.onrender.com/api";
 
 const blankForm = { name:"", rollNumber:"", class:"FSc Pre-Medical", year:"2026", marks:"", totalMarks:"1100", grade:"A+", position:"", status:"Pass" };
 

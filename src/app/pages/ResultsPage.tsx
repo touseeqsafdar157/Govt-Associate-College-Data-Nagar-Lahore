@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Search, Trophy, UserCircle, Download, FileSpreadsheet } from "lucide-react";
 import { Skeleton } from "../components/ui/skeleton";
 
-const API = "http://localhost:5000/api";
+const API = "https://govt-associate-college-data-nagar-lahore.onrender.com/api";
 
 const CLASSES = ["FSc Pre-Medical", "FSc Pre-Engineering", "ICS", "FA", "I.Com", "ADP Science", "ADP Arts", "ADP Commerce"];
 const YEARS = ["2026", "2025", "2024", "2023"];
