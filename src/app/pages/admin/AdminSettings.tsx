@@ -7,7 +7,7 @@ function SectionCard({ title, icon, children }: { title: string; icon?: string; 
   return (
     <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
       <h2 className="font-bold text-gray-800 mb-4 flex items-center gap-2">
-        {icon && <Settings className="w-4 h-4 text-[#006B3F]" />} {title}
+        {icon && <Settings className="w-4 h-4 text-[#0284C7]" />} {title}
       </h2>
       {children}
     </div>
@@ -46,7 +46,7 @@ export function AdminSettings() {
           onChange={(e) => setForm({ ...form, [key]: e.target.value })}
           placeholder={placeholder}
           rows={4}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#006B3F] resize-none"
+          className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0284C7] resize-none"
         />
       ) : (
         <input
@@ -54,7 +54,7 @@ export function AdminSettings() {
           value={form[key] as string}
           onChange={(e) => setForm({ ...form, [key]: e.target.value })}
           placeholder={placeholder}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#006B3F]"
+          className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0284C7]"
         />
       )}
     </div>
@@ -64,7 +64,7 @@ export function AdminSettings() {
     <button
       onClick={handleSave}
       disabled={loading || isSaving}
-      className="flex items-center gap-2 bg-[#006B3F] hover:bg-[#003D1F] text-white px-5 py-2 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
+      className="flex items-center gap-2 bg-[#0284C7] hover:bg-[#0369A1] text-white px-5 py-2 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
     >
       {isSaving ? "Saving..." : (saved ? <><Check className="w-4 h-4" /> Saved!</> : <><Save className="w-4 h-4" /> Save Changes</>)}
     </button>
@@ -106,7 +106,7 @@ export function AdminSettings() {
               <label className="flex items-center gap-2 cursor-pointer">
                 <div
                   onClick={() => setForm({ ...form, admissionsOpen: !form.admissionsOpen })}
-                  className={`w-12 h-6 rounded-full transition-all relative cursor-pointer ${form.admissionsOpen ? "bg-[#006B3F]" : "bg-gray-300"}`}
+                  className={`w-12 h-6 rounded-full transition-all relative cursor-pointer ${form.admissionsOpen ? "bg-[#0284C7]" : "bg-gray-300"}`}
                 >
                   <div className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-all shadow-sm ${form.admissionsOpen ? "left-6" : "left-0.5"}`} />
                 </div>
@@ -138,7 +138,7 @@ export function AdminSettings() {
                   onChange={(e) => setForm({ ...form, principalFullMessage: e.target.value })}
                   placeholder="Dear Students, Parents, and Well-wishers..."
                   rows={8}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#006B3F] resize-none"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0284C7] resize-none"
                 />
               </div>
             </div>
@@ -164,7 +164,7 @@ export function AdminSettings() {
           <SectionCard title="Eligibility Criteria (Admissions Page)">
             <div className="flex justify-between items-center mb-4">
               <p className="text-xs text-gray-500">Shown on the Admissions page eligibility table</p>
-              <button onClick={() => setForm({ ...form, eligibilityCriteria: [...(form.eligibilityCriteria || []), { program: "", qualification: "", marks: "", ageLimit: "" }] })} className="text-sm bg-[#006B3F] text-white px-3 py-1.5 rounded hover:bg-[#003D1F] flex items-center gap-1">
+              <button onClick={() => setForm({ ...form, eligibilityCriteria: [...(form.eligibilityCriteria || []), { program: "", qualification: "", marks: "", ageLimit: "" }] })} className="text-sm bg-[#0284C7] text-white px-3 py-1.5 rounded hover:bg-[#0369A1] flex items-center gap-1">
                 <Plus className="w-3 h-3" /> Add Row
               </button>
             </div>
@@ -172,10 +172,10 @@ export function AdminSettings() {
               {(form.eligibilityCriteria || []).map((row: any, i: number) => (
                 <div key={i} className="flex gap-2 items-start p-3 border border-gray-200 rounded-lg">
                   <div className="flex-1 grid grid-cols-2 sm:grid-cols-4 gap-2">
-                    <input value={row.program} onChange={(e) => { const n = [...(form.eligibilityCriteria || [])]; n[i] = { ...n[i], program: e.target.value }; setForm({ ...form, eligibilityCriteria: n }); }} placeholder="Program" className="border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#006B3F]" />
-                    <input value={row.qualification} onChange={(e) => { const n = [...(form.eligibilityCriteria || [])]; n[i] = { ...n[i], qualification: e.target.value }; setForm({ ...form, eligibilityCriteria: n }); }} placeholder="Qualification" className="border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#006B3F]" />
-                    <input value={row.marks} onChange={(e) => { const n = [...(form.eligibilityCriteria || [])]; n[i] = { ...n[i], marks: e.target.value }; setForm({ ...form, eligibilityCriteria: n }); }} placeholder="Marks" className="border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#006B3F]" />
-                    <input value={row.ageLimit} onChange={(e) => { const n = [...(form.eligibilityCriteria || [])]; n[i] = { ...n[i], ageLimit: e.target.value }; setForm({ ...form, eligibilityCriteria: n }); }} placeholder="Age Limit" className="border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#006B3F]" />
+                    <input value={row.program} onChange={(e) => { const n = [...(form.eligibilityCriteria || [])]; n[i] = { ...n[i], program: e.target.value }; setForm({ ...form, eligibilityCriteria: n }); }} placeholder="Program" className="border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#0284C7]" />
+                    <input value={row.qualification} onChange={(e) => { const n = [...(form.eligibilityCriteria || [])]; n[i] = { ...n[i], qualification: e.target.value }; setForm({ ...form, eligibilityCriteria: n }); }} placeholder="Qualification" className="border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#0284C7]" />
+                    <input value={row.marks} onChange={(e) => { const n = [...(form.eligibilityCriteria || [])]; n[i] = { ...n[i], marks: e.target.value }; setForm({ ...form, eligibilityCriteria: n }); }} placeholder="Marks" className="border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#0284C7]" />
+                    <input value={row.ageLimit} onChange={(e) => { const n = [...(form.eligibilityCriteria || [])]; n[i] = { ...n[i], ageLimit: e.target.value }; setForm({ ...form, eligibilityCriteria: n }); }} placeholder="Age Limit" className="border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#0284C7]" />
                   </div>
                   <button onClick={() => { const n = [...(form.eligibilityCriteria || [])]; n.splice(i, 1); setForm({ ...form, eligibilityCriteria: n }); }} className="text-red-500 p-1 mt-1"><Trash2 className="w-4 h-4" /></button>
                 </div>
@@ -187,7 +187,7 @@ export function AdminSettings() {
           <SectionCard title="Home Page — Stats Strip">
             <div className="flex justify-between items-center mb-4">
               <p className="text-xs text-gray-500">Stats shown on homepage (icons: Users, BookOpen, GraduationCap, Award, Shield, Clock)</p>
-              <button onClick={() => setForm({ ...form, homeStats: [...(form.homeStats || []), { icon: "Award", value: "", label: "" }] })} className="text-sm bg-[#006B3F] text-white px-3 py-1.5 rounded hover:bg-[#003D1F] flex items-center gap-1">
+              <button onClick={() => setForm({ ...form, homeStats: [...(form.homeStats || []), { icon: "Award", value: "", label: "" }] })} className="text-sm bg-[#0284C7] text-white px-3 py-1.5 rounded hover:bg-[#0369A1] flex items-center gap-1">
                 <Plus className="w-3 h-3" /> Add Stat
               </button>
             </div>
@@ -195,9 +195,9 @@ export function AdminSettings() {
               {(form.homeStats || []).map((stat: any, i: number) => (
                 <div key={i} className="flex gap-2 items-center p-3 border border-gray-200 rounded-lg">
                   <div className="flex-1 grid grid-cols-3 gap-2">
-                    <input value={stat.icon} onChange={(e) => { const n = [...(form.homeStats || [])]; n[i] = { ...n[i], icon: e.target.value }; setForm({ ...form, homeStats: n }); }} placeholder="Icon name" className="border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#006B3F]" />
-                    <input value={stat.value} onChange={(e) => { const n = [...(form.homeStats || [])]; n[i] = { ...n[i], value: e.target.value }; setForm({ ...form, homeStats: n }); }} placeholder="e.g. 3,500+" className="border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#006B3F]" />
-                    <input value={stat.label} onChange={(e) => { const n = [...(form.homeStats || [])]; n[i] = { ...n[i], label: e.target.value }; setForm({ ...form, homeStats: n }); }} placeholder="Label" className="border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#006B3F]" />
+                    <input value={stat.icon} onChange={(e) => { const n = [...(form.homeStats || [])]; n[i] = { ...n[i], icon: e.target.value }; setForm({ ...form, homeStats: n }); }} placeholder="Icon name" className="border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#0284C7]" />
+                    <input value={stat.value} onChange={(e) => { const n = [...(form.homeStats || [])]; n[i] = { ...n[i], value: e.target.value }; setForm({ ...form, homeStats: n }); }} placeholder="e.g. 3,500+" className="border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#0284C7]" />
+                    <input value={stat.label} onChange={(e) => { const n = [...(form.homeStats || [])]; n[i] = { ...n[i], label: e.target.value }; setForm({ ...form, homeStats: n }); }} placeholder="Label" className="border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#0284C7]" />
                   </div>
                   <button onClick={() => { const n = [...(form.homeStats || [])]; n.splice(i, 1); setForm({ ...form, homeStats: n }); }} className="text-red-500 p-1"><Trash2 className="w-4 h-4" /></button>
                 </div>
@@ -209,7 +209,7 @@ export function AdminSettings() {
           <SectionCard title="Home Page — Why Choose Us Features">
             <div className="flex justify-between items-center mb-4">
               <p className="text-xs text-gray-500">Feature cards on homepage</p>
-              <button onClick={() => setForm({ ...form, homeFeatures: [...(form.homeFeatures || []), { icon: "Award", title: "", desc: "" }] })} className="text-sm bg-[#006B3F] text-white px-3 py-1.5 rounded hover:bg-[#003D1F] flex items-center gap-1">
+              <button onClick={() => setForm({ ...form, homeFeatures: [...(form.homeFeatures || []), { icon: "Award", title: "", desc: "" }] })} className="text-sm bg-[#0284C7] text-white px-3 py-1.5 rounded hover:bg-[#0369A1] flex items-center gap-1">
                 <Plus className="w-3 h-3" /> Add Feature
               </button>
             </div>
@@ -217,9 +217,9 @@ export function AdminSettings() {
               {(form.homeFeatures || []).map((feat: any, i: number) => (
                 <div key={i} className="flex gap-2 items-start p-3 border border-gray-200 rounded-lg">
                   <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-2">
-                    <input value={feat.icon} onChange={(e) => { const n = [...(form.homeFeatures || [])]; n[i] = { ...n[i], icon: e.target.value }; setForm({ ...form, homeFeatures: n }); }} placeholder="Icon name" className="border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#006B3F]" />
-                    <input value={feat.title} onChange={(e) => { const n = [...(form.homeFeatures || [])]; n[i] = { ...n[i], title: e.target.value }; setForm({ ...form, homeFeatures: n }); }} placeholder="Title" className="border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#006B3F]" />
-                    <input value={feat.desc} onChange={(e) => { const n = [...(form.homeFeatures || [])]; n[i] = { ...n[i], desc: e.target.value }; setForm({ ...form, homeFeatures: n }); }} placeholder="Description" className="border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#006B3F]" />
+                    <input value={feat.icon} onChange={(e) => { const n = [...(form.homeFeatures || [])]; n[i] = { ...n[i], icon: e.target.value }; setForm({ ...form, homeFeatures: n }); }} placeholder="Icon name" className="border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#0284C7]" />
+                    <input value={feat.title} onChange={(e) => { const n = [...(form.homeFeatures || [])]; n[i] = { ...n[i], title: e.target.value }; setForm({ ...form, homeFeatures: n }); }} placeholder="Title" className="border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#0284C7]" />
+                    <input value={feat.desc} onChange={(e) => { const n = [...(form.homeFeatures || [])]; n[i] = { ...n[i], desc: e.target.value }; setForm({ ...form, homeFeatures: n }); }} placeholder="Description" className="border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#0284C7]" />
                   </div>
                   <button onClick={() => { const n = [...(form.homeFeatures || [])]; n.splice(i, 1); setForm({ ...form, homeFeatures: n }); }} className="text-red-500 p-1 mt-1"><Trash2 className="w-4 h-4" /></button>
                 </div>
@@ -233,7 +233,7 @@ export function AdminSettings() {
               <p className="text-xs text-gray-500">Timeline entries shown on the About page</p>
               <button
                 onClick={() => setForm({ ...form, aboutHistory: [...(form.aboutHistory || []), { year: "", title: "", description: "" }] })}
-                className="text-sm bg-[#006B3F] text-white px-3 py-1.5 rounded hover:bg-[#003D1F] flex items-center gap-1"
+                className="text-sm bg-[#0284C7] text-white px-3 py-1.5 rounded hover:bg-[#0369A1] flex items-center gap-1"
               >
                 <Plus className="w-3 h-3" /> Add Entry
               </button>
@@ -247,15 +247,15 @@ export function AdminSettings() {
                   <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 mt-1">
                     <div>
                       <label className="block text-xs font-medium text-gray-700 mb-1">Year</label>
-                      <input value={item.year} onChange={(e) => { const n = [...(form.aboutHistory || [])]; n[i] = { ...n[i], year: e.target.value }; setForm({ ...form, aboutHistory: n }); }} className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#006B3F]" />
+                      <input value={item.year} onChange={(e) => { const n = [...(form.aboutHistory || [])]; n[i] = { ...n[i], year: e.target.value }; setForm({ ...form, aboutHistory: n }); }} className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#0284C7]" />
                     </div>
                     <div className="sm:col-span-3">
                       <label className="block text-xs font-medium text-gray-700 mb-1">Title</label>
-                      <input value={item.title} onChange={(e) => { const n = [...(form.aboutHistory || [])]; n[i] = { ...n[i], title: e.target.value }; setForm({ ...form, aboutHistory: n }); }} className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#006B3F]" />
+                      <input value={item.title} onChange={(e) => { const n = [...(form.aboutHistory || [])]; n[i] = { ...n[i], title: e.target.value }; setForm({ ...form, aboutHistory: n }); }} className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#0284C7]" />
                     </div>
                     <div className="sm:col-span-4">
                       <label className="block text-xs font-medium text-gray-700 mb-1">Description</label>
-                      <textarea value={item.description} onChange={(e) => { const n = [...(form.aboutHistory || [])]; n[i] = { ...n[i], description: e.target.value }; setForm({ ...form, aboutHistory: n }); }} rows={2} className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#006B3F] resize-none" />
+                      <textarea value={item.description} onChange={(e) => { const n = [...(form.aboutHistory || [])]; n[i] = { ...n[i], description: e.target.value }; setForm({ ...form, aboutHistory: n }); }} rows={2} className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#0284C7] resize-none" />
                     </div>
                   </div>
                 </div>
@@ -268,19 +268,19 @@ export function AdminSettings() {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">Vision Statement</label>
-                <textarea value={form.aboutVision || ""} onChange={(e) => setForm({ ...form, aboutVision: e.target.value })} rows={3} placeholder="Our vision..." className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#006B3F] resize-none" />
+                <textarea value={form.aboutVision || ""} onChange={(e) => setForm({ ...form, aboutVision: e.target.value })} rows={3} placeholder="Our vision..." className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0284C7] resize-none" />
               </div>
               <div>
                 <div className="flex justify-between items-center mb-2">
                   <label className="block text-sm font-medium text-gray-700">Mission Points</label>
-                  <button onClick={() => setForm({ ...form, aboutMission: [...(form.aboutMission || []), ""] })} className="text-sm bg-[#006B3F] text-white px-3 py-1 rounded hover:bg-[#003D1F] flex items-center gap-1">
+                  <button onClick={() => setForm({ ...form, aboutMission: [...(form.aboutMission || []), ""] })} className="text-sm bg-[#0284C7] text-white px-3 py-1 rounded hover:bg-[#0369A1] flex items-center gap-1">
                     <Plus className="w-3 h-3" /> Add
                   </button>
                 </div>
                 <div className="space-y-2">
                   {(form.aboutMission || []).map((point: string, i: number) => (
                     <div key={i} className="flex gap-2">
-                      <input value={point} onChange={(e) => { const n = [...(form.aboutMission || [])]; n[i] = e.target.value; setForm({ ...form, aboutMission: n }); }} placeholder="Mission point..." className="flex-1 border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#006B3F]" />
+                      <input value={point} onChange={(e) => { const n = [...(form.aboutMission || [])]; n[i] = e.target.value; setForm({ ...form, aboutMission: n }); }} placeholder="Mission point..." className="flex-1 border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#0284C7]" />
                       <button onClick={() => { const n = [...(form.aboutMission || [])]; n.splice(i, 1); setForm({ ...form, aboutMission: n }); }} className="text-red-500 hover:bg-red-50 p-2 rounded-lg"><Trash2 className="w-4 h-4" /></button>
                     </div>
                   ))}
@@ -293,7 +293,7 @@ export function AdminSettings() {
           <SectionCard title="About Page — Achievements & Milestones">
             <div className="flex justify-between items-center mb-4">
               <p className="text-xs text-gray-500">Achievement cards on the About page</p>
-              <button onClick={() => setForm({ ...form, achievements: [...(form.achievements || []), { title: "", description: "" }] })} className="text-sm bg-[#006B3F] text-white px-3 py-1.5 rounded hover:bg-[#003D1F] flex items-center gap-1">
+              <button onClick={() => setForm({ ...form, achievements: [...(form.achievements || []), { title: "", description: "" }] })} className="text-sm bg-[#0284C7] text-white px-3 py-1.5 rounded hover:bg-[#0369A1] flex items-center gap-1">
                 <Plus className="w-3 h-3" /> Add Achievement
               </button>
             </div>
@@ -301,8 +301,8 @@ export function AdminSettings() {
               {(form.achievements || []).map((item: any, i: number) => (
                 <div key={i} className="flex gap-3 items-start p-3 border border-gray-200 rounded-lg">
                   <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    <input value={item.title} onChange={(e) => { const n = [...(form.achievements || [])]; n[i] = { ...n[i], title: e.target.value }; setForm({ ...form, achievements: n }); }} placeholder="Title (e.g. 98% Success Rate)" className="border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#006B3F]" />
-                    <input value={item.description} onChange={(e) => { const n = [...(form.achievements || [])]; n[i] = { ...n[i], description: e.target.value }; setForm({ ...form, achievements: n }); }} placeholder="Description" className="border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#006B3F]" />
+                    <input value={item.title} onChange={(e) => { const n = [...(form.achievements || [])]; n[i] = { ...n[i], title: e.target.value }; setForm({ ...form, achievements: n }); }} placeholder="Title (e.g. 98% Success Rate)" className="border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#0284C7]" />
+                    <input value={item.description} onChange={(e) => { const n = [...(form.achievements || [])]; n[i] = { ...n[i], description: e.target.value }; setForm({ ...form, achievements: n }); }} placeholder="Description" className="border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#0284C7]" />
                   </div>
                   <button onClick={() => { const n = [...(form.achievements || [])]; n.splice(i, 1); setForm({ ...form, achievements: n }); }} className="text-red-500 hover:bg-red-50 p-2 rounded-lg"><Trash2 className="w-4 h-4" /></button>
                 </div>
@@ -316,12 +316,12 @@ export function AdminSettings() {
               <div>
                 <div className="flex justify-between items-center mb-2">
                   <label className="text-sm font-medium text-gray-700">Campus Facilities</label>
-                  <button onClick={() => setForm({ ...form, infrastructureCampus: [...(form.infrastructureCampus || []), ""] })} className="text-xs bg-[#006B3F] text-white px-2 py-1 rounded hover:bg-[#003D1F]">+ Add</button>
+                  <button onClick={() => setForm({ ...form, infrastructureCampus: [...(form.infrastructureCampus || []), ""] })} className="text-xs bg-[#0284C7] text-white px-2 py-1 rounded hover:bg-[#0369A1]">+ Add</button>
                 </div>
                 <div className="space-y-2">
                   {(form.infrastructureCampus || []).map((item: string, i: number) => (
                     <div key={i} className="flex gap-2">
-                      <input value={item} onChange={(e) => { const n = [...(form.infrastructureCampus || [])]; n[i] = e.target.value; setForm({ ...form, infrastructureCampus: n }); }} className="flex-1 border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#006B3F]" />
+                      <input value={item} onChange={(e) => { const n = [...(form.infrastructureCampus || [])]; n[i] = e.target.value; setForm({ ...form, infrastructureCampus: n }); }} className="flex-1 border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#0284C7]" />
                       <button onClick={() => { const n = [...(form.infrastructureCampus || [])]; n.splice(i, 1); setForm({ ...form, infrastructureCampus: n }); }} className="text-red-500 p-1"><Trash2 className="w-3.5 h-3.5" /></button>
                     </div>
                   ))}
@@ -330,12 +330,12 @@ export function AdminSettings() {
               <div>
                 <div className="flex justify-between items-center mb-2">
                   <label className="text-sm font-medium text-gray-700">Support Facilities</label>
-                  <button onClick={() => setForm({ ...form, infrastructureSupport: [...(form.infrastructureSupport || []), ""] })} className="text-xs bg-[#006B3F] text-white px-2 py-1 rounded hover:bg-[#003D1F]">+ Add</button>
+                  <button onClick={() => setForm({ ...form, infrastructureSupport: [...(form.infrastructureSupport || []), ""] })} className="text-xs bg-[#0284C7] text-white px-2 py-1 rounded hover:bg-[#0369A1]">+ Add</button>
                 </div>
                 <div className="space-y-2">
                   {(form.infrastructureSupport || []).map((item: string, i: number) => (
                     <div key={i} className="flex gap-2">
-                      <input value={item} onChange={(e) => { const n = [...(form.infrastructureSupport || [])]; n[i] = e.target.value; setForm({ ...form, infrastructureSupport: n }); }} className="flex-1 border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#006B3F]" />
+                      <input value={item} onChange={(e) => { const n = [...(form.infrastructureSupport || [])]; n[i] = e.target.value; setForm({ ...form, infrastructureSupport: n }); }} className="flex-1 border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#0284C7]" />
                       <button onClick={() => { const n = [...(form.infrastructureSupport || [])]; n.splice(i, 1); setForm({ ...form, infrastructureSupport: n }); }} className="text-red-500 p-1"><Trash2 className="w-3.5 h-3.5" /></button>
                     </div>
                   ))}
@@ -365,7 +365,7 @@ export function AdminSettings() {
                   type="number"
                   value={form.totalVisitors || 0}
                   onChange={(e) => setForm({ ...form, totalVisitors: parseInt(e.target.value) || 0 })}
-                  className="w-48 border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#006B3F]"
+                  className="w-48 border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0284C7]"
                 />
               </div>
               <p className="text-xs text-gray-500 mt-6">This counter auto-increments on each unique visitor session.</p>
@@ -377,7 +377,7 @@ export function AdminSettings() {
             <div className="flex justify-end mb-4">
               <button
                 onClick={() => setForm({ ...form, departments: [...(form.departments || []), { dept: "", name: "", phone: "", email: "" }] })}
-                className="text-sm bg-[#006B3F] text-white px-3 py-1.5 rounded hover:bg-[#003D1F]"
+                className="text-sm bg-[#0284C7] text-white px-3 py-1.5 rounded hover:bg-[#0369A1]"
               >
                 Add Department
               </button>
@@ -394,19 +394,19 @@ export function AdminSettings() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
                     <div>
                       <label className="block text-xs font-medium text-gray-700 mb-1">Department</label>
-                      <input value={dept.dept} onChange={(e) => { const n = [...form.departments]; n[index] = { ...n[index], dept: e.target.value }; setForm({ ...form, departments: n }); }} className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#006B3F]" />
+                      <input value={dept.dept} onChange={(e) => { const n = [...form.departments]; n[index] = { ...n[index], dept: e.target.value }; setForm({ ...form, departments: n }); }} className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#0284C7]" />
                     </div>
                     <div>
                       <label className="block text-xs font-medium text-gray-700 mb-1">Contact Person</label>
-                      <input value={dept.name} onChange={(e) => { const n = [...form.departments]; n[index] = { ...n[index], name: e.target.value }; setForm({ ...form, departments: n }); }} className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#006B3F]" />
+                      <input value={dept.name} onChange={(e) => { const n = [...form.departments]; n[index] = { ...n[index], name: e.target.value }; setForm({ ...form, departments: n }); }} className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#0284C7]" />
                     </div>
                     <div>
                       <label className="block text-xs font-medium text-gray-700 mb-1">Phone</label>
-                      <input value={dept.phone} onChange={(e) => { const n = [...form.departments]; n[index] = { ...n[index], phone: e.target.value }; setForm({ ...form, departments: n }); }} className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#006B3F]" />
+                      <input value={dept.phone} onChange={(e) => { const n = [...form.departments]; n[index] = { ...n[index], phone: e.target.value }; setForm({ ...form, departments: n }); }} className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#0284C7]" />
                     </div>
                     <div>
                       <label className="block text-xs font-medium text-gray-700 mb-1">Email</label>
-                      <input value={dept.email} onChange={(e) => { const n = [...form.departments]; n[index] = { ...n[index], email: e.target.value }; setForm({ ...form, departments: n }); }} className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#006B3F]" />
+                      <input value={dept.email} onChange={(e) => { const n = [...form.departments]; n[index] = { ...n[index], email: e.target.value }; setForm({ ...form, departments: n }); }} className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#0284C7]" />
                     </div>
                   </div>
                 </div>
@@ -417,12 +417,12 @@ export function AdminSettings() {
           {/* Required Documents */}
           <SectionCard title="Required Admission Documents">
             <div className="flex justify-end mb-4">
-              <button onClick={() => setForm({ ...form, requiredDocuments: [...(form.requiredDocuments || []), ""] })} className="text-sm bg-[#006B3F] text-white px-3 py-1.5 rounded hover:bg-[#003D1F]">Add Document</button>
+              <button onClick={() => setForm({ ...form, requiredDocuments: [...(form.requiredDocuments || []), ""] })} className="text-sm bg-[#0284C7] text-white px-3 py-1.5 rounded hover:bg-[#0369A1]">Add Document</button>
             </div>
             <div className="space-y-3">
               {form.requiredDocuments?.map((doc: string, index: number) => (
                 <div key={index} className="flex gap-2 items-center">
-                  <input value={doc} onChange={(e) => { const n = [...(form.requiredDocuments || [])]; n[index] = e.target.value; setForm({ ...form, requiredDocuments: n }); }} placeholder="e.g. Matric Certificate (2 copies)" className="flex-1 border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#006B3F]" />
+                  <input value={doc} onChange={(e) => { const n = [...(form.requiredDocuments || [])]; n[index] = e.target.value; setForm({ ...form, requiredDocuments: n }); }} placeholder="e.g. Matric Certificate (2 copies)" className="flex-1 border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#0284C7]" />
                   <button onClick={() => { const n = [...(form.requiredDocuments || [])]; n.splice(index, 1); setForm({ ...form, requiredDocuments: n }); }} className="text-red-500 hover:bg-red-50 p-2 rounded-lg">Remove</button>
                 </div>
               ))}
@@ -441,7 +441,7 @@ export function AdminSettings() {
         <button
           onClick={handleSave}
           disabled={loading || isSaving}
-          className="flex items-center gap-2 bg-[#006B3F] hover:bg-[#003D1F] text-white px-8 py-3 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
+          className="flex items-center gap-2 bg-[#0284C7] hover:bg-[#0369A1] text-white px-8 py-3 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
         >
           {isSaving ? "Saving..." : (saved ? <><Check className="w-4 h-4" /> Saved!</> : <><Save className="w-4 h-4" /> Save All Changes</>)}
         </button>
@@ -449,3 +449,4 @@ export function AdminSettings() {
     </div>
   );
 }
+

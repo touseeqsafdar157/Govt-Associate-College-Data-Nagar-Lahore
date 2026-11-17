@@ -48,7 +48,7 @@ export function AdminMessages() {
                 placeholder="Search messages..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#006B3F] focus:border-transparent"
+                className="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0284C7] focus:border-transparent"
               />
             </div>
           </div>
@@ -86,7 +86,7 @@ export function AdminMessages() {
                       {msg.name}
                     </h3>
                     {msg.status === "unread" && (
-                      <span className="w-2 h-2 bg-[#006B3F] rounded-full shrink-0 mt-1.5" />
+                      <span className="w-2 h-2 bg-[#0284C7] rounded-full shrink-0 mt-1.5" />
                     )}
                   </div>
                   <p className={`text-xs mb-1 truncate ${msg.status === "unread" ? "font-semibold text-gray-800" : "text-gray-600"}`}>
@@ -133,11 +133,11 @@ export function AdminMessages() {
                       <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-sm text-gray-600">
                         <span className="font-medium text-gray-800">{msg.name}</span>
                         <span className="hidden sm:inline">•</span>
-                        <a href={`mailto:${msg.email}`} className="text-[#006B3F] hover:underline">{msg.email}</a>
+                        <a href={`mailto:${msg.email}`} className="text-[#0284C7] hover:underline">{msg.email}</a>
                         {msg.phone && (
                           <>
                             <span className="hidden sm:inline">•</span>
-                            <a href={`tel:${msg.phone}`} className="text-[#006B3F] hover:underline">{msg.phone}</a>
+                            <a href={`tel:${msg.phone}`} className="text-[#0284C7] hover:underline">{msg.phone}</a>
                           </>
                         )}
                       </div>
@@ -189,4 +189,5 @@ export function AdminMessages() {
     </div>
   );
 }
+
 

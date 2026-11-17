@@ -44,7 +44,7 @@ export function AdminCampusLife() {
         <button
           onClick={handleSave}
           disabled={loading || isSaving}
-          className="flex items-center gap-2 bg-[#006B3F] hover:bg-[#003D1F] text-white px-5 py-2 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
+          className="flex items-center gap-2 bg-[#0284C7] hover:bg-[#0369A1] text-white px-5 py-2 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
         >
           {isSaving ? "Saving..." : (saved ? <><Check className="w-4 h-4" /> Saved!</> : <><Save className="w-4 h-4" /> Save Changes</>)}
         </button>
@@ -77,14 +77,14 @@ export function AdminCampusLife() {
           {/* Student Council */}
           <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="font-bold text-gray-800 flex items-center gap-2"><Users className="w-4 h-4 text-[#006B3F]" /> Student Council</h2>
+              <h2 className="font-bold text-gray-800 flex items-center gap-2"><Users className="w-4 h-4 text-[#0284C7]" /> Student Council</h2>
               <button
                 onClick={() => {
                   const updated = { ...form };
                   updated.studentCouncil.members.push({ position: "Member", name: "", program: "" });
                   setForm(updated);
                 }}
-                className="text-sm bg-[#006B3F] text-white px-3 py-1.5 rounded hover:bg-[#003D1F]"
+                className="text-sm bg-[#0284C7] text-white px-3 py-1.5 rounded hover:bg-[#0369A1]"
               >
                 Add Member
               </button>
@@ -94,7 +94,7 @@ export function AdminCampusLife() {
               <input
                 value={form.studentCouncil.year}
                 onChange={e => setForm({...form, studentCouncil: {...form.studentCouncil, year: e.target.value}})}
-                className="w-1/4 border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#006B3F]"
+                className="w-1/4 border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#0284C7]"
               />
             </div>
             <div className="space-y-3">
@@ -112,14 +112,14 @@ export function AdminCampusLife() {
           {/* Sports Gala */}
           <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="font-bold text-gray-800 flex items-center gap-2"><Trophy className="w-4 h-4 text-[#006B3F]" /> Sports Gala Highlights</h2>
+              <h2 className="font-bold text-gray-800 flex items-center gap-2"><Trophy className="w-4 h-4 text-[#0284C7]" /> Sports Gala Highlights</h2>
               <button
                 onClick={() => {
                   const updated = { ...form };
                   updated.sportsGala.highlights.push({ title: "New Highlight", details: [] });
                   setForm(updated);
                 }}
-                className="text-sm bg-[#006B3F] text-white px-3 py-1.5 rounded hover:bg-[#003D1F]"
+                className="text-sm bg-[#0284C7] text-white px-3 py-1.5 rounded hover:bg-[#0369A1]"
               >
                 Add Highlight
               </button>
@@ -145,7 +145,7 @@ export function AdminCampusLife() {
 
           {/* Annual Function */}
           <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-             <h2 className="font-bold text-gray-800 flex items-center gap-2 mb-4"><Award className="w-4 h-4 text-[#006B3F]" /> Annual Function</h2>
+             <h2 className="font-bold text-gray-800 flex items-center gap-2 mb-4"><Award className="w-4 h-4 text-[#0284C7]" /> Annual Function</h2>
              <div className="grid grid-cols-2 gap-4 mb-4">
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-1">Chief Guest Name</label>
@@ -169,7 +169,7 @@ export function AdminCampusLife() {
 
              <div className="flex justify-between items-center mb-2">
               <label className="block text-xs font-medium text-gray-700">Awards Distributed</label>
-              <button onClick={() => { const u = {...form}; u.annualFunction.awards.push({category:"", value:""}); setForm(u); }} className="text-xs text-[#006B3F]">Add Award</button>
+              <button onClick={() => { const u = {...form}; u.annualFunction.awards.push({category:"", value:""}); setForm(u); }} className="text-xs text-[#0284C7]">Add Award</button>
              </div>
              <div className="space-y-2">
                {form.annualFunction.awards.map((awd: any, i: number) => (
@@ -185,14 +185,14 @@ export function AdminCampusLife() {
           {/* Cultural Events */}
           <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="font-bold text-gray-800 flex items-center gap-2"><Music className="w-4 h-4 text-[#006B3F]" /> Cultural Events</h2>
+              <h2 className="font-bold text-gray-800 flex items-center gap-2"><Music className="w-4 h-4 text-[#0284C7]" /> Cultural Events</h2>
               <button
                 onClick={() => {
                   const updated = { ...form };
                   updated.culturalEvents.push({ event: "New Event", date: "", desc: "" });
                   setForm(updated);
                 }}
-                className="text-sm bg-[#006B3F] text-white px-3 py-1.5 rounded hover:bg-[#003D1F]"
+                className="text-sm bg-[#0284C7] text-white px-3 py-1.5 rounded hover:bg-[#0369A1]"
               >
                 Add Event
               </button>
@@ -214,14 +214,14 @@ export function AdminCampusLife() {
           {/* Student Societies */}
           <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="font-bold text-gray-800 flex items-center gap-2"><BookOpen className="w-4 h-4 text-[#006B3F]" /> Student Societies</h2>
+              <h2 className="font-bold text-gray-800 flex items-center gap-2"><BookOpen className="w-4 h-4 text-[#0284C7]" /> Student Societies</h2>
               <button
                 onClick={() => {
                   const updated = { ...form };
                   updated.studentSocieties.push({ name: "New Society", desc: "", activities: [] });
                   setForm(updated);
                 }}
-                className="text-sm bg-[#006B3F] text-white px-3 py-1.5 rounded hover:bg-[#003D1F]"
+                className="text-sm bg-[#0284C7] text-white px-3 py-1.5 rounded hover:bg-[#0369A1]"
               >
                 Add Society
               </button>
@@ -256,4 +256,5 @@ export function AdminCampusLife() {
     </div>
   );
 }
+
 

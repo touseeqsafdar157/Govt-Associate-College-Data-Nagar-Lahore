@@ -56,7 +56,7 @@ export function AdminApplications() {
       <div className="flex flex-wrap gap-2 mb-6">
         {STATUSES.map(s => (
           <button key={s} onClick={() => setFilter(s)}
-            className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${filter===s?"bg-[#006B3F] text-white":"bg-gray-100 text-gray-600 hover:bg-gray-200"}`}>
+            className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${filter===s?"bg-[#0284C7] text-white":"bg-gray-100 text-gray-600 hover:bg-gray-200"}`}>
             {s}
           </button>
         ))}
@@ -84,8 +84,8 @@ export function AdminApplications() {
             {apps.map(app => (
               <div key={app._id} className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-all flex flex-wrap items-center gap-3">
                 {/* Photo */}
-                <div className="w-12 h-12 rounded-full bg-[#006B3F]/10 overflow-hidden border-2 border-[#006B3F]/10 shrink-0">
-                  {app.photoUrl ? <img src={app.photoUrl} alt={app.name} className="w-full h-full object-cover"/> : <div className="w-full h-full flex items-center justify-center text-[#006B3F] font-bold text-lg">{app.name?.[0]}</div>}
+                <div className="w-12 h-12 rounded-full bg-[#0284C7]/10 overflow-hidden border-2 border-[#0284C7]/10 shrink-0">
+                  {app.photoUrl ? <img src={app.photoUrl} alt={app.name} className="w-full h-full object-cover"/> : <div className="w-full h-full flex items-center justify-center text-[#0284C7] font-bold text-lg">{app.name?.[0]}</div>}
                 </div>
                 {/* Info */}
                 <div className="flex-1 min-w-0">
@@ -97,7 +97,7 @@ export function AdminApplications() {
                 <span className={`text-xs font-semibold px-3 py-1 rounded-full ${STATUS_COLORS[app.status]||""}`}>{app.status}</span>
                 {/* Actions */}
                 <div className="flex gap-2">
-                  <button onClick={() => setViewApp(app)} className="p-2 text-[#006B3F] hover:bg-[#006B3F]/10 rounded-lg transition-colors" title="View">
+                  <button onClick={() => setViewApp(app)} className="p-2 text-[#0284C7] hover:bg-[#0284C7]/10 rounded-lg transition-colors" title="View">
                     <Eye className="w-4 h-4"/>
                   </button>
                   <button onClick={() => setDeleteId(app._id)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Delete">
@@ -127,12 +127,12 @@ export function AdminApplications() {
             <div className="p-5 space-y-5">
               {/* Header */}
               <div className="flex items-center gap-4">
-                <div className="w-20 h-20 rounded-full bg-[#006B3F]/10 overflow-hidden border-4 border-[#006B3F]/10 shrink-0">
-                  {viewApp.photoUrl ? <img src={viewApp.photoUrl} alt={viewApp.name} className="w-full h-full object-cover"/> : <div className="w-full h-full flex items-center justify-center text-[#006B3F] font-bold text-3xl">{viewApp.name?.[0]}</div>}
+                <div className="w-20 h-20 rounded-full bg-[#0284C7]/10 overflow-hidden border-4 border-[#0284C7]/10 shrink-0">
+                  {viewApp.photoUrl ? <img src={viewApp.photoUrl} alt={viewApp.name} className="w-full h-full object-cover"/> : <div className="w-full h-full flex items-center justify-center text-[#0284C7] font-bold text-3xl">{viewApp.name?.[0]}</div>}
                 </div>
                 <div>
                   <h3 className="text-lg font-bold text-gray-800">{viewApp.name}</h3>
-                  <p className="text-sm text-[#006B3F]">{viewApp.program}</p>
+                  <p className="text-sm text-[#0284C7]">{viewApp.program}</p>
                   <div className="flex items-center gap-2 mt-1">
                     <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${STATUS_COLORS[viewApp.status]||""}`}>{viewApp.status}</span>
                   </div>
@@ -145,7 +145,7 @@ export function AdminApplications() {
                 <div className="flex flex-wrap gap-2">
                   {["Pending","Reviewed","Accepted","Rejected"].map(s => (
                     <button key={s} onClick={() => updateStatus(viewApp._id, s)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${viewApp.status===s?"ring-2 ring-[#006B3F] bg-[#006B3F] text-white":"bg-white border border-gray-200 text-gray-600 hover:bg-gray-50"}`}>
+                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${viewApp.status===s?"ring-2 ring-[#0284C7] bg-[#0284C7] text-white":"bg-white border border-gray-200 text-gray-600 hover:bg-gray-50"}`}>
                       {s}
                     </button>
                   ))}
@@ -200,7 +200,7 @@ export function AdminApplications() {
                     <div key={label} className="bg-gray-50 rounded-lg p-3">
                       <p className="text-xs text-gray-400 mb-1">{label}</p>
                       {url
-                        ? <a href={url} target="_blank" rel="noreferrer" className="text-xs text-[#006B3F] font-semibold underline">View Document</a>
+                        ? <a href={url} target="_blank" rel="noreferrer" className="text-xs text-[#0284C7] font-semibold underline">View Document</a>
                         : <p className="text-xs text-gray-400 italic">Not uploaded</p>}
                     </div>
                   ))}
@@ -234,4 +234,5 @@ export function AdminApplications() {
     </div>
   );
 }
+
 

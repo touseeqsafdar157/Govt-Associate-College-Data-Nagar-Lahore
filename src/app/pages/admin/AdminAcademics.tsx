@@ -125,13 +125,13 @@ export function AdminAcademics() {
       <div className="flex gap-4 mb-6 border-b border-gray-200">
         <button
           onClick={() => setActiveTab("programs")}
-          className={`pb-3 font-semibold text-sm transition-colors ${activeTab === "programs" ? "border-b-2 border-[#006B3F] text-[#006B3F]" : "text-gray-500 hover:text-[#006B3F]"}`}
+          className={`pb-3 font-semibold text-sm transition-colors ${activeTab === "programs" ? "border-b-2 border-[#0284C7] text-[#0284C7]" : "text-gray-500 hover:text-[#0284C7]"}`}
         >
           Programs & Syllabus
         </button>
         <button
           onClick={() => setActiveTab("calendar")}
-          className={`pb-3 font-semibold text-sm transition-colors ${activeTab === "calendar" ? "border-b-2 border-[#006B3F] text-[#006B3F]" : "text-gray-500 hover:text-[#006B3F]"}`}
+          className={`pb-3 font-semibold text-sm transition-colors ${activeTab === "calendar" ? "border-b-2 border-[#0284C7] text-[#0284C7]" : "text-gray-500 hover:text-[#0284C7]"}`}
         >
           Academic Calendar
         </button>
@@ -140,7 +140,7 @@ export function AdminAcademics() {
       {activeTab === "programs" && (
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-            <h2 className="font-bold text-gray-800 flex items-center gap-2"><BookOpen className="w-4 h-4 text-[#006B3F]" /> Academic Programs</h2>
+            <h2 className="font-bold text-gray-800 flex items-center gap-2"><BookOpen className="w-4 h-4 text-[#0284C7]" /> Academic Programs</h2>
             <button
               onClick={() => {
                 setEditingId(null);
@@ -148,7 +148,7 @@ export function AdminAcademics() {
                 setSelectedFiles([]);
                 setShowModal(true);
               }}
-              className="flex items-center gap-2 bg-[#006B3F] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#003D1F]"
+              className="flex items-center gap-2 bg-[#0284C7] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#0369A1]"
             >
               <Plus className="w-4 h-4" /> Add Program
             </button>
@@ -207,8 +207,8 @@ export function AdminAcademics() {
       {activeTab === "calendar" && (
         <div className="space-y-6">
           <div className="flex justify-between items-center">
-            <h2 className="font-bold text-gray-800 flex items-center gap-2"><Calendar className="w-5 h-5 text-[#006B3F]" /> Academic Calendar 2026-27</h2>
-            <button onClick={handleSaveCalendar} className="flex items-center gap-2 bg-[#006B3F] text-white px-5 py-2 rounded-lg text-sm font-semibold hover:bg-[#003D1F]">
+            <h2 className="font-bold text-gray-800 flex items-center gap-2"><Calendar className="w-5 h-5 text-[#0284C7]" /> Academic Calendar 2026-27</h2>
+            <button onClick={handleSaveCalendar} className="flex items-center gap-2 bg-[#0284C7] text-white px-5 py-2 rounded-lg text-sm font-semibold hover:bg-[#0369A1]">
               {calendarSaved ? "Saved!" : "Save Calendar"}
             </button>
           </div>
@@ -216,7 +216,7 @@ export function AdminAcademics() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="font-bold text-[#006B3F]">First Year / Semester 1 & 2</h3>
+                <h3 className="font-bold text-[#0284C7]">First Year / Semester 1 & 2</h3>
                 <button onClick={() => {
                   const updated = { ...calendarForm };
                   updated.firstYear.push({ event: "", date: "" });
@@ -248,7 +248,7 @@ export function AdminAcademics() {
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="font-bold text-[#006B3F]">Second Year / Semester 3 & 4</h3>
+                <h3 className="font-bold text-[#0284C7]">Second Year / Semester 3 & 4</h3>
                 <button onClick={() => {
                   const updated = { ...calendarForm };
                   updated.secondYear.push({ event: "", date: "" });
@@ -294,30 +294,30 @@ export function AdminAcademics() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2 md:col-span-1">
                   <label className="block text-sm font-medium text-gray-700 mb-1">Program Name</label>
-                  <input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#006B3F] outline-none" placeholder="e.g. FSc Pre-Medical" />
+                  <input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#0284C7] outline-none" placeholder="e.g. FSc Pre-Medical" />
                 </div>
                 <div className="col-span-2 md:col-span-1">
                   <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-                  <select value={form.category} onChange={e => setForm({ ...form, category: e.target.value as "Intermediate" | "ADP" })} className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#006B3F] outline-none">
+                  <select value={form.category} onChange={e => setForm({ ...form, category: e.target.value as "Intermediate" | "ADP" })} className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#0284C7] outline-none">
                     <option value="Intermediate">Intermediate</option>
                     <option value="ADP">ADP (Associate Degree)</option>
                   </select>
                 </div>
                 <div className="col-span-2 md:col-span-1">
                   <label className="block text-sm font-medium text-gray-700 mb-1">Duration</label>
-                  <input value={form.duration} onChange={e => setForm({ ...form, duration: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#006B3F] outline-none" placeholder="e.g. 2 Years" />
+                  <input value={form.duration} onChange={e => setForm({ ...form, duration: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#0284C7] outline-none" placeholder="e.g. 2 Years" />
                 </div>
                 <div className="col-span-2 md:col-span-1">
                   <label className="block text-sm font-medium text-gray-700 mb-1">Fee per Year</label>
-                  <input value={form.fee} onChange={e => setForm({ ...form, fee: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#006B3F] outline-none" placeholder="e.g. PKR 15,000/year" />
+                  <input value={form.fee} onChange={e => setForm({ ...form, fee: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#0284C7] outline-none" placeholder="e.g. PKR 15,000/year" />
                 </div>
                 <div className="col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-1">Eligibility Criteria</label>
-                  <input value={form.eligibility} onChange={e => setForm({ ...form, eligibility: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#006B3F] outline-none" placeholder="e.g. Matric with Science (Minimum 60% marks)" />
+                  <input value={form.eligibility} onChange={e => setForm({ ...form, eligibility: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#0284C7] outline-none" placeholder="e.g. Matric with Science (Minimum 60% marks)" />
                 </div>
                 <div className="col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-1">Subjects Covered</label>
-                  <textarea value={form.subjects} onChange={e => setForm({ ...form, subjects: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#006B3F] outline-none resize-none" rows={2} placeholder="List main subjects..." />
+                  <textarea value={form.subjects} onChange={e => setForm({ ...form, subjects: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#0284C7] outline-none resize-none" rows={2} placeholder="List main subjects..." />
                 </div>
                 <div className="col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-1">Syllabus PDF (Optional)</label>
@@ -348,7 +348,7 @@ export function AdminAcademics() {
 
             <div className="p-4 border-t border-gray-100 flex justify-end gap-3 bg-gray-50">
               <button onClick={() => { setShowModal(false); setSelectedFiles([]); }} className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 rounded-lg transition-colors">Cancel</button>
-              <button onClick={handleSaveProgram} disabled={uploading} className="px-6 py-2 text-sm font-bold text-white bg-[#006B3F] hover:bg-[#003D1F] rounded-lg transition-colors flex items-center gap-2 disabled:opacity-50">
+              <button onClick={handleSaveProgram} disabled={uploading} className="px-6 py-2 text-sm font-bold text-white bg-[#0284C7] hover:bg-[#0369A1] rounded-lg transition-colors flex items-center gap-2 disabled:opacity-50">
                 {uploading ? "Uploading..." : <><Save className="w-4 h-4" /> {editingId ? "Update" : "Save"} Program</>}
               </button>
             </div>
@@ -373,5 +373,6 @@ export function AdminAcademics() {
     </div>
   );
 }
+
 
 

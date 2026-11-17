@@ -92,7 +92,7 @@ export function AdminEvents() {
         </div>
         <button
           onClick={openAdd}
-          className="flex items-center gap-2 bg-[#006B3F] hover:bg-[#003D1F] text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
+          className="flex items-center gap-2 bg-[#0284C7] hover:bg-[#0369A1] text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
         >
           <Plus className="w-4 h-4" /> Add Event
         </button>
@@ -114,7 +114,7 @@ export function AdminEvents() {
             <div className="p-5 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Event Title *</label>
-                <input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Event name" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#006B3F]" />
+                <input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Event name" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0284C7]" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Event Date *</label>
@@ -123,27 +123,27 @@ export function AdminEvents() {
                   value={form.dateISO}
                   onChange={(e) => setForm({ ...form, dateISO: e.target.value })}
                   max="2099-12-31"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#006B3F]"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0284C7]"
                 />
                 {form.dateISO && (
                   <p className="text-xs text-gray-400 mt-1">
-                    Will show as: <span className="text-[#006B3F] font-medium">{formatEventDate(form.dateISO)}</span>
+                    Will show as: <span className="text-[#0284C7] font-medium">{formatEventDate(form.dateISO)}</span>
                   </p>
                 )}
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Time</label>
-                  <input value={form.time} type="time" onChange={(e) => setForm({ ...form, time: e.target.value })} placeholder="e.g. 9:00 AM" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#006B3F]" />
+                  <input value={form.time} type="time" onChange={(e) => setForm({ ...form, time: e.target.value })} placeholder="e.g. 9:00 AM" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0284C7]" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
-                  <input value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} placeholder="Venue" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#006B3F]" />
+                  <input value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} placeholder="Venue" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0284C7]" />
                 </div>
               </div>
             </div>
             <div className="flex gap-3 p-5 border-t border-gray-100">
-              <button onClick={handleSave} disabled={isSaving || !form.title.trim() || !form.dateISO} className="flex-1 bg-[#006B3F] hover:bg-[#003D1F] text-white py-2.5 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50">
+              <button onClick={handleSave} disabled={isSaving || !form.title.trim() || !form.dateISO} className="flex-1 bg-[#0284C7] hover:bg-[#0369A1] text-white py-2.5 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50">
                 {isSaving ? "Saving..." : (editingId ? "Save Changes" : "Add Event")}
               </button>
               <button onClick={() => setShowForm(false)} className="px-4 py-2.5 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">Cancel</button>
@@ -185,7 +185,7 @@ export function AdminEvents() {
           <>
             {events.map((item) => (
               <div key={item.id} className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-all flex gap-4">
-                <div className="bg-gradient-to-br from-[#006B3F] to-[#003D1F] text-white text-center p-3 rounded-xl min-w-[56px] shrink-0">
+                <div className="bg-gradient-to-br from-[#0284C7] to-[#0369A1] text-white text-center p-3 rounded-xl min-w-[56px] shrink-0">
                   <p className="text-xl font-bold leading-none">{item.day}</p>
                   <p className="text-[10px] mt-0.5 opacity-80">{item.month}</p>
                 </div>
@@ -194,7 +194,7 @@ export function AdminEvents() {
                   <p className="text-xs text-gray-500 mt-0.5">{item.time} {item.location && `· ${item.location}`}</p>
                 </div>
                 <div className="flex gap-1 shrink-0">
-                  <button onClick={() => openEdit(item)} className="p-1.5 text-[#006B3F] hover:bg-[#006B3F]/10 rounded-lg transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
+                  <button onClick={() => openEdit(item)} className="p-1.5 text-[#0284C7] hover:bg-[#0284C7]/10 rounded-lg transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
                   <button onClick={() => setDeleteId(item.id)} className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
                 </div>
               </div>
@@ -211,4 +211,5 @@ export function AdminEvents() {
     </div>
   );
 }
+
 

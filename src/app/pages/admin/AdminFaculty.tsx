@@ -3,7 +3,8 @@ import { Plus, Edit2, Trash2, Save, X, GraduationCap, Building2, AlertCircle } f
 import { useAdmin, FacultyItem } from "../../context/AdminContext";
 import { Skeleton } from "../../components/ui/skeleton";
 
-const DEPARTMENTS = ["Science", "Arts", "Commerce", "Computer", "General"];
+// Theme: Sky Blue #0284c7 (Commented previous green: #006B3F / #003D1F)
+const DEPARTMENTS = ["Science", "Arts", "Commerce", "Computer", "General Science"];
 
 export function AdminFaculty() {
   const { faculty, addFaculty, updateFaculty, deleteFaculty, loading } = useAdmin();
@@ -20,7 +21,17 @@ export function AdminFaculty() {
 
   const handleEdit = (f: FacultyItem) => {
     setEditingId(f.id);
-    setForm({ name: f.name, designation: f.designation, qualification: f.qualification, dept: f.dept, subject: f.subject, experience: f.experience, email: f.email, isHOD: f.isHOD, staffType: f.staffType });
+    setForm({
+      name: f.name,
+      designation: f.designation,
+      qualification: f.qualification,
+      dept: f.dept === "General" ? "General Science" : f.dept,
+      subject: f.subject,
+      experience: f.experience,
+      email: f.email,
+      isHOD: f.isHOD,
+      staffType: f.staffType
+    });
     setShowModal(true);
   };
 
@@ -60,13 +71,13 @@ export function AdminFaculty() {
       <div className="flex gap-4 mb-6 border-b border-gray-200">
         <button
           onClick={() => setActiveTab("Teaching")}
-          className={`pb-3 font-semibold text-sm transition-colors flex items-center gap-2 ${activeTab === "Teaching" ? "border-b-2 border-[#006B3F] text-[#006B3F]" : "text-gray-500 hover:text-[#006B3F]"}`}
+          className={`pb-3 font-semibold text-sm transition-colors flex items-center gap-2 ${activeTab === "Teaching" ? "border-b-2 border-[#0284c7] text-[#0284c7]" : "text-gray-500 hover:text-[#0284c7]"}`}
         >
           <GraduationCap className="w-4 h-4" /> Teaching Staff
         </button>
         <button
           onClick={() => setActiveTab("Non-Teaching")}
-          className={`pb-3 font-semibold text-sm transition-colors flex items-center gap-2 ${activeTab === "Non-Teaching" ? "border-b-2 border-[#006B3F] text-[#006B3F]" : "text-gray-500 hover:text-[#006B3F]"}`}
+          className={`pb-3 font-semibold text-sm transition-colors flex items-center gap-2 ${activeTab === "Non-Teaching" ? "border-b-2 border-[#0284c7] text-[#0284c7]" : "text-gray-500 hover:text-[#0284c7]"}`}
         >
           <Building2 className="w-4 h-4" /> Non-Teaching Staff
         </button>
@@ -81,7 +92,7 @@ export function AdminFaculty() {
               setForm({ name: "", designation: "", qualification: "", dept: "Science", subject: "", experience: "", email: "", isHOD: false, staffType: activeTab });
               setShowModal(true);
             }}
-            className="flex items-center gap-2 bg-[#006B3F] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#003D1F]"
+            className="flex items-center gap-2 bg-[#0284c7] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#0369a1]"
           >
             <Plus className="w-4 h-4" /> Add Member
           </button>
@@ -122,8 +133,14 @@ export function AdminFaculty() {
                         <p>{f.designation}</p>
                         <p className="text-xs text-gray-400">{f.qualification}</p>
                       </td>
-                      {activeTab === "Teaching" && <td className="p-4 text-gray-600"><span className="bg-gray-200 px-2 py-1 rounded text-xs">{f.dept}</span></td>}
-                      {activeTab === "Teaching" && <td className="p-4 text-gray-600">{f.subject}</td>}
+                      {activeTab === "Teaching" && (
+                        <td className="p-4 text-gray-600">
+                          <span className="bg-sky-50 text-[#0284c7] font-medium px-2 py-1 rounded text-xs">
+                            {f.dept === "General" ? "General Science" : f.dept}
+                          </span>
+                        </td>
+                      )}
+                      {activeTab === "Teaching" && <td className="p-4 text-gray-800 font-medium">{f.subject || "—"}</td>}
                       <td className="p-4 text-gray-600">{f.experience}</td>
                       <td className="p-4">
                         <div className="flex justify-end gap-2">
@@ -157,45 +174,45 @@ export function AdminFaculty() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2 md:col-span-1">
                   <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                  <input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#006B3F] outline-none" placeholder="e.g. Prof. Dr. Amir Khan" />
+                  <input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#0284c7] outline-none" placeholder="e.g. Prof. Dr. Amir Khan" />
                 </div>
                 <div className="col-span-2 md:col-span-1">
                   <label className="block text-sm font-medium text-gray-700 mb-1">Designation</label>
-                  <input value={form.designation} onChange={e => setForm({ ...form, designation: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#006B3F] outline-none" placeholder={form.staffType === "Teaching" ? "e.g. Associate Professor" : "e.g. Chief Librarian"} />
+                  <input value={form.designation} onChange={e => setForm({ ...form, designation: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#0284c7] outline-none" placeholder={form.staffType === "Teaching" ? "e.g. Associate Professor" : "e.g. Chief Librarian"} />
                 </div>
                 <div className="col-span-2 md:col-span-1">
                   <label className="block text-sm font-medium text-gray-700 mb-1">Qualification</label>
-                  <input value={form.qualification} onChange={e => setForm({ ...form, qualification: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#006B3F] outline-none" placeholder="e.g. Ph.D. in Physics" />
+                  <input value={form.qualification} onChange={e => setForm({ ...form, qualification: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#0284c7] outline-none" placeholder="e.g. Ph.D. in Physics" />
                 </div>
                 <div className="col-span-2 md:col-span-1">
                   <label className="block text-sm font-medium text-gray-700 mb-1">Experience</label>
-                  <input value={form.experience} onChange={e => setForm({ ...form, experience: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#006B3F] outline-none" placeholder="e.g. 15 years" />
+                  <input value={form.experience} onChange={e => setForm({ ...form, experience: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#0284c7] outline-none" placeholder="e.g. 15 years" />
                 </div>
                 
                 {form.staffType === "Teaching" && (
                   <>
                     <div className="col-span-2 md:col-span-1">
                       <label className="block text-sm font-medium text-gray-700 mb-1">Department</label>
-                      <select value={form.dept} onChange={e => setForm({ ...form, dept: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#006B3F] outline-none">
+                      <select value={form.dept} onChange={e => setForm({ ...form, dept: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#0284c7] outline-none">
                         {DEPARTMENTS.map(d => <option key={d} value={d}>{d}</option>)}
                       </select>
                     </div>
                     <div className="col-span-2 md:col-span-1">
                       <label className="block text-sm font-medium text-gray-700 mb-1">Subject</label>
-                      <input value={form.subject} onChange={e => setForm({ ...form, subject: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#006B3F] outline-none" placeholder="e.g. Physics" />
+                      <input value={form.subject} onChange={e => setForm({ ...form, subject: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#0284c7] outline-none" placeholder="e.g. Physics" />
                     </div>
                   </>
                 )}
 
                 <div className="col-span-2 md:col-span-1">
                   <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-                  <input value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#006B3F] outline-none" placeholder="e.g. name@gacdatanagar.edu.pk" />
+                  <input value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#0284c7] outline-none" placeholder="e.g. name@gacdatanagar.edu.pk" />
                 </div>
                 
                 {form.staffType === "Teaching" && (
                   <div className="col-span-2 md:col-span-1 flex items-center pt-6">
                     <label className="flex items-center gap-2 cursor-pointer">
-                      <input type="checkbox" checked={form.isHOD} onChange={e => setForm({ ...form, isHOD: e.target.checked })} className="w-4 h-4 text-[#006B3F] rounded border-gray-300" />
+                      <input type="checkbox" checked={form.isHOD} onChange={e => setForm({ ...form, isHOD: e.target.checked })} className="w-4 h-4 text-[#0284c7] rounded border-gray-300" />
                       <span className="text-sm font-medium text-gray-700">Is Head of Department (HOD)?</span>
                     </label>
                   </div>
@@ -205,7 +222,7 @@ export function AdminFaculty() {
 
             <div className="p-4 border-t border-gray-100 flex justify-end gap-3 bg-gray-50">
               <button onClick={() => setShowModal(false)} className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 rounded-lg transition-colors">Cancel</button>
-              <button onClick={handleSave} disabled={isSaving} className="px-6 py-2 text-sm font-bold text-white bg-[#006B3F] hover:bg-[#003D1F] rounded-lg transition-colors flex items-center gap-2 disabled:opacity-50">
+              <button onClick={handleSave} disabled={isSaving} className="px-6 py-2 text-sm font-bold text-white bg-[#0284c7] hover:bg-[#0369a1] rounded-lg transition-colors flex items-center gap-2 disabled:opacity-50">
                 <Save className="w-4 h-4" /> {isSaving ? "Saving..." : (editingId ? "Update Member" : "Save Member")}
               </button>
             </div>

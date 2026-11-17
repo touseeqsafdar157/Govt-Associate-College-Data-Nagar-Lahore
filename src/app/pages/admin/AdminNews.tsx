@@ -82,7 +82,7 @@ export function AdminNews() {
         </div>
         <button
           onClick={openAdd}
-          className="flex items-center gap-2 bg-[#006B3F] hover:bg-[#003D1F] text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
+          className="flex items-center gap-2 bg-[#0284C7] hover:bg-[#0369A1] text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
         >
           <Plus className="w-4 h-4" /> Add News
         </button>
@@ -116,13 +116,13 @@ export function AdminNews() {
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-2 mb-1">
-                      <span className="text-xs bg-[#006B3F]/10 text-[#006B3F] px-2 py-0.5 rounded-full font-medium">{item.category}</span>
+                      <span className="text-xs bg-[#0284C7]/10 text-[#0284C7] px-2 py-0.5 rounded-full font-medium">{item.category}</span>
                       <span className="text-xs text-[#C8A951] font-medium">{item.date}</span>
                     </div>
                     <h3 className="font-semibold text-gray-800 text-sm">{item.title}</h3>
                     {item.content && <p className="text-gray-500 text-xs mt-1 line-clamp-2">{item.content}</p>}
                     {item.fileUrl && item.fileUrl.split(',').map((url: any, idx: any) => (
-                      <a key={idx} href={url} target="_blank" rel="noreferrer" className="inline-block mt-2 mr-3 text-xs text-[#006B3F] hover:underline font-medium">
+                      <a key={idx} href={url} target="_blank" rel="noreferrer" className="inline-block mt-2 mr-3 text-xs text-[#0284C7] hover:underline font-medium">
                         View Attachment {item.fileUrl.split(',').length > 1 ? idx + 1 : ''}
                       </a>
                     ))}
@@ -130,7 +130,7 @@ export function AdminNews() {
                   <div className="flex gap-2 shrink-0">
                     <button
                       onClick={() => openEdit(item)}
-                      className="p-2 text-[#006B3F] hover:bg-[#006B3F]/10 rounded-lg transition-colors"
+                      className="p-2 text-[#0284C7] hover:bg-[#0284C7]/10 rounded-lg transition-colors"
                       title="Edit"
                     >
                       <Pencil className="w-4 h-4" />
@@ -173,7 +173,7 @@ export function AdminNews() {
                   value={form.title}
                   onChange={(e) => setForm({ ...form, title: e.target.value })}
                   placeholder="News article title"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#006B3F]"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0284C7]"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -184,7 +184,7 @@ export function AdminNews() {
                     value={form.date}
                     onChange={(e) => setForm({ ...form, date: e.target.value })}
                     max="2099-12-31"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#006B3F]"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0284C7]"
                   />
                 </div>
                 <div>
@@ -192,7 +192,7 @@ export function AdminNews() {
                   <select
                     value={form.category}
                     onChange={(e) => setForm({ ...form, category: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#006B3F]"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0284C7]"
                   >
                     {CATEGORIES.map((c) => <option key={c}>{c}</option>)}
                   </select>
@@ -205,15 +205,15 @@ export function AdminNews() {
                   onChange={(e) => setForm({ ...form, content: e.target.value })}
                   placeholder="News article content..."
                   rows={3}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#006B3F] resize-none"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0284C7] resize-none"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Attachment (PDF/DOC/Image)</label>
                 <div className="flex items-center gap-3">
                   <label className="flex flex-col gap-1">
-                    <div className="flex items-center gap-2 bg-gray-50 border border-gray-300 hover:border-[#006B3F] text-gray-700 px-3 py-2 rounded-lg cursor-pointer transition-colors text-sm">
-                      <Upload className="w-4 h-4 text-[#006B3F]" />
+                    <div className="flex items-center gap-2 bg-gray-50 border border-gray-300 hover:border-[#0284C7] text-gray-700 px-3 py-2 rounded-lg cursor-pointer transition-colors text-sm">
+                      <Upload className="w-4 h-4 text-[#0284C7]" />
                       <span>{filesToUpload.length ? filesToUpload.map(f => f.name).join(", ") : "Choose Files"}</span>
                       <input
                         type="file"
@@ -246,7 +246,7 @@ export function AdminNews() {
               <button
                 onClick={handleSave}
                 disabled={isSaving || !form.title.trim() || !form.date.trim()}
-                className="flex-1 bg-[#006B3F] hover:bg-[#003D1F] text-white py-2.5 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
+                className="flex-1 bg-[#0284C7] hover:bg-[#0369A1] text-white py-2.5 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
               >
                 {isSaving ? "Saving..." : (editingId ? "Save Changes" : "Add Article")}
               </button>
@@ -278,4 +278,5 @@ export function AdminNews() {
     </div>
   );
 }
+
 

@@ -26,7 +26,7 @@ export function AdminLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#003D1F] via-[#006B3F] to-[#004d2d] flex items-center justify-center px-4">
+    <div className="min-h-screen bg-gradient-to-br from-[#0369A1] via-[#0284C7] to-[#0369A1] flex items-center justify-center px-4">
       {/* Background pattern */}
       <div
         className="absolute inset-0 opacity-5"
@@ -39,14 +39,15 @@ export function AdminLogin() {
       <div className="relative w-full max-w-md">
         <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
           {/* Header */}
-          <div className="bg-gradient-to-r from-[#003D1F] to-[#006B3F] p-8 text-center">
+          <div className="bg-gradient-to-r from-[#0369A1] to-[#0284C7] p-8 text-center">
             <div className="w-20 h-20 bg-[#C8A951] rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-              <GraduationCap className="w-10 h-10 text-[#003D1F]" />
+              <GraduationCap className="w-10 h-10 text-[#0369A1]" />
             </div>
             <h1 className="text-white text-xl font-bold" style={{ fontFamily: "Playfair Display, serif" }}>
-              GAC Admin Portal
+              GACW Admin Portal
             </h1>
-            <p className="text-green-200 text-sm mt-1">Government Associate College, Data Nagar</p>
+            <p className="text-sky-200 text-sm mt-1">Govt. Associate College for Women (GACW)</p>
+            <p className="text-sky-300 text-xs mt-0.5">Data Nagar, Lahore</p>
           </div>
 
           {/* Form */}
@@ -72,7 +73,7 @@ export function AdminLogin() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="admin@gac.edu.pk"
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#006B3F] focus:border-transparent transition-all"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0284C7] focus:border-transparent transition-all"
                   required
                 />
               </div>
@@ -87,7 +88,7 @@ export function AdminLogin() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Enter your password"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-[#006B3F] focus:border-transparent transition-all"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-[#0284C7] focus:border-transparent transition-all"
                     required
                   />
                   <button
@@ -104,7 +105,7 @@ export function AdminLogin() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-gradient-to-r from-[#006B3F] to-[#003D1F] text-white py-3 rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-60 text-sm"
+                className="w-full bg-gradient-to-r from-[#0284C7] to-[#0369A1] text-white py-3 rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-60 text-sm"
               >
                 {loading ? (
                   <span className="flex items-center justify-center gap-2">
@@ -118,7 +119,7 @@ export function AdminLogin() {
             </form>
 
             <div className="mt-6 pt-4 border-t border-gray-100 text-center">
-              <a href="/" className="text-sm text-[#006B3F] hover:text-[#C8A951] transition-colors">
+              <a href="/" className="text-sm text-[#0284C7] hover:text-[#C8A951] transition-colors">
                 ← Back to College Website
               </a>
             </div>
@@ -128,3 +129,4 @@ export function AdminLogin() {
     </div>
   );
 }
+

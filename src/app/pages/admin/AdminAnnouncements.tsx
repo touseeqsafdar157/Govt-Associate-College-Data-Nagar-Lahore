@@ -49,12 +49,12 @@ export function AdminAnnouncements() {
             onChange={(e) => setNewText(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleAdd()}
             placeholder="e.g. 🎓 Admissions Open 2026-27 — Last date: May 31, 2026"
-            className="flex-1 border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#006B3F]"
+            className="flex-1 border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0284C7]"
           />
           <button
             onClick={handleAdd}
             disabled={!newText.trim()}
-            className="flex items-center gap-2 bg-[#006B3F] hover:bg-[#003D1F] text-white px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50 shrink-0"
+            className="flex items-center gap-2 bg-[#0284C7] hover:bg-[#0369A1] text-white px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50 shrink-0"
           >
             <Plus className="w-4 h-4" /> Add
           </button>
@@ -77,7 +77,7 @@ export function AdminAnnouncements() {
         ) : (
           <>
             {announcements.map((item) => (
-              <div key={item.id} className={`bg-white rounded-xl p-4 shadow-sm border transition-all ${item.active ? "border-[#006B3F]/20" : "border-gray-100 opacity-60"}`}>
+              <div key={item.id} className={`bg-white rounded-xl p-4 shadow-sm border transition-all ${item.active ? "border-[#0284C7]/20" : "border-gray-100 opacity-60"}`}>
                 <div className="flex items-center gap-3">
                   <Bell className={`w-4 h-4 shrink-0 ${item.active ? "text-[#C8A951]" : "text-gray-300"}`} />
                   <p className="flex-1 text-sm text-gray-700 min-w-0">{item.content || item.text}</p>
@@ -91,7 +91,7 @@ export function AdminAnnouncements() {
                       title={item.active ? "Deactivate" : "Activate"}
                     >
                       {item.active
-                        ? <ToggleRight className="w-5 h-5 text-[#006B3F]" />
+                        ? <ToggleRight className="w-5 h-5 text-[#0284C7]" />
                         : <ToggleLeft className="w-5 h-5 text-gray-400" />
                       }
                     </button>
@@ -114,4 +114,5 @@ export function AdminAnnouncements() {
     </div>
   );
 }
+
 

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, Edit2, Trash2, Save, X, Microscope, Trophy, BookOpen, Network, CheckCircle, Database, Video, AlertCircle } from "lucide-react";
+import { Plus, Edit2, Trash2, Save, X, Microscope, Trophy, BookOpen, Network, CheckCircle, Database, Video, AlertCircle, Upload, Image as ImageIcon } from "lucide-react";
 import { useAdmin, FacilityItem } from "../../context/AdminContext";
 import { Skeleton } from "../../components/ui/skeleton";
 
@@ -18,9 +18,11 @@ export function AdminFacilities() {
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
   
+  // Theme: Sky Blue #0284c7 (Commented previous green: #006B3F / #003D1F)
   const [form, setForm] = useState<Omit<FacilityItem, "id">>({
-    category: "Laboratory", title: "", description: "", iconName: "Microscope", capacity: "", instructor: "", equipmentList: []
+    category: "Laboratory", title: "", description: "", iconName: "Microscope", capacity: "", instructor: "", equipmentList: [], image: ""
   });
 
   const [libForm, setLibForm] = useState(settings?.libraryStats || {
@@ -35,8 +37,62 @@ export function AdminFacilities() {
 
   const handleEdit = (f: FacilityItem) => {
     setEditingId(f.id);
-    setForm({ category: f.category, title: f.title, description: f.description, iconName: f.iconName, capacity: f.capacity, instructor: f.instructor, equipmentList: f.equipmentList || [] });
+    setForm({ category: f.category, title: f.title, description: f.description, iconName: f.iconName, capacity: f.capacity, instructor: f.instructor, equipmentList: f.equipmentList || [], image: f.image || "" });
     setShowModal(true);
+  };
+
+  const [fileSizeInfo, setFileSizeInfo] = useState<string>("");
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const sizeKB = Math.round(file.size / 1024);
+    const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+    const sizeStr = file.size < 1024 * 1024 ? `${sizeKB} KB` : `${sizeMB} MB`;
+    setFileSizeInfo(sizeStr);
+
+    if (file.size > 2 * 1024 * 1024) {
+      const proceed = confirm(`⚠️ Large Image: ${sizeMB} MB.\n\nRecommended: Keep images under 1 MB (${sizeKB} KB) for faster website loading.\n\nDo you want to continue uploading?`);
+      if (!proceed) {
+        e.target.value = "";
+        return;
+      }
+    }
+
+    setIsUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append("image", file);
+      // Primary: Render public API (so image URL works everywhere); Fallback: localhost
+      let res;
+      try {
+        res = await fetch("https://govt-associate-college-data-nagar-lahore.onrender.com/api/upload", {
+          method: "POST",
+          body: fd
+        });
+      } catch {
+        res = await fetch("http://localhost:5000/api/upload", {
+          method: "POST",
+          body: fd
+        });
+      }
+
+      if (res && res.ok) {
+        const data = await res.json();
+        const rawUrl = data.urls ? data.urls[0] : data.url;
+        // Ensure https
+        const secureUrl = rawUrl?.replace(/^http:\/\/govt-associate-college/, "https://govt-associate-college");
+        setForm(prev => ({ ...prev, image: secureUrl }));
+        alert(`✅ Image uploaded successfully!\nFile Size: ${sizeStr}`);
+      } else {
+        alert("Image upload failed. Please try again or paste image URL directly.");
+      }
+    } catch (err: any) {
+      alert("Upload error: " + (err.message || "Failed to upload"));
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleSaveFacility = async () => {
@@ -76,7 +132,7 @@ export function AdminFacilities() {
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`pb-3 font-semibold text-sm transition-colors ${activeTab === tab ? "border-b-2 border-[#006B3F] text-[#006B3F]" : "text-gray-500 hover:text-[#006B3F]"}`}
+            className={`pb-3 font-semibold text-sm transition-colors ${activeTab === tab ? "border-b-2 border-[#0284c7] text-[#0284c7]" : "text-gray-500 hover:text-[#0284c7]"}`}
           >
             {tab}
           </button>
@@ -102,8 +158,8 @@ export function AdminFacilities() {
         activeTab === "Library" ? (
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 max-w-2xl">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="font-bold text-gray-800 flex items-center gap-2"><BookOpen className="w-5 h-5 text-[#006B3F]" /> Library Statistics</h2>
-              <button onClick={handleSaveLibrary} className="flex items-center gap-2 bg-[#006B3F] text-white px-5 py-2 rounded-lg text-sm font-semibold hover:bg-[#003D1F]">
+              <h2 className="font-bold text-gray-800 flex items-center gap-2"><BookOpen className="w-5 h-5 text-[#0284c7]" /> Library Statistics</h2>
+              <button onClick={handleSaveLibrary} className="flex items-center gap-2 bg-[#0284c7] text-white px-5 py-2 rounded-lg text-sm font-semibold hover:bg-[#0369a1]">
                 {libSaved ? "Saved!" : "Save Stats"}
               </button>
             </div>
@@ -132,7 +188,7 @@ export function AdminFacilities() {
               {/* Library Timing */}
               <div className="col-span-2 mt-4">
                 <div className="flex justify-between items-center mb-2">
-                  <label className="block text-sm font-bold text-[#006B3F]">Library Timings</label>
+                  <label className="block text-sm font-bold text-[#0284c7]">Library Timings</label>
                   <button onClick={() => setLibInfoForm({...libInfoForm, timing: [...libInfoForm.timing, ""]})} className="text-xs bg-gray-100 px-2 py-1 rounded hover:bg-gray-200">Add Timing</button>
                 </div>
                 <div className="space-y-2">
@@ -156,7 +212,7 @@ export function AdminFacilities() {
               {/* Library Facilities */}
               <div className="col-span-2 mt-4">
                 <div className="flex justify-between items-center mb-2">
-                  <label className="block text-sm font-bold text-[#006B3F]">Facilities & Services</label>
+                  <label className="block text-sm font-bold text-[#0284c7]">Facilities & Services</label>
                   <button onClick={() => setLibInfoForm({...libInfoForm, facilities: [...libInfoForm.facilities, ""]})} className="text-xs bg-gray-100 px-2 py-1 rounded hover:bg-gray-200">Add Facility</button>
                 </div>
                 <div className="space-y-2">
@@ -180,7 +236,7 @@ export function AdminFacilities() {
               {/* Library Rules */}
               <div className="col-span-2 mt-4">
                 <div className="flex justify-between items-center mb-2">
-                  <label className="block text-sm font-bold text-[#006B3F]">Rules & Regulations</label>
+                  <label className="block text-sm font-bold text-[#0284c7]">Rules & Regulations</label>
                   <button onClick={() => setLibInfoForm({...libInfoForm, rules: [...libInfoForm.rules, ""]})} className="text-xs bg-gray-100 px-2 py-1 rounded hover:bg-gray-200">Add Rule</button>
                 </div>
                 <div className="space-y-2">
@@ -209,10 +265,10 @@ export function AdminFacilities() {
               <button
                 onClick={() => {
                   setEditingId(null);
-                  setForm({ category: activeTab, title: "", description: "", iconName: "Microscope", capacity: "", instructor: "", equipmentList: [] });
+                  setForm({ category: activeTab, title: "", description: "", iconName: "Microscope", capacity: "", instructor: "", equipmentList: [], image: "" });
                   setShowModal(true);
                 }}
-                className="flex items-center gap-2 bg-[#006B3F] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#003D1F]"
+                className="flex items-center gap-2 bg-[#0284c7] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#0369a1]"
               >
                 <Plus className="w-4 h-4" /> Add {activeTab}
               </button>
@@ -221,21 +277,38 @@ export function AdminFacilities() {
               {filteredFacilities.map(f => {
                 const IconComp = ICONS.find(i => i.name === f.iconName)?.icon || CheckCircle;
                 return (
-                  <div key={f.id} className="border border-gray-200 rounded-lg p-5 relative group hover:border-[#006B3F] transition-colors">
-                    <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button onClick={() => handleEdit(f)} className="p-1.5 bg-blue-50 text-blue-600 rounded"><Edit2 className="w-4 h-4" /></button>
-                      <button onClick={() => setDeleteId(f.id)} className="p-1.5 bg-red-50 text-red-600 rounded"><Trash2 className="w-4 h-4" /></button>
-                    </div>
-                    <div className="flex gap-4">
-                      <div className="w-12 h-12 rounded-lg bg-[#006B3F]/10 flex items-center justify-center shrink-0">
-                        <IconComp className="w-6 h-6 text-[#006B3F]" />
+                  <div key={f.id} className="border border-gray-200 rounded-lg overflow-hidden relative group hover:border-[#0284c7] transition-colors">
+                    {/* Image preview at top of card */}
+                    {f.image ? (
+                      <div className="relative h-32 bg-gray-100">
+                        <img src={f.image} alt={f.title} className="w-full h-full object-cover" />
+                        <span className="absolute bottom-2 left-2 bg-green-600 text-white text-xs px-2 py-0.5 rounded-full font-semibold">✓ Image Set</span>
                       </div>
-                      <div>
-                        <h3 className="font-bold text-gray-800 text-lg">{f.title}</h3>
-                        <p className="text-sm text-gray-600 mt-1 line-clamp-2">{f.description}</p>
-                        <div className="mt-3 text-xs text-gray-500 space-y-1">
-                          {f.instructor && <p><strong>Instructor:</strong> {f.instructor}</p>}
-                          {f.capacity && <p><strong>Capacity:</strong> {f.capacity}</p>}
+                    ) : (
+                      <div className="h-20 bg-gradient-to-r from-sky-50 to-blue-50 flex items-center justify-center border-b border-gray-100">
+                        <div className="flex items-center gap-2 text-gray-400">
+                          <ImageIcon className="w-5 h-5" />
+                          <span className="text-xs italic">No image — click Edit to upload</span>
+                        </div>
+                      </div>
+                    )}
+                    <div className="p-4">
+                      <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                        <button onClick={() => handleEdit(f)} className="p-1.5 bg-blue-50 text-blue-600 rounded hover:bg-blue-100"><Edit2 className="w-4 h-4" /></button>
+                        <button onClick={() => setDeleteId(f.id)} className="p-1.5 bg-red-50 text-red-600 rounded hover:bg-red-100"><Trash2 className="w-4 h-4" /></button>
+                      </div>
+                      <div className="flex gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-[#0284c7]/10 flex items-center justify-center shrink-0">
+                          <IconComp className="w-5 h-5 text-[#0284c7]" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-bold text-gray-800 truncate">{f.title}</h3>
+                          <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">{f.description}</p>
+                          <div className="mt-2 flex flex-wrap gap-3 text-xs text-gray-500">
+                            {f.instructor && <span>👩‍🏫 {f.instructor}</span>}
+                            {f.capacity && <span className="bg-sky-50 text-[#0284c7] px-2 py-0.5 rounded font-semibold">👥 {f.capacity} students</span>}
+                            {(f.equipmentList?.length || 0) > 0 && <span>🔧 {f.equipmentList?.length} equipment</span>}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -260,25 +333,70 @@ export function AdminFacilities() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2 md:col-span-1">
                   <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
-                  <input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#006B3F] outline-none" placeholder="e.g. Physics Lab" />
+                  <input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#0284c7] outline-none" placeholder="e.g. Physics Lab" />
                 </div>
                 <div className="col-span-2 md:col-span-1">
                   <label className="block text-sm font-medium text-gray-700 mb-1">Icon</label>
-                  <select value={form.iconName} onChange={e => setForm({ ...form, iconName: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#006B3F] outline-none">
+                  <select value={form.iconName} onChange={e => setForm({ ...form, iconName: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#0284c7] outline-none">
                     {ICONS.map(i => <option key={i.name} value={i.name}>{i.name}</option>)}
                   </select>
                 </div>
                 <div className="col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                  <textarea value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#006B3F] outline-none resize-none" rows={3} placeholder="Brief description of the facility..." />
+                  <textarea value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#0284c7] outline-none resize-none" rows={3} placeholder="Brief description of the facility..." />
                 </div>
                 <div className="col-span-2 md:col-span-1">
                   <label className="block text-sm font-medium text-gray-700 mb-1">Capacity (Optional)</label>
-                  <input value={form.capacity} onChange={e => setForm({ ...form, capacity: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#006B3F] outline-none" placeholder="e.g. 50 Students" />
+                  <input value={form.capacity} onChange={e => setForm({ ...form, capacity: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#0284c7] outline-none" placeholder="e.g. 50 Students" />
                 </div>
                 <div className="col-span-2 md:col-span-1">
                   <label className="block text-sm font-medium text-gray-700 mb-1">Instructor / Incharge (Optional)</label>
-                  <input value={form.instructor} onChange={e => setForm({ ...form, instructor: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#006B3F] outline-none" placeholder="e.g. Prof. Amir Khan" />
+                  <input value={form.instructor} onChange={e => setForm({ ...form, instructor: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#0284c7] outline-none" placeholder="e.g. Prof. Amir Khan" />
+                </div>
+
+                {/* Laboratory / Facility Image Upload */}
+                <div className="col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {form.category === "Laboratory" ? "Laboratory Image" : "Facility Image"} (Optional)
+                  </label>
+                  <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+                    <label className="cursor-pointer bg-sky-50 text-[#0284c7] hover:bg-sky-100 border border-sky-200 px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2">
+                      <Upload className="w-4 h-4" />
+                      {isUploading ? "Uploading..." : "Upload Image"}
+                      <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={isUploading} />
+                    </label>
+                    <span className="text-xs text-gray-400">or enter image URL:</span>
+                    <input
+                      value={form.image || ""}
+                      onChange={e => setForm({ ...form, image: e.target.value })}
+                      className="flex-1 border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#0284c7] outline-none"
+                      placeholder="https://example.com/lab-image.jpg"
+                    />
+                  </div>
+                  {form.image && (
+                    <div className="mt-3 flex items-center gap-4">
+                      <div className="relative inline-block rounded-lg overflow-hidden border border-gray-200 group">
+                        <img src={form.image} alt="Preview" className="h-28 w-44 object-cover" />
+                        <button
+                          type="button"
+                          onClick={() => { setForm({ ...form, image: "" }); setFileSizeInfo(""); }}
+                          className="absolute top-1 right-1 bg-red-600 text-white rounded-full p-1 text-xs hover:bg-red-700 shadow"
+                          title="Remove image"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                      <div className="text-xs text-gray-500 space-y-1">
+                        <span className="inline-block bg-sky-100 text-[#0284c7] font-semibold px-2 py-0.5 rounded">
+                          Image Selected
+                        </span>
+                        {fileSizeInfo && (
+                          <p className="font-mono text-gray-600">Size: <strong className="text-gray-800">{fileSizeInfo}</strong></p>
+                        )}
+                        <p className="text-[11px] text-gray-400">💡 Under 1 MB recommended</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
                 
                 {form.category === "Laboratory" && (
@@ -289,7 +407,7 @@ export function AdminFacilities() {
                         const updated = [...(form.equipmentList || [])];
                         updated.push("");
                         setForm({...form, equipmentList: updated});
-                      }} className="text-xs bg-gray-100 px-2 py-1 rounded">Add Item</button>
+                      }} className="text-xs bg-gray-100 px-2 py-1 rounded hover:bg-gray-200">Add Item</button>
                     </div>
                     <div className="space-y-2">
                       {form.equipmentList?.map((eq, idx) => (
@@ -298,12 +416,12 @@ export function AdminFacilities() {
                             const updated = [...(form.equipmentList || [])];
                             updated[idx] = e.target.value;
                             setForm({...form, equipmentList: updated});
-                          }} className="flex-1 border rounded px-2 py-1 text-sm" placeholder="e.g. Oscilloscopes" />
+                          }} className="flex-1 border rounded px-2 py-1 text-sm focus:ring-2 focus:ring-[#0284c7] outline-none" placeholder="e.g. Oscilloscopes" />
                           <button onClick={() => {
                             const updated = [...(form.equipmentList || [])];
                             updated.splice(idx, 1);
                             setForm({...form, equipmentList: updated});
-                          }} className="text-red-500 px-2">X</button>
+                          }} className="text-red-500 px-2 hover:bg-red-50 rounded">X</button>
                         </div>
                       ))}
                     </div>
@@ -314,7 +432,7 @@ export function AdminFacilities() {
 
             <div className="p-4 border-t border-gray-100 flex justify-end gap-3 bg-gray-50">
               <button onClick={() => setShowModal(false)} className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 rounded-lg transition-colors">Cancel</button>
-              <button onClick={handleSaveFacility} className="px-6 py-2 text-sm font-bold text-white bg-[#006B3F] hover:bg-[#003D1F] rounded-lg transition-colors flex items-center gap-2">
+              <button onClick={handleSaveFacility} className="px-6 py-2 text-sm font-bold text-white bg-[#0284c7] hover:bg-[#0369a1] rounded-lg transition-colors flex items-center gap-2">
                 <Save className="w-4 h-4" /> Save
               </button>
             </div>

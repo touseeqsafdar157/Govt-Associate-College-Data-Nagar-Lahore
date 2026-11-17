@@ -91,7 +91,7 @@ export function AdminGallery() {
         </div>
         <button
           onClick={() => { setForm(blank); setPreview(null); setSelectedFiles([]); setError(null); setShowForm(true); }}
-          className="flex items-center gap-2 bg-[#006B3F] hover:bg-[#003D1F] text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
+          className="flex items-center gap-2 bg-[#0284C7] hover:bg-[#0369A1] text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
         >
           <Plus className="w-4 h-4" /> Add Photo
         </button>
@@ -120,7 +120,7 @@ export function AdminGallery() {
                 </div>
                 <div className="p-3">
                   <p className="text-xs font-semibold text-gray-700 truncate">{item.title}</p>
-                  <span className="text-[10px] bg-[#006B3F]/10 text-[#006B3F] px-1.5 py-0.5 rounded-full">{item.category}</span>
+                  <span className="text-[10px] bg-[#0284C7]/10 text-[#0284C7] px-1.5 py-0.5 rounded-full">{item.category}</span>
                 </div>
                 <button
                   onClick={() => setDeleteId(item.id)}
@@ -156,7 +156,7 @@ export function AdminGallery() {
                   value={form.title}
                   onChange={(e) => setForm({ ...form, title: e.target.value })}
                   placeholder="e.g. Annual Sports Day"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#006B3F]"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0284C7]"
                 />
               </div>
 
@@ -176,10 +176,10 @@ export function AdminGallery() {
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="w-full border-2 border-dashed border-gray-300 hover:border-[#006B3F] rounded-xl p-8 flex flex-col items-center gap-2 transition-colors cursor-pointer group"
+                    className="w-full border-2 border-dashed border-gray-300 hover:border-[#0284C7] rounded-xl p-8 flex flex-col items-center gap-2 transition-colors cursor-pointer group"
                   >
-                    <Upload className="w-8 h-8 text-gray-400 group-hover:text-[#006B3F] transition-colors" />
-                    <span className="text-sm text-gray-500 group-hover:text-[#006B3F]">Click to select image from your drive</span>
+                    <Upload className="w-8 h-8 text-gray-400 group-hover:text-[#0284C7] transition-colors" />
+                    <span className="text-sm text-gray-500 group-hover:text-[#0284C7]">Click to select image from your drive</span>
                     <span className="text-xs text-gray-400">JPG, PNG, WEBP — max 1MB</span>
                   </button>
                 ) : (
@@ -206,7 +206,7 @@ export function AdminGallery() {
                 <select
                   value={form.category}
                   onChange={(e) => setForm({ ...form, category: e.target.value })}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#006B3F]"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0284C7]"
                 >
                   {CATEGORIES.map((c) => <option key={c}>{c}</option>)}
                 </select>
@@ -224,7 +224,7 @@ export function AdminGallery() {
               <button
                 onClick={handleAdd}
                 disabled={!form.title.trim() || !selectedFiles.length || uploading}
-                className="flex-1 bg-[#006B3F] hover:bg-[#003D1F] text-white py-2.5 rounded-lg text-sm font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
+                className="flex-1 bg-[#0284C7] hover:bg-[#0369A1] text-white py-2.5 rounded-lg text-sm font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {uploading ? (
                   <>
@@ -261,4 +261,5 @@ export function AdminGallery() {
     </div>
   );
 }
+
 

@@ -3,26 +3,27 @@ import { Newspaper, Calendar, Bell, Image, Settings, Users, BookOpen, Award, Gra
 import { useAdmin } from "../../context/AdminContext";
 import { Skeleton } from "../../components/ui/skeleton";
 
+// Theme: Changed green #006B3F to sky blue #0284C7
 const quickLinks = [
-  { to: "/admin/news", icon: Newspaper, label: "Manage News", desc: "Add or edit news articles", color: "#006B3F" },
-  { to: "/admin/events", icon: Calendar, label: "Manage Events", desc: "Update upcoming events", color: "#C8A951" },
-  { to: "/admin/announcements", icon: Bell, label: "Announcements", desc: "Edit ticker announcements", color: "#006B3F" },
-  { to: "/admin/gallery", icon: Image, label: "Gallery", desc: "Manage photo gallery", color: "#C8A951" },
-  { to: "/admin/settings", icon: Settings, label: "Site Settings", desc: "Contact, principal info", color: "#006B3F" },
+  { to: "/admin/news", icon: Newspaper, label: "Manage News", desc: "Add or edit news articles", color: "#0284C7" /* #006B3F */ },
+  { to: "/admin/events", icon: Calendar, label: "Manage Events", desc: "Update upcoming events", color: "#0369A1" },
+  { to: "/admin/announcements", icon: Bell, label: "Announcements", desc: "Edit ticker announcements", color: "#0284C7" /* #006B3F */ },
+  { to: "/admin/gallery", icon: Image, label: "Gallery", desc: "Manage photo gallery", color: "#0369A1" },
+  { to: "/admin/settings", icon: Settings, label: "Site Settings", desc: "Contact, principal info", color: "#0284C7" /* #006B3F */ },
 ];
 
 export function AdminDashboard() {
   const { news, events, announcements, gallery, settings, messages, faculty, programs, facilities, loading } = useAdmin();
 
   const stats = [
-    { icon: Newspaper, label: "News Articles", value: news?.length || 0, color: "#006B3F" },
-    { icon: Calendar, label: "Events", value: events?.length || 0, color: "#C8A951" },
-    { icon: Bell, label: "Active Announcements", value: announcements?.filter((a) => a?.active)?.length || 0, color: "#006B3F" },
-    { icon: Image, label: "Gallery Photos", value: gallery?.length || 0, color: "#C8A951" },
-    { icon: GraduationCap, label: "Faculty Members", value: faculty?.length || 0, color: "#006B3F" },
-    { icon: BookOpen, label: "Programs", value: programs?.length || 0, color: "#C8A951" },
-    { icon: Award, label: "Facilities", value: facilities?.length || 0, color: "#006B3F" },
-    { icon: Users, label: "Messages", value: messages?.length || 0, color: "#C8A951" },
+    { icon: Newspaper, label: "News Articles", value: news?.length || 0, color: "#0284C7" /* #006B3F */ },
+    { icon: Calendar, label: "Events", value: events?.length || 0, color: "#0369A1" },
+    { icon: Bell, label: "Active Announcements", value: announcements?.filter((a) => a?.active)?.length || 0, color: "#0284C7" /* #006B3F */ },
+    { icon: Image, label: "Gallery Photos", value: gallery?.length || 0, color: "#0369A1" },
+    { icon: GraduationCap, label: "Faculty Members", value: faculty?.length || 0, color: "#0284C7" /* #006B3F */ },
+    { icon: BookOpen, label: "Programs", value: programs?.length || 0, color: "#0369A1" },
+    { icon: Award, label: "Facilities & Labs", value: facilities?.length || 0, color: "#0284C7" /* #006B3F */ },
+    { icon: Users, label: "Messages", value: messages?.length || 0, color: "#0369A1" },
   ];
 
   return (
@@ -32,7 +33,7 @@ export function AdminDashboard() {
         <h1 className="text-2xl font-bold text-gray-800" style={{ fontFamily: "Playfair Display, serif" }}>
           Welcome, Administrator 👋
         </h1>
-        <p className="text-gray-500 text-sm mt-1">Here's an overview of your college website content.</p>
+        <p className="text-gray-500 text-sm mt-1">Govt. Associate College for Women (GACW) Data Nagar Lahore · Portal Overview</p>
       </div>
 
       {loading ? (
@@ -48,15 +49,15 @@ export function AdminDashboard() {
       ) : (
         <>
           {/* Admissions Status Banner */}
-          <div className={`rounded-xl p-4 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 ${settings?.admissionsOpen ? "bg-green-50 border border-green-200" : "bg-red-50 border border-red-200"}`}>
+          <div className={`rounded-xl p-4 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 ${settings?.admissionsOpen ? "bg-sky-50 border border-sky-200" : "bg-red-50 border border-red-200"}`}>
             <div className="flex items-center gap-3">
-              <GraduationCap className={`w-6 h-6 ${settings?.admissionsOpen ? "text-green-600" : "text-red-600"}`} />
+              <GraduationCap className={`w-6 h-6 ${settings?.admissionsOpen ? "text-[#0284C7]" : "text-red-600"}`} />
               <div>
-                <p className={`font-semibold text-sm ${settings?.admissionsOpen ? "text-green-800" : "text-red-800"}`}>
+                <p className={`font-semibold text-sm ${settings?.admissionsOpen ? "text-sky-900" : "text-red-800"}`}>
                   Admissions are currently {settings?.admissionsOpen ? "OPEN" : "CLOSED"}
                 </p>
                 {settings?.admissionsOpen && (
-                  <p className="text-green-600 text-xs">Last date: {settings?.lastDateAdmission}</p>
+                  <p className="text-[#0284C7] text-xs">Last date: {settings?.lastDateAdmission}</p>
                 )}
               </div>
             </div>
@@ -92,16 +93,18 @@ export function AdminDashboard() {
                 <Link
                   key={to}
                   to={to}
-                  className="bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-md hover:border-[#006B3F]/20 transition-all group flex items-start gap-4"
+                  /* Previous green: hover:border-[#006B3F]/20 -> hover:border-[#0284C7]/20 */
+                  className="bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-md hover:border-[#0284C7]/30 transition-all group flex items-start gap-4"
                 >
                   <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: `${color}18` }}>
                     <Icon className="w-5 h-5" style={{ color }} />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-gray-800 text-sm group-hover:text-[#006B3F] transition-colors">{label}</p>
+                    {/* Previous green: group-hover:text-[#006B3F] -> group-hover:text-[#0284C7] */}
+                    <p className="font-semibold text-gray-800 text-sm group-hover:text-[#0284C7] transition-colors">{label}</p>
                     <p className="text-xs text-gray-500 mt-0.5">{desc}</p>
                   </div>
-                  <ArrowRight className="w-4 h-4 text-gray-300 group-hover:text-[#006B3F] transition-colors mt-0.5 shrink-0" />
+                  <ArrowRight className="w-4 h-4 text-gray-300 group-hover:text-[#0284C7] transition-colors mt-0.5 shrink-0" />
                 </Link>
               ))}
             </div>
@@ -111,19 +114,21 @@ export function AdminDashboard() {
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-bold text-gray-800 text-sm">Recent News</h2>
-              <Link to="/admin/news" className="text-xs text-[#006B3F] hover:text-[#C8A951] font-semibold flex items-center gap-1 transition-colors">
+              {/* Previous green: text-[#006B3F] -> text-[#0284C7] */}
+              <Link to="/admin/news" className="text-xs text-[#0284C7] hover:text-[#0369A1] font-semibold flex items-center gap-1 transition-colors">
                 Manage <ArrowRight className="w-3 h-3" />
               </Link>
             </div>
             <div className="space-y-3">
               {news.slice(0, 3).map((item) => (
                 <div key={item.id} className="flex items-center gap-3 py-2 border-b border-gray-50 last:border-0">
-                  <div className="w-2 h-2 rounded-full bg-[#C8A951] shrink-0" />
+                  <div className="w-2 h-2 rounded-full bg-[#0284C7] shrink-0" />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm text-gray-700 truncate">{item.title}</p>
                     <p className="text-xs text-gray-400">{item.date}</p>
                   </div>
-                  <span className="text-xs bg-[#006B3F]/10 text-[#006B3F] px-2 py-0.5 rounded-full shrink-0">{item.category}</span>
+                  {/* Previous green: bg-[#006B3F]/10 text-[#006B3F] -> bg-[#0284C7]/10 text-[#0284C7] */}
+                  <span className="text-xs bg-[#0284C7]/10 text-[#0284C7] px-2 py-0.5 rounded-full shrink-0">{item.category}</span>
                 </div>
               ))}
             </div>
@@ -133,4 +138,3 @@ export function AdminDashboard() {
     </div>
   );
 }
-

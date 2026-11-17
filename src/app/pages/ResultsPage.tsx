@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Search, Trophy, UserCircle, Download, FileSpreadsheet } from "lucide-react";
 import { Skeleton } from "../components/ui/skeleton";
+import { Helmet } from "react-helmet-async";
 
 const API = "https://govt-associate-college-data-nagar-lahore.onrender.com/api";
 
@@ -34,33 +35,42 @@ export function ResultsPage() {
 
   return (
     <div className="bg-white min-h-screen">
-      <section className="bg-gradient-to-r from-[#006B3F] to-[#004d2d] text-white py-16">
+      <Helmet>
+        <title>Examination Results | Govt. Associate College for Women (GACW) Data Nagar</title>
+        <meta name="description" content="Check annual and term examination results of Govt. Associate College for Women (GACW) Data Nagar Lahore." />
+      </Helmet>
+
+      {/* Header */}
+      {/* Theme: Changed from green bg-gradient-to-r from-[#006B3F] to-[#004d2d] to sky blue */}
+      {/* Previous green: from-[#006B3F] to-[#004d2d] */}
+      <section className="bg-gradient-to-r from-[#0284C7] to-[#0369A1] text-white py-16 shadow-md">
         <div className="container mx-auto px-4">
           <h1 className="text-5xl font-bold mb-4" style={{ fontFamily: "Playfair Display,serif" }}>Examination Results</h1>
-          <p className="text-xl text-[#C8A951]">Track your academic excellence and progress</p>
+          <p className="text-xl text-[#C8A951]">Govt. Associate College for Women (GACW) Data Nagar Lahore</p>
         </div>
       </section>
 
       {/* Filters */}
-      <section className="py-10 sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-gray-100 shadow-sm">
+      <section className="py-10 sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-sky-100 shadow-sm">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row gap-4 items-end">
             <div className="w-full md:w-1/4">
               <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Class</label>
-              <select value={filterClass} onChange={e => setFilterClass(e.target.value)} className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#006B3F] bg-white">
+              {/* Previous green: focus:ring-[#006B3F] -> focus:ring-[#0284C7] */}
+              <select value={filterClass} onChange={e => setFilterClass(e.target.value)} className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0284C7] bg-white">
                 {CLASSES.map(c => <option key={c}>{c}</option>)}
               </select>
             </div>
             <div className="w-full md:w-1/4">
               <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Academic Year</label>
-              <select value={filterYear} onChange={e => setFilterYear(e.target.value)} className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#006B3F] bg-white">
+              <select value={filterYear} onChange={e => setFilterYear(e.target.value)} className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0284C7] bg-white">
                 {YEARS.map(y => <option key={y}>{y}</option>)}
               </select>
             </div>
             <div className="w-full md:w-2/4">
               <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Search Student</label>
               <div className="relative">
-                <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Roll Number ya Name likhen..." className="w-full border border-gray-300 rounded-xl px-3 py-2.5 pl-10 text-sm focus:outline-none focus:ring-2 focus:ring-[#006B3F] bg-white" />
+                <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Roll Number ya Name likhen..." className="w-full border border-gray-300 rounded-xl px-3 py-2.5 pl-10 text-sm focus:outline-none focus:ring-2 focus:ring-[#0284C7] bg-white" />
                 <Search className="absolute left-3.5 top-3 w-4 h-4 text-gray-400" />
               </div>
             </div>
@@ -70,11 +80,13 @@ export function ResultsPage() {
 
       {/* Top Performers */}
       {!loading && (topThree?.length || 0) > 0 && (
-        <section className="py-12 bg-[#F8F9FA]">
+        /* Previous green tint: bg-[#F8F9FA] -> bg-[#F0F9FF]/40 */
+        <section className="py-12 bg-[#F0F9FF]/40">
           <div className="container mx-auto px-4">
             <div className="flex items-center gap-3 justify-center mb-8">
               <Trophy className="w-8 h-8 text-[#C8A951]" />
-              <h2 className="text-3xl font-bold text-[#006B3F] text-center" style={{ fontFamily: "Playfair Display,serif" }}>Position Holders</h2>
+              {/* Previous green: text-[#006B3F] -> text-[#082F49] */}
+              <h2 className="text-3xl font-bold text-[#082F49] text-center" style={{ fontFamily: "Playfair Display,serif" }}>Position Holders</h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto items-end">
               {/* 2nd Position */}
@@ -87,8 +99,9 @@ export function ResultsPage() {
                     </div>
                     <h3 className="font-bold text-xl text-gray-800">{topThree[1]?.name}</h3>
                     <p className="text-sm text-gray-500 mb-2">{topThree[1]?.rollNumber}</p>
-                    <div className="bg-gray-50 rounded-lg py-2 px-4 inline-block">
-                      <p className="text-[#006B3F] font-bold text-lg">{topThree[1]?.marks} / {topThree[1]?.totalMarks}</p>
+                    <div className="bg-sky-50 rounded-lg py-2 px-4 inline-block">
+                      {/* Previous green: text-[#006B3F] -> text-[#0284C7] */}
+                      <p className="text-[#0284C7] font-bold text-lg">{topThree[1]?.marks} / {topThree[1]?.totalMarks}</p>
                     </div>
                   </div>
                 </div>
@@ -106,7 +119,8 @@ export function ResultsPage() {
                     <h3 className="font-bold text-2xl text-gray-900">{topThree[0]?.name}</h3>
                     <p className="text-base text-gray-500 mb-4">{topThree[0]?.rollNumber}</p>
                     <div className="bg-[#C8A951]/10 rounded-xl py-3 px-6 inline-block">
-                      <p className="text-[#006B3F] font-extrabold text-2xl">{topThree[0]?.marks} / {topThree[0]?.totalMarks}</p>
+                      {/* Previous green: text-[#006B3F] -> text-[#0284C7] */}
+                      <p className="text-[#0284C7] font-extrabold text-2xl">{topThree[0]?.marks} / {topThree[0]?.totalMarks}</p>
                       <p className="text-xs text-[#C8A951] font-bold uppercase mt-1">Grade: {topThree[0]?.grade}</p>
                     </div>
                   </div>
@@ -123,8 +137,9 @@ export function ResultsPage() {
                     </div>
                     <h3 className="font-bold text-xl text-gray-800">{topThree[2]?.name}</h3>
                     <p className="text-sm text-gray-500 mb-2">{topThree[2]?.rollNumber}</p>
-                    <div className="bg-gray-50 rounded-lg py-2 px-4 inline-block">
-                      <p className="text-[#006B3F] font-bold text-lg">{topThree[2]?.marks} / {topThree[2]?.totalMarks}</p>
+                    <div className="bg-sky-50 rounded-lg py-2 px-4 inline-block">
+                      {/* Previous green: text-[#006B3F] -> text-[#0284C7] */}
+                      <p className="text-[#0284C7] font-bold text-lg">{topThree[2]?.marks} / {topThree[2]?.totalMarks}</p>
                     </div>
                   </div>
                 </div>
@@ -139,11 +154,13 @@ export function ResultsPage() {
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
             <div>
-              <h2 className="text-3xl font-bold text-[#006B3F]" style={{ fontFamily: "Playfair Display,serif" }}>{filterClass} Results</h2>
-              <p className="text-gray-500 mt-1">Academic Session {filterYear}</p>
+              {/* Previous green: text-[#006B3F] -> text-[#082F49] */}
+              <h2 className="text-3xl font-bold text-[#082F49]" style={{ fontFamily: "Playfair Display,serif" }}>{filterClass} Results</h2>
+              <p className="text-gray-500 mt-1">Academic Session {filterYear} · GACW Data Nagar</p>
             </div>
             {!loading && filtered.length > 0 && (
-              <button className="flex items-center gap-2 bg-[#006B3F] text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-[#004d2d] transition-all shadow-md">
+              /* Previous green: bg-[#006B3F] hover:bg-[#004d2d] -> bg-[#0284C7] hover:bg-[#0369A1] */
+              <button className="flex items-center gap-2 bg-[#0284C7] text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-[#0369A1] transition-all shadow-md">
                 <Download className="w-4 h-4" /> Download Full Result
               </button>
             )}
@@ -172,17 +189,17 @@ export function ResultsPage() {
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
               {filtered?.map((r) => (
-                <div key={r?._id} className="group bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-xl hover:border-[#006B3F]/20 transition-all duration-300 overflow-hidden flex flex-col">
+                <div key={r?._id} className="group bg-white rounded-xl border border-sky-100 shadow-sm hover:shadow-xl hover:border-[#0284C7]/30 transition-all duration-300 overflow-hidden flex flex-col">
                   <div className="p-4 text-center flex-grow">
                     <div className="mb-3 relative inline-block">
                       {r?.photo ? (
                         <img src={r?.photo} className="w-16 h-16 rounded-full object-cover border-2 border-gray-50 shadow-inner group-hover:scale-110 transition-transform duration-500" />
                       ) : (
-                        <div className="w-16 h-16 rounded-full bg-[#006B3F]/5 flex items-center justify-center border-2 border-white shadow-inner">
-                          <UserCircle className="w-10 h-10 text-[#006B3F]/20" />
+                        <div className="w-16 h-16 rounded-full bg-[#0284C7]/10 flex items-center justify-center border-2 border-white shadow-inner">
+                          <UserCircle className="w-10 h-10 text-[#0284C7]/30" />
                         </div>
                       )}
-                      <div className={`absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full border border-white flex items-center justify-center ${r?.status === "Pass" ? "bg-green-500" : "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]"}`}>
+                      <div className={`absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full border border-white flex items-center justify-center ${r?.status === "Pass" ? "bg-sky-600" : "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]"}`}>
                         {r?.status === "Pass" ? <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" /> : <div className="w-1.5 h-0.5 bg-white rotate-45 absolute" />}
                       </div>
                     </div>
@@ -191,38 +208,38 @@ export function ResultsPage() {
                     <p className="text-[9px] font-bold text-[#C8A951] tracking-widest uppercase mb-3">{r?.rollNumber}</p>
 
                     <div className="grid grid-cols-2 gap-1.5 mt-auto">
-                      <div className="bg-gray-50 group-hover:bg-[#006B3F]/5 rounded-lg p-1.5 text-center transition-colors">
+                      <div className="bg-sky-50/50 group-hover:bg-[#0284C7]/10 rounded-lg p-1.5 text-center transition-colors">
                         <p className="text-[7px] text-gray-400 font-bold uppercase mb-0.5">Marks</p>
-                        <p className="text-[#006B3F] font-bold text-[11px]">{r?.marks}<span className="text-gray-400 font-normal text-[9px] ml-0.5">/{r?.totalMarks}</span></p>
+                        {/* Previous green: text-[#006B3F] -> text-[#0284C7] */}
+                        <p className="text-[#0284C7] font-bold text-[11px]">{r?.marks}<span className="text-gray-400 font-normal text-[9px] ml-0.5">/{r?.totalMarks}</span></p>
                       </div>
-                      <div className="bg-gray-50 group-hover:bg-[#C8A951]/5 rounded-lg p-1.5 text-center transition-colors">
+                      <div className="bg-sky-50/50 group-hover:bg-[#C8A951]/10 rounded-lg p-1.5 text-center transition-colors">
                         <p className="text-[7px] text-gray-400 font-bold uppercase mb-0.5">Grade</p>
                         <p className="text-[#C8A951] font-bold text-[11px]">{r?.grade}</p>
                       </div>
                     </div>
                   </div>
 
-                  <div className={`py-1.5 px-3 text-center text-[8px] font-bold uppercase tracking-widest ${r?.status === "Pass" ? "bg-green-50 text-green-600" : "bg-red-50 text-red-600"}`}>
+                  <div className={`py-1.5 px-3 text-center text-[8px] font-bold uppercase tracking-widest ${r?.status === "Pass" ? "bg-sky-50 text-sky-700" : "bg-red-50 text-red-600"}`}>
                     {r?.status}
                   </div>
                 </div>
               ))}
             </div>
           )}
-
-
         </div>
       </section>
 
       {/* BISE Link */}
-      <section className="py-20 bg-[#003D1F] text-white">
+      {/* Previous green: bg-[#003D1F] -> bg-[#082F49] */}
+      <section className="py-20 bg-[#082F49] text-white">
         <div className="container mx-auto px-4 max-w-4xl text-center">
-          <div className="w-16 h-16 bg-[#C8A951]/20 rounded-full flex items-center justify-center mx-auto mb-6">
+          <div className="w-16 h-16 bg-[#0284C7]/20 rounded-full flex items-center justify-center mx-auto mb-6">
             <Trophy className="w-8 h-8 text-[#C8A951]" />
           </div>
           <h2 className="text-3xl font-bold mb-4" style={{ fontFamily: "Playfair Display,serif" }}>Official BISE Lahore Results</h2>
-          <p className="text-green-200 mb-8 text-lg">Govt. Associate College Data Nagar is affiliated with BISE Lahore. Board results ke liye official website visit karen.</p>
-          <a href="https://www.biselahore.com" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 bg-[#C8A951] hover:bg-[#b89841] text-white px-10 py-4 rounded-2xl font-bold transition-all shadow-xl hover:shadow-2xl">
+          <p className="text-sky-100 mb-8 text-lg">Govt. Associate College for Women (GACW) Data Nagar is affiliated with BISE Lahore. Board results ke liye official website visit karen.</p>
+          <a href="https://www.biselahore.com" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 bg-[#0284C7] hover:bg-[#0369A1] text-white px-10 py-4 rounded-2xl font-bold transition-all shadow-xl hover:shadow-2xl">
             Visit BISE Website <Search className="w-5 h-5" />
           </a>
         </div>
@@ -230,4 +247,3 @@ export function ResultsPage() {
     </div>
   );
 }
-

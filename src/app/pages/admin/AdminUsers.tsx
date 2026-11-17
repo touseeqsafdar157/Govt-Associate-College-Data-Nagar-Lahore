@@ -55,7 +55,7 @@ export function AdminUsers() {
         </div>
         <button
           onClick={() => { setShowForm(!showForm); setError(""); }}
-          className="flex items-center gap-2 bg-[#006B3F] hover:bg-[#003D1F] text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
+          className="flex items-center gap-2 bg-[#0284C7] hover:bg-[#0369A1] text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
         >
           <Plus className="w-4 h-4" /> Add User
         </button>
@@ -77,7 +77,7 @@ export function AdminUsers() {
       {showForm && (
         <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 mb-6">
           <h2 className="font-bold text-gray-800 mb-4 flex items-center gap-2">
-            <Users className="w-4 h-4 text-[#006B3F]" /> New Admin User
+            <Users className="w-4 h-4 text-[#0284C7]" /> New Admin User
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
@@ -88,7 +88,7 @@ export function AdminUsers() {
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                 placeholder="Administrator"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#006B3F]"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0284C7]"
               />
             </div>
             <div>
@@ -100,7 +100,7 @@ export function AdminUsers() {
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
                 placeholder="user@gac.edu.pk"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#006B3F]"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0284C7]"
               />
             </div>
             <div>
@@ -112,12 +112,12 @@ export function AdminUsers() {
                 value={form.password}
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
                 placeholder="Min 6 characters"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#006B3F]"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0284C7]"
               />
             </div>
           </div>
           <div className="flex gap-3 mt-4">
-            <button onClick={handleAdd} className="bg-[#006B3F] hover:bg-[#003D1F] text-white px-5 py-2 rounded-lg text-sm font-semibold transition-colors">
+            <button onClick={handleAdd} className="bg-[#0284C7] hover:bg-[#0369A1] text-white px-5 py-2 rounded-lg text-sm font-semibold transition-colors">
               Create User
             </button>
             <button onClick={() => { setShowForm(false); setError(""); }} className="border border-gray-300 hover:bg-gray-50 px-5 py-2 rounded-lg text-sm text-gray-600">
@@ -153,7 +153,7 @@ export function AdminUsers() {
             adminUsers.map((user) => (
               <div key={user.id} className="px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-gradient-to-br from-[#006B3F] to-[#003D1F] rounded-full flex items-center justify-center">
+                  <div className="w-10 h-10 bg-gradient-to-br from-[#0284C7] to-[#0369A1] rounded-full flex items-center justify-center">
                     <span className="text-white text-sm font-bold">{user.name?.[0]?.toUpperCase() || "A"}</span>
                   </div>
                   <div>
@@ -203,4 +203,5 @@ export function AdminUsers() {
     </div>
   );
 }
+
 

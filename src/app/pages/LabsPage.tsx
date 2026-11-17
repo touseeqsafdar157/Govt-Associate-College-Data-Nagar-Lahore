@@ -27,8 +27,9 @@ export function LabsPage() {
 
   return (
     <div className="bg-white">
+      {/* Theme: Sky Blue #0284c7 (Commented previous green: #006B3F) */}
       {/* Hero Section */}
-      <div className="bg-[#006B3F] py-20 px-4 text-center">
+      <div className="bg-gradient-to-r from-[#0284c7] to-[#0369a1] py-20 px-4 text-center">
         <h1 className="text-4xl md:text-5xl font-bold text-white mb-4" style={{ fontFamily: "Playfair Display, serif" }}>
           Campus Facilities
         </h1>
@@ -45,7 +46,7 @@ export function LabsPage() {
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={`px-6 py-3 font-semibold transition-colors flex items-center gap-2 ${
-                activeTab === tab ? "border-b-4 border-[#006B3F] text-[#006B3F]" : "text-gray-600 hover:text-[#006B3F]"
+                activeTab === tab ? "border-b-4 border-[#0284c7] text-[#0284c7]" : "text-gray-600 hover:text-[#0284c7]"
               }`}
             >
               {tab === "Laboratory" && <Microscope className="w-5 h-5" />}
@@ -64,7 +65,7 @@ export function LabsPage() {
           {activeTab === "Laboratory" && (
             <section>
               <div className="mb-8">
-                <h2 className="text-3xl font-bold text-[#006B3F] mb-2" style={{ fontFamily: "Playfair Display, serif" }}>Science & Computer Labs</h2>
+                <h2 className="text-3xl font-bold text-[#0284c7] mb-2" style={{ fontFamily: "Playfair Display, serif" }}>Science & Computer Labs</h2>
                 <div className="w-20 h-1 bg-[#C8A951] mb-6" />
                 <p className="text-gray-600 max-w-3xl">Our college features modern, well-equipped laboratories designed to provide students with hands-on practical experience aligned with the latest curriculum requirements.</p>
               </div>
@@ -90,38 +91,71 @@ export function LabsPage() {
                   {labs?.map((lab) => {
                     const IconComp = ICONS[lab?.iconName] || Microscope;
                     return (
-                      <div key={lab?.id} className="bg-white border border-gray-100 rounded-2xl p-6 shadow-md hover:shadow-xl transition-shadow group">
-                        <div className="flex items-start gap-4 mb-6">
-                          <div className="w-14 h-14 rounded-xl bg-[#006B3F]/10 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                            <IconComp className="w-7 h-7 text-[#006B3F]" />
+                      <div key={lab?.id} className="bg-white border border-gray-100 rounded-2xl shadow-md hover:shadow-xl transition-shadow group flex flex-col justify-between overflow-hidden">
+                        {/* Image Section */}
+                        {lab?.image ? (
+                          <div className="w-full h-52 overflow-hidden bg-sky-50 relative">
+                            <img
+                              src={lab.image}
+                              alt={lab?.title}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            />
+                            {/* Capacity badge on image */}
+                            {lab?.capacity && (
+                              <span className="absolute top-3 right-3 bg-[#0284c7] text-white text-xs font-semibold px-3 py-1 rounded-full shadow">
+                                👩‍🔬 Capacity: {lab.capacity}
+                              </span>
+                            )}
                           </div>
-                          <div>
-                            <h3 className="text-2xl font-bold text-gray-800 mb-1">{lab?.title}</h3>
-                            {lab?.capacity && <p className="text-sm text-[#C8A951] font-semibold">{lab?.capacity}</p>}
+                        ) : (
+                          <div className="w-full h-36 bg-gradient-to-br from-sky-50 to-blue-100 flex flex-col items-center justify-center border-b border-sky-100 relative">
+                            <IconComp className="w-10 h-10 text-[#0284c7]/40 mb-2" />
+                            <span className="text-xs text-gray-400 italic">No image uploaded yet</span>
+                            {lab?.capacity && (
+                              <span className="absolute top-3 right-3 bg-[#0284c7] text-white text-xs font-semibold px-3 py-1 rounded-full shadow">
+                                👩‍🔬 Capacity: {lab.capacity}
+                              </span>
+                            )}
                           </div>
+                        )}
+
+                        <div className="p-6 flex flex-col flex-1">
+                          {/* Title & Icon */}
+                          <div className="flex items-start gap-4 mb-4">
+                            <div className="w-12 h-12 rounded-xl bg-[#0284c7]/10 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                              <IconComp className="w-6 h-6 text-[#0284c7]" />
+                            </div>
+                            <div>
+                              <h3 className="text-xl font-bold text-gray-800 mb-0.5">{lab?.title}</h3>
+                              {lab?.instructor && (
+                                <p className="text-xs text-[#0284c7] font-semibold flex items-center gap-1">
+                                  <span>👩‍🏫</span> {lab.instructor}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Description */}
+                          <p className="text-gray-600 text-sm mb-5 leading-relaxed">{lab?.description}</p>
+
+                          {/* Equipment List */}
+                          {lab?.equipmentList && (lab?.equipmentList?.length || 0) > 0 && (
+                            <div className="bg-gray-50 rounded-xl p-4 border border-gray-100 mt-auto">
+                              <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2 text-sm">
+                                <Database className="w-4 h-4 text-[#0284c7]" /> Key Equipment
+                                <span className="ml-auto text-xs text-gray-400 font-normal">{lab.equipmentList.length} items</span>
+                              </h4>
+                              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                                {lab?.equipmentList?.map((item: any, idx: number) => (
+                                  <li key={idx} className="flex items-center gap-2 text-sm text-gray-600">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-[#C8A951] shrink-0" />
+                                    {item}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
                         </div>
-                        <p className="text-gray-600 mb-6">{lab?.description}</p>
-                        
-                        {lab?.equipmentList && (lab?.equipmentList?.length || 0) > 0 && (
-                          <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
-                            <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                              <Database className="w-4 h-4 text-[#006B3F]" /> Key Equipment
-                            </h4>
-                            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                              {lab?.equipmentList?.map((item: any, idx: number) => (
-                                <li key={idx} className="flex items-center gap-2 text-sm text-gray-600">
-                                  <div className="w-1.5 h-1.5 rounded-full bg-[#C8A951]" />
-                                  {item}
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-                        {lab.instructor && (
-                          <div className="mt-4 text-sm text-gray-500">
-                            <strong>Incharge:</strong> {lab.instructor}
-                          </div>
-                        )}
                       </div>
                     );
                   })}
@@ -136,7 +170,7 @@ export function LabsPage() {
           {activeTab === "Library" && (
             <section>
               <div className="mb-8">
-                <h2 className="text-3xl font-bold text-[#006B3F] mb-2" style={{ fontFamily: "Playfair Display, serif" }}>College Library</h2>
+                <h2 className="text-3xl font-bold text-[#0284c7] mb-2" style={{ fontFamily: "Playfair Display, serif" }}>College Library</h2>
                 <div className="w-20 h-1 bg-[#C8A951] mb-6" />
                 <p className="text-gray-600 max-w-3xl">The central library is a hub of knowledge, offering a vast collection of academic resources, a peaceful study environment, and digital access to empower students' research and learning.</p>
               </div>
@@ -151,8 +185,8 @@ export function LabsPage() {
                       </div>
                     ) : (
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                        <div className="text-center p-4 bg-[#006B3F]/5 rounded-xl border border-[#006B3F]/10">
-                          <BookMarked className="w-8 h-8 text-[#006B3F] mx-auto mb-3" />
+                        <div className="text-center p-4 bg-[#0284c7]/5 rounded-xl border border-[#0284c7]/10">
+                          <BookMarked className="w-8 h-8 text-[#0284c7] mx-auto mb-3" />
                           <h4 className="font-bold text-2xl text-gray-800 mb-1">{libraryStats?.totalBooks || "0"}</h4>
                           <p className="text-xs text-gray-600 uppercase tracking-wider font-semibold">Total Books</p>
                         </div>
@@ -178,7 +212,7 @@ export function LabsPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="bg-white border border-gray-100 rounded-xl p-6 shadow-sm">
                       <h4 className="font-bold text-lg text-gray-800 mb-3 flex items-center gap-2">
-                        <Clock className="w-5 h-5 text-[#006B3F]" /> Timing
+                        <Clock className="w-5 h-5 text-[#0284c7]" /> Timing
                       </h4>
                       {loading ? (
                         <div className="space-y-2"><Skeleton className="h-5 w-full" /><Skeleton className="h-5 w-5/6" /></div>
@@ -190,7 +224,7 @@ export function LabsPage() {
                     </div>
                     <div className="bg-white border border-gray-100 rounded-xl p-6 shadow-sm">
                       <h4 className="font-bold text-lg text-gray-800 mb-3 flex items-center gap-2">
-                        <Wifi className="w-5 h-5 text-[#006B3F]" /> Facilities
+                        <Wifi className="w-5 h-5 text-[#0284c7]" /> Facilities
                       </h4>
                       <ul className="space-y-1 text-gray-600 text-sm">
                         {loading ? (
@@ -205,7 +239,7 @@ export function LabsPage() {
                   </div>
                 </div>
 
-                <div className="bg-[#006B3F] rounded-2xl p-8 text-white shadow-xl">
+                <div className="bg-gradient-to-br from-[#0284c7] to-[#0369a1] rounded-2xl p-8 text-white shadow-xl">
                   <h3 className="text-xl font-bold mb-6 text-[#C8A951]">Rules & Regulations</h3>
                   <ul className="space-y-4">
                     {loading ? (
@@ -230,9 +264,9 @@ export function LabsPage() {
           {activeTab === "Sports" && (
             <section>
               <div className="mb-8">
-                <h2 className="text-3xl font-bold text-[#006B3F] mb-2" style={{ fontFamily: "Playfair Display, serif" }}>Sports & Recreation</h2>
+                <h2 className="text-3xl font-bold text-[#0284c7] mb-2" style={{ fontFamily: "Playfair Display, serif" }}>Sports & Recreation</h2>
                 <div className="w-20 h-1 bg-[#C8A951] mb-6" />
-                <p className="text-gray-600 max-w-3xl">We believe in the holistic development of our students. Our extensive sports facilities encourage physical fitness, teamwork, and healthy competition.</p>
+                <p className="text-gray-600 max-w-3xl">We believe in the holistic development of our students. Our extensive sports facilities—including badminton, athletics track, and table games—encourage physical fitness, teamwork, and healthy competition.</p>
               </div>
 
               {loading ? (
@@ -245,9 +279,15 @@ export function LabsPage() {
                     const IconComp = ICONS[sport.iconName] || Trophy;
                     return (
                       <div key={sport.id} className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all group">
-                        <div className="h-32 bg-[#006B3F]/5 flex items-center justify-center">
-                          <IconComp className="w-16 h-16 text-[#006B3F]/30 group-hover:scale-110 group-hover:text-[#006B3F] transition-all duration-300" />
-                        </div>
+                        {sport.image ? (
+                          <div className="h-44 w-full overflow-hidden bg-sky-50">
+                            <img src={sport.image} alt={sport.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                          </div>
+                        ) : (
+                          <div className="h-32 bg-[#0284c7]/5 flex items-center justify-center">
+                            <IconComp className="w-16 h-16 text-[#0284c7]/30 group-hover:scale-110 group-hover:text-[#0284c7] transition-all duration-300" />
+                          </div>
+                        )}
                         <div className="p-6 text-center border-t border-gray-100">
                           <h3 className="text-xl font-bold text-gray-800 mb-2">{sport.title}</h3>
                           <p className="text-gray-600 text-sm mb-4">{sport.description}</p>
@@ -267,7 +307,7 @@ export function LabsPage() {
           {activeTab === "Other" && (
             <section>
               <div className="mb-8">
-                <h2 className="text-3xl font-bold text-[#006B3F] mb-2" style={{ fontFamily: "Playfair Display, serif" }}>Campus Amenities</h2>
+                <h2 className="text-3xl font-bold text-[#0284c7] mb-2" style={{ fontFamily: "Playfair Display, serif" }}>Campus Amenities</h2>
                 <div className="w-20 h-1 bg-[#C8A951] mb-6" />
                 <p className="text-gray-600 max-w-3xl">Explore the various other facilities that make campus life convenient, safe, and enjoyable for our students.</p>
               </div>
@@ -281,13 +321,19 @@ export function LabsPage() {
                   {others.map(item => {
                     const IconComp = ICONS[item.iconName] || Building2;
                     return (
-                      <div key={item.id} className="bg-white border border-gray-100 rounded-xl p-6 shadow-sm flex gap-5 hover:shadow-md transition-shadow">
-                        <div className="w-14 h-14 rounded-full bg-[#C8A951]/10 flex items-center justify-center shrink-0">
-                          <IconComp className="w-7 h-7 text-[#C8A951]" />
-                        </div>
-                        <div>
+                      <div key={item.id} className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm flex flex-col sm:flex-row hover:shadow-md transition-shadow">
+                        {item.image ? (
+                          <div className="sm:w-44 h-40 sm:h-auto overflow-hidden bg-sky-50 shrink-0">
+                            <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
+                          </div>
+                        ) : (
+                          <div className="w-16 h-16 m-4 rounded-xl bg-[#C8A951]/10 flex items-center justify-center shrink-0 self-center">
+                            <IconComp className="w-8 h-8 text-[#C8A951]" />
+                          </div>
+                        )}
+                        <div className="p-5 flex-1">
                           <h3 className="text-xl font-bold text-gray-800 mb-2">{item.title}</h3>
-                          <p className="text-gray-600 text-sm">{item.description}</p>
+                          <p className="text-gray-600 text-sm leading-relaxed">{item.description}</p>
                         </div>
                       </div>
                     );

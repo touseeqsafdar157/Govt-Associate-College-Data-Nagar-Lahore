@@ -92,6 +92,7 @@ export interface FacilityItem {
   capacity?: string;
   instructor?: string;
   equipmentList: string[];
+  image?: string;
 }
 
 export interface SiteSettings {
@@ -230,8 +231,8 @@ const defaultSettings: SiteSettings = {
   admissionsOpen: true,
   lastDateAdmission: "May 31, 2026",
   principalName: "Prof. Dr. Farzana Ashfaq",
-  principalMessage: "Welcome to Government Associate College, Data Nagar.",
-  phone: "04237602172",
+  principalMessage: "Welcome to Government Associate College for Women (GACW), Data Nagar.",
+  phone: "042-37602172",
   email: "datanagargacw@gmail.com",
   address: "Ilahi Bakhsh Road Data Nagar, Lahore",
   tickerText: "Admissions Open 2026-27 | Last Date: May 31, 2026",
@@ -263,10 +264,10 @@ const defaultSettings: SiteSettings = {
   infrastructureCampus: [],
   infrastructureSupport: [],
   totalVisitors: 0,
-  collegeName: "Govt. Associate College",
+  collegeName: "Govt. Associate College for Women (GACW)",
   collegeLocation: "Data Nagar, Lahore",
   collegeEstYear: "1981",
-  collegeShortHistory: "",
+  collegeShortHistory: "Established in 1981, GACW Data Nagar has been a beacon of quality education and academic excellence for women in Punjab for over four decades.",
   homeStats: [],
   homeFeatures: [],
 };
