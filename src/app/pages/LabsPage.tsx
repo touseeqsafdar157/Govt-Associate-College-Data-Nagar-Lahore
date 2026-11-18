@@ -175,6 +175,30 @@ export function LabsPage() {
                 <p className="text-gray-600 max-w-3xl">The central library is a hub of knowledge, offering a vast collection of academic resources, a peaceful study environment, and digital access to empower students' research and learning.</p>
               </div>
 
+              {/* Library Hero Showcase Image */}
+              {settings?.libraryImage && (
+                <div className="mb-8 rounded-2xl overflow-hidden shadow-md border border-sky-100 h-64 sm:h-80 w-full relative group">
+                  <img
+                    src={settings.libraryImage}
+                    alt="GACW College Library"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent flex items-end p-6 md:p-8">
+                    <div>
+                      <span className="bg-[#0284c7] text-white text-xs uppercase tracking-wider font-bold px-3 py-1 rounded-full shadow">
+                        GACW Central Library
+                      </span>
+                      <h3 className="text-2xl md:text-3xl font-bold text-white mt-2" style={{ fontFamily: "Playfair Display, serif" }}>
+                        Knowledge & Research Center
+                      </h3>
+                      <p className="text-gray-200 text-sm mt-1 max-w-xl">
+                        A peaceful sanctuary fostering curiosity, self-study, and research excellence for students and faculty.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2 space-y-6">
                   <div className="bg-white border border-gray-100 rounded-2xl p-8 shadow-md">

@@ -142,6 +142,7 @@ export interface SiteSettings {
     facilities: string[];
     rules: string[];
   };
+  libraryImage?: string;
   // About Page
   aboutHistory: { year: string; title: string; description: string }[];
   aboutVision: string;

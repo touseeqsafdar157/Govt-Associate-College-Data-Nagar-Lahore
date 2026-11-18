@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Plus, Edit2, Trash2, Save, X, Microscope, Trophy, BookOpen, Network, CheckCircle, Database, Video, AlertCircle, Upload, Image as ImageIcon } from "lucide-react";
 import { useAdmin, FacilityItem } from "../../context/AdminContext";
 import { Skeleton } from "../../components/ui/skeleton";
@@ -33,7 +33,16 @@ export function AdminFacilities() {
     facilities: ["High-speed Wi-Fi Access", "Computer Workstations", "Quiet Study Zones", "Photocopier Services"],
     rules: ["College ID card is mandatory for entry and borrowing books.", "Strict silence must be observed inside the library premises.", "Books can be issued for a maximum of 14 days.", "Use of mobile phones for calls is strictly prohibited."]
   });
+  const [libImage, setLibImage] = useState(settings?.libraryImage || "");
+  const [isLibUploading, setIsLibUploading] = useState(false);
+  const [libFileSizeInfo, setLibFileSizeInfo] = useState<string>("");
   const [libSaved, setLibSaved] = useState(false);
+
+  useEffect(() => {
+    if (settings?.libraryStats) setLibForm(settings.libraryStats);
+    if (settings?.libraryInfo) setLibInfoForm(settings.libraryInfo);
+    if (settings?.libraryImage) setLibImage(settings.libraryImage);
+  }, [settings]);
 
   const handleEdit = (f: FacilityItem) => {
     setEditingId(f.id);
@@ -95,6 +104,56 @@ export function AdminFacilities() {
     }
   };
 
+  const handleLibImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const sizeKB = Math.round(file.size / 1024);
+    const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+    const sizeStr = file.size < 1024 * 1024 ? `${sizeKB} KB` : `${sizeMB} MB`;
+    setLibFileSizeInfo(sizeStr);
+
+    if (file.size > 2 * 1024 * 1024) {
+      const proceed = confirm(`⚠️ Large Image: ${sizeMB} MB.\n\nRecommended: Keep images under 1 MB (${sizeKB} KB) for faster website loading.\n\nDo you want to continue uploading?`);
+      if (!proceed) {
+        e.target.value = "";
+        return;
+      }
+    }
+
+    setIsLibUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append("image", file);
+      let res;
+      try {
+        res = await fetch("https://govt-associate-college-data-nagar-lahore.onrender.com/api/upload", {
+          method: "POST",
+          body: fd
+        });
+      } catch {
+        res = await fetch("http://localhost:5000/api/upload", {
+          method: "POST",
+          body: fd
+        });
+      }
+
+      if (res && res.ok) {
+        const data = await res.json();
+        const rawUrl = data.urls ? data.urls[0] : data.url;
+        const secureUrl = rawUrl?.replace(/^http:\/\/govt-associate-college/, "https://govt-associate-college");
+        setLibImage(secureUrl);
+        alert(`✅ Library photo uploaded successfully!\nFile Size: ${sizeStr}`);
+      } else {
+        alert("Image upload failed. Please try again or paste image URL directly.");
+      }
+    } catch (err: any) {
+      alert("Upload error: " + (err.message || "Failed to upload"));
+    } finally {
+      setIsLibUploading(false);
+    }
+  };
+
   const handleSaveFacility = async () => {
     if (editingId) {
       await updateFacility(editingId, form);
@@ -111,7 +170,7 @@ export function AdminFacilities() {
   };
 
   const handleSaveLibrary = async () => {
-    await updateSettings({ ...settings, libraryStats: libForm, libraryInfo: libInfoForm });
+    await updateSettings({ ...settings, libraryStats: libForm, libraryInfo: libInfoForm, libraryImage: libImage });
     setLibSaved(true);
     setTimeout(() => setLibSaved(false), 2500);
   };
@@ -255,6 +314,52 @@ export function AdminFacilities() {
                     </div>
                   ))}
                 </div>
+              </div>
+
+              {/* Library Showcase Image Upload */}
+              <div className="col-span-2 mt-4 pt-4 border-t border-gray-100">
+                <label className="block text-sm font-bold text-[#0284c7] mb-2 flex items-center gap-2">
+                  <ImageIcon className="w-4 h-4" /> Library Showcase Photo
+                </label>
+                <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+                  <label className="cursor-pointer bg-sky-50 text-[#0284c7] hover:bg-sky-100 border border-sky-200 px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2">
+                    <Upload className="w-4 h-4" />
+                    {isLibUploading ? "Uploading..." : "Upload Library Photo"}
+                    <input type="file" accept="image/*" className="hidden" onChange={handleLibImageUpload} disabled={isLibUploading} />
+                  </label>
+                  <span className="text-xs text-gray-400">or enter image URL:</span>
+                  <input
+                    value={libImage}
+                    onChange={e => setLibImage(e.target.value)}
+                    className="flex-1 border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#0284c7] outline-none"
+                    placeholder="https://example.com/library-photo.jpg"
+                  />
+                </div>
+
+                {libImage && (
+                  <div className="mt-3 flex items-center gap-4">
+                    <div className="relative inline-block rounded-xl overflow-hidden border border-gray-200 shadow-sm group">
+                      <img src={libImage} alt="Library Preview" className="h-32 w-56 object-cover" />
+                      <button
+                        type="button"
+                        onClick={() => { setLibImage(""); setLibFileSizeInfo(""); }}
+                        className="absolute top-1 right-1 bg-red-600 text-white rounded-full p-1 text-xs hover:bg-red-700 shadow"
+                        title="Remove image"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                    <div className="text-xs text-gray-500 space-y-1">
+                      <span className="inline-block bg-green-100 text-green-700 font-semibold px-2 py-0.5 rounded">
+                        ✓ Library Image Active
+                      </span>
+                      {libFileSizeInfo && (
+                        <p className="font-mono text-gray-600">Size: <strong className="text-gray-800">{libFileSizeInfo}</strong></p>
+                      )}
+                      <p className="text-[11px] text-gray-400">Click "Save Stats" above to save changes</p>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
