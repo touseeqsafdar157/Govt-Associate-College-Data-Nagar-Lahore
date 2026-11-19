@@ -99,6 +99,9 @@ export function LabsPage() {
                               src={lab.image}
                               alt={lab?.title}
                               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                              onError={(e) => {
+                                e.currentTarget.style.display = 'none';
+                              }}
                             />
                             {/* Capacity badge on image */}
                             {lab?.capacity && (
@@ -270,22 +273,42 @@ export function LabsPage() {
                   </div>
                 </div>
 
-                <div className="bg-gradient-to-br from-[#0284c7] to-[#0369a1] rounded-2xl p-8 text-white shadow-xl">
-                  <h3 className="text-xl font-bold mb-6 text-[#C8A951]">Rules & Regulations</h3>
-                  <ul className="space-y-4">
-                    {loading ? (
-                      [...Array(5)].map((_, i) => <Skeleton key={i} className="h-10 w-full opacity-20" />)
-                    ) : (
-                      libRules.map((rule, idx) => (
-                        <li key={idx} className="flex items-start gap-3">
-                          <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center shrink-0 mt-0.5">
-                            <span className="text-xs font-bold">{idx + 1}</span>
-                          </div>
-                          <p className="text-sm opacity-90">{rule}</p>
-                        </li>
-                      ))
-                    )}
-                  </ul>
+                <div className="space-y-6">
+                  <div className="bg-gradient-to-br from-[#0284c7] to-[#0369a1] rounded-2xl p-8 text-white shadow-xl">
+                    <h3 className="text-xl font-bold mb-6 text-[#C8A951]">Rules & Regulations</h3>
+                    <ul className="space-y-4">
+                      {loading ? (
+                        [...Array(5)].map((_, i) => <Skeleton key={i} className="h-10 w-full opacity-20" />)
+                      ) : (
+                        libRules.map((rule, idx) => (
+                          <li key={idx} className="flex items-start gap-3">
+                            <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center shrink-0 mt-0.5">
+                              <span className="text-xs font-bold">{idx + 1}</span>
+                            </div>
+                            <p className="text-sm opacity-90">{rule}</p>
+                          </li>
+                        ))
+                      )}
+                    </ul>
+                  </div>
+
+                  {/* Library Photo in Sidebar */}
+                  {settings?.libraryImage && (
+                    <div className="rounded-2xl overflow-hidden shadow-lg border border-sky-100 group relative">
+                      <img
+                        src={settings.libraryImage}
+                        alt="College Library"
+                        className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-500"
+                        onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end p-4">
+                        <div>
+                          <p className="text-white font-bold text-sm">GACW Library</p>
+                          <p className="text-gray-300 text-xs">Quiet study &amp; research zone</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </section>
