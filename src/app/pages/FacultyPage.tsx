@@ -124,8 +124,15 @@ export function FacultyPage() {
                         <span className="text-xs font-bold text-[#C8A951] uppercase tracking-wider mb-2 block">{formatDept(hod.dept)}</span>
                         <h3 className="text-xl font-bold text-gray-800 mb-1">{hod.name}</h3>
                         <p className="text-[#0284c7] font-medium mb-3">{hod.designation}</p>
+                        {/* Subject Badge */}
+                        {(hod.subject || hod.dept) && (
+                          <div className="mb-3">
+                            <span className="inline-flex items-center gap-1 bg-[#0284c7] text-white text-xs font-semibold px-3 py-1 rounded-full">
+                              📚 {hod.subject || formatDept(hod.dept)}
+                            </span>
+                          </div>
+                        )}
                         <div className="space-y-2 text-sm text-gray-600">
-                          <p><span className="font-semibold text-gray-800">Subject:</span> {hod.subject || formatDept(hod.dept)}</p>
                           <p><span className="font-semibold text-gray-800">Qualification:</span> {hod.qualification}</p>
                           <p><span className="font-semibold text-gray-800">Experience:</span> {hod.experience}</p>
                         </div>
@@ -159,9 +166,16 @@ export function FacultyPage() {
                   {filteredTeachingStaff.map((member, idx) => (
                     <div key={idx} className="bg-white border border-gray-100 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
                       <h4 className="font-bold text-lg text-gray-800 mb-1">{member.name}</h4>
-                      <p className="text-[#0284c7] text-sm font-medium mb-3">{member.designation}</p>
+                      <p className="text-[#0284c7] text-sm font-medium mb-2">{member.designation}</p>
+                      {/* Subject Badge */}
+                      {(member.subject || member.dept) && (
+                        <div className="mb-3">
+                          <span className="inline-flex items-center gap-1 bg-green-50 text-green-700 text-xs font-semibold px-2.5 py-1 rounded-full border border-green-200">
+                            📚 {member.subject || formatDept(member.dept)}
+                          </span>
+                        </div>
+                      )}
                       <div className="space-y-1.5 text-xs text-gray-600">
-                        <p><span className="font-semibold text-gray-800">Subject:</span> {member.subject || formatDept(member.dept)}</p>
                         <p><span className="font-semibold text-gray-800">Department:</span> {formatDept(member.dept)}</p>
                         <p><span className="font-semibold">Qualification:</span> {member.qualification}</p>
                         <p><span className="font-semibold">Experience:</span> {member.experience}</p>

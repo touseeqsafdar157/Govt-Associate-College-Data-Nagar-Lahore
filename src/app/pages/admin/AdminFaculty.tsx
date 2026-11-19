@@ -140,7 +140,13 @@ export function AdminFaculty() {
                           </span>
                         </td>
                       )}
-                      {activeTab === "Teaching" && <td className="p-4 text-gray-800 font-medium">{f.subject || "—"}</td>}
+                      {activeTab === "Teaching" && (
+                        <td className="p-4">
+                          {f.subject
+                            ? <span className="bg-green-50 text-green-700 font-medium px-2 py-1 rounded text-xs border border-green-200">{f.subject}</span>
+                            : <span className="text-gray-400 text-xs italic">Not set</span>}
+                        </td>
+                      )}
                       <td className="p-4 text-gray-600">{f.experience}</td>
                       <td className="p-4">
                         <div className="flex justify-end gap-2">
@@ -198,8 +204,11 @@ export function AdminFaculty() {
                       </select>
                     </div>
                     <div className="col-span-2 md:col-span-1">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Subject</label>
-                      <input value={form.subject} onChange={e => setForm({ ...form, subject: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#0284c7] outline-none" placeholder="e.g. Physics" />
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Subject <span className="text-red-500">*</span>
+                        <span className="ml-1 text-xs text-gray-400 font-normal">(Subject taught)</span>
+                      </label>
+                      <input value={form.subject} onChange={e => setForm({ ...form, subject: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#0284c7] outline-none" placeholder="e.g. Physics, Mathematics, English..." />
                     </div>
                   </>
                 )}
