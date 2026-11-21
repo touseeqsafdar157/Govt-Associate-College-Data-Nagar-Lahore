@@ -29,7 +29,14 @@ export function AdminNews() {
 
   const openAdd = () => { setForm({ ...blankForm, date: todayISO() }); setEditingId(null); setFilesToUpload([]); setShowForm(true); };
   const openEdit = (item: NewsItem) => {
-    setForm({ title: item.title, date: item.date, content: item.content, category: item.category, fileUrl: item.fileUrl || "" });
+    let editDate = item.date || todayISO();
+    if (editDate && !editDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      const parsed = new Date(editDate);
+      if (!isNaN(parsed.getTime())) {
+        editDate = parsed.toISOString().split("T")[0];
+      }
+    }
+    setForm({ title: item.title, date: editDate, content: item.content, category: item.category || "General", fileUrl: item.fileUrl || "" });
     setEditingId(item.id);
     setFilesToUpload([]);
     setShowForm(true);
@@ -52,7 +59,7 @@ export function AdminNews() {
         }
       }
 
-      const saveForm = { ...form, date: formatDate(form.date), fileUrl: finalFileUrl };
+      const saveForm = { ...form, category: form.category || "General", date: formatDate(form.date) || form.date, fileUrl: finalFileUrl };
       if (editingId) {
         await updateNews(editingId, saveForm);
       } else {

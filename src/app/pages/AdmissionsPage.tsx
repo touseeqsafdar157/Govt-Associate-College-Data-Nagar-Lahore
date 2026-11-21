@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { X, Upload, Check, AlertCircle, ChevronRight } from "lucide-react";
+import { X, Upload, Check, AlertCircle, ChevronRight, CheckCircle2, FileText, Calendar, Award, Shield, Clock, Phone, BookOpen, Sparkles } from "lucide-react";
 import { useAdmin } from "../context/AdminContext";
 import { Helmet } from "react-helmet-async";
 import { Skeleton } from "../components/ui/skeleton";
@@ -65,7 +65,57 @@ export function AdmissionsPage() {
       <section className="bg-gradient-to-r from-[#0284C7] to-[#0369A1] text-white py-16 shadow-md">
         <div className="container mx-auto px-4">
           <h1 className="text-5xl font-bold mb-4" style={{fontFamily:"Playfair Display,serif"}}>Admissions</h1>
-          <p className="text-xl text-[#C8A951]">Govt. Associate College for Women (GACW) Data Nagar Lahore</p>
+          <p className="text-xl text-[#C8A951] max-w-3xl leading-relaxed">
+            Your journey towards academic excellence begins here — explore intermediate & associate degree admissions, eligibility criteria, admission procedures, and merit guidelines at Govt. Associate College for Women (GACW) Data Nagar Lahore.
+          </p>
+        </div>
+      </section>
+
+      {/* Step by Step Admission Procedure */}
+      <section className="py-14 bg-gradient-to-b from-[#F0F9FF]/60 to-white border-b border-sky-100">
+        <div className="container mx-auto px-4">
+          <div className="text-center max-w-2xl mx-auto mb-10">
+            <span className="text-[#0284C7] text-sm font-semibold uppercase tracking-widest">How to Apply</span>
+            <h2 className="text-3xl font-bold text-[#082F49] mt-1" style={{fontFamily:"Playfair Display,serif"}}>Step-by-Step Admission Procedure</h2>
+            <p className="text-gray-600 text-sm mt-2">Follow these simple steps to complete your admission process at GACW Data Nagar Lahore.</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            {[
+              {
+                step: "01",
+                icon: FileText,
+                title: "Application Submission",
+                desc: "Fill in the online application form or obtain the prospectus form directly from the college admission counter."
+              },
+              {
+                step: "02",
+                icon: CheckCircle2,
+                title: "Document Verification",
+                desc: "Submit verified copies of Matric Result Card, CNIC/B-Form, Character Certificate, and passport photos."
+              },
+              {
+                step: "03",
+                icon: Award,
+                title: "Merit List Display",
+                desc: "1st, 2nd & 3rd Merit Lists are displayed on the college notice board and official website as per HED schedule."
+              },
+              {
+                step: "04",
+                icon: Sparkles,
+                title: "Fee Deposit & Enrollment",
+                desc: "Selected candidates submit admission dues in the designated bank counter and receive their roll numbers & identity cards."
+              }
+            ].map((item, idx) => (
+              <div key={idx} className="bg-white rounded-2xl p-6 shadow-sm border border-sky-100 hover:shadow-md transition-all relative group">
+                <span className="text-4xl font-extrabold text-[#0284C7]/15 absolute top-4 right-4 group-hover:text-[#0284C7]/30 transition-colors">{item.step}</span>
+                <div className="w-12 h-12 rounded-xl bg-[#0284C7]/10 flex items-center justify-center text-[#0284C7] mb-4 group-hover:bg-[#0284C7] group-hover:text-white transition-colors">
+                  <item.icon className="w-6 h-6" />
+                </div>
+                <h3 className="font-bold text-gray-800 text-base mb-2">{item.title}</h3>
+                <p className="text-gray-600 text-sm leading-relaxed">{item.desc}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -102,6 +152,83 @@ export function AdmissionsPage() {
         </div>
       </section>
 
+      {/* Reserved Quota & Scholarships Section */}
+      <section className="py-12 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Quota & Reserved Seats */}
+            <div className="bg-[#F0F9FF]/50 p-6 sm:p-8 rounded-2xl border border-sky-100 shadow-sm">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-xl bg-[#0284C7] text-white flex items-center justify-center">
+                  <Shield className="w-5 h-5" />
+                </div>
+                <h3 className="text-xl font-bold text-[#082F49]" style={{fontFamily:"Playfair Display,serif"}}>Reserved Seats & Quotas</h3>
+              </div>
+              <p className="text-sm text-gray-600 mb-4 leading-relaxed">
+                As per Punjab Higher Education Department policy, seats are reserved across various categories in intermediate and associate programs:
+              </p>
+              <ul className="space-y-2.5 text-sm text-gray-700">
+                <li className="flex items-start gap-2">
+                  <span className="text-[#0284C7] font-bold">•</span>
+                  <span><strong>Open Merit:</strong> Majority seats allocated purely based on matriculation marks percentage.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-[#0284C7] font-bold">•</span>
+                  <span><strong>Sports Quota:</strong> Special seats for champion athletes & players (trials conducted by Sports Board).</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-[#0284C7] font-bold">•</span>
+                  <span><strong>Co-Curricular / Fine Arts:</strong> For students excelling in debates, Qirat, Naat, and cultural competitions.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-[#0284C7] font-bold">•</span>
+                  <span><strong>Special Persons Quota:</strong> Reserved opportunities with fee facilitation for students with disabilities.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-[#0284C7] font-bold">•</span>
+                  <span><strong>College Staff & Kinship:</strong> Seats reserved as per Govt. of Punjab education regulations.</span>
+                </li>
+              </ul>
+            </div>
+
+            {/* Scholarships & Financial Support */}
+            <div className="bg-[#F0F9FF]/50 p-6 sm:p-8 rounded-2xl border border-sky-100 shadow-sm">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-xl bg-[#C8A951] text-white flex items-center justify-center">
+                  <Award className="w-5 h-5" />
+                </div>
+                <h3 className="text-xl font-bold text-[#082F49]" style={{fontFamily:"Playfair Display,serif"}}>Scholarships & Fee Concessions</h3>
+              </div>
+              <p className="text-sm text-gray-600 mb-4 leading-relaxed">
+                Govt. Associate College for Women Data Nagar ensures financial constraints never stop talented young women from acquiring higher education:
+              </p>
+              <ul className="space-y-2.5 text-sm text-gray-700">
+                <li className="flex items-start gap-2">
+                  <span className="text-[#C8A951] font-bold">•</span>
+                  <span><strong>PEEF Scholarships:</strong> Punjab Educational Endowment Fund scholarships for deserving high-achievers.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-[#C8A951] font-bold">•</span>
+                  <span><strong>Mora & Zakat Scholarships:</strong> Financial support funded through Punjab District Zakat Committees.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-[#C8A951] font-bold">•</span>
+                  <span><strong>Ehsaas / Benazir Scholarships:</strong> Higher education grants for eligible undergraduate candidates.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-[#C8A951] font-bold">•</span>
+                  <span><strong>College Welfare Fund:</strong> Full or partial fee remissions for orphans and low-income students upon interview.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-[#C8A951] font-bold">•</span>
+                  <span><strong>Sibling Concession:</strong> Standard government sibling fee rebate for sisters enrolled simultaneously.</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Required Documents */}
       {/* Previous green tint: bg-[#F8F9FA] -> bg-[#F0F9FF]/40 */}
       <section className="py-10 bg-[#F0F9FF]/40">
@@ -123,6 +250,50 @@ export function AdmissionsPage() {
         </div>
       </section>
 
+      {/* Important Guidelines & Admission Desk Info */}
+      <section className="py-12 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="bg-gradient-to-r from-[#082F49] to-[#0369A1] rounded-2xl p-6 sm:p-10 text-white shadow-lg">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div>
+                <div className="flex items-center gap-2 mb-3 text-[#C8A951]">
+                  <Clock className="w-5 h-5" />
+                  <h4 className="font-bold text-base uppercase tracking-wider text-white">Desk Timings</h4>
+                </div>
+                <p className="text-sm text-sky-100 leading-relaxed">
+                  Monday to Saturday: <br />
+                  <span className="font-semibold text-white">8:00 AM – 1:30 PM</span><br />
+                  (Friday: 8:00 AM – 12:00 PM)
+                </p>
+                <p className="text-xs text-sky-200 mt-2">Closed on Sundays and Gazetted Holidays.</p>
+              </div>
+
+              <div>
+                <div className="flex items-center gap-2 mb-3 text-[#C8A951]">
+                  <Phone className="w-5 h-5" />
+                  <h4 className="font-bold text-base uppercase tracking-wider text-white">Admission Cell</h4>
+                </div>
+                <p className="text-sm text-sky-100 leading-relaxed">
+                  Direct Inquiries: <a href="tel:04237602172" className="text-white font-semibold underline hover:text-[#C8A951]">042-37602172</a><br />
+                  WhatsApp Helpline: <a href="https://wa.me/924237602172" target="_blank" rel="noopener noreferrer" className="text-white font-semibold underline hover:text-[#C8A951]">042-37602172</a><br />
+                  Email: <a href="mailto:datanagargacw@gmail.com" className="text-white font-semibold underline hover:text-[#C8A951]">datanagargacw@gmail.com</a>
+                </p>
+              </div>
+
+              <div>
+                <div className="flex items-center gap-2 mb-3 text-[#C8A951]">
+                  <BookOpen className="w-5 h-5" />
+                  <h4 className="font-bold text-base uppercase tracking-wider text-white">Discipline & Attendance</h4>
+                </div>
+                <p className="text-sm text-sky-100 leading-relaxed">
+                  Students must maintain a minimum of <span className="font-semibold text-white">75% attendance</span> to be eligible for board & university examinations, strictly adhering to the college uniform and code of conduct.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* CTA */}
       {/* Previous green: from-[#006B3F] to-[#004d2d] -> from-[#0284C7] to-[#0369A1] */}
       <section className="py-14 bg-gradient-to-r from-[#0284C7] to-[#0369A1] text-white text-center shadow-lg">
@@ -138,12 +309,18 @@ export function AdmissionsPage() {
             </button>
           </>
         ) : (
-          <>
-            <p className="text-sky-100 mb-8 text-lg font-semibold">Admissions are currently closed.</p>
-            <button onClick={() => window.scrollTo({ top: 300, behavior: 'smooth' })} className="bg-white hover:bg-gray-100 text-[#0284C7] px-12 py-4 rounded-xl text-lg font-bold transition-all shadow-xl">
-              View Admission Criteria
+          <div className="max-w-2xl mx-auto bg-white/10 backdrop-blur-md border border-white/20 p-8 rounded-2xl shadow-xl">
+            <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <AlertCircle className="w-8 h-8 text-[#C8A951]" />
+            </div>
+            <h3 className="text-2xl font-bold text-white mb-2">Admissions Are Currently Closed</h3>
+            <p className="text-sky-100 text-sm leading-relaxed mb-6">
+              Online applications for the ongoing academic cycle are closed. Prospective candidates are encouraged to check eligibility criteria, required documents, and preparation guidelines above. Notice for the upcoming admission intake will be announced on the college portal.
+            </p>
+            <button onClick={() => window.scrollTo({ top: 350, behavior: 'smooth' })} className="bg-white hover:bg-gray-100 text-[#0284C7] px-8 py-3 rounded-xl text-sm font-bold transition-all shadow-lg">
+              Explore Eligibility & Requirements
             </button>
-          </>
+          </div>
         )}
       </section>
 

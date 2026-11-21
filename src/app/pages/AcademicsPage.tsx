@@ -33,7 +33,9 @@ export function AcademicsPage() {
           <h1 className="text-5xl font-bold mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>
             Academics
           </h1>
-          <p className="text-xl text-[#C8A951]">Explore our comprehensive academic programs at GACW Data Nagar</p>
+          <p className="text-xl text-[#C8A951] max-w-3xl leading-relaxed">
+            Explore our diverse intermediate and associate degree programs, dynamic curriculum aligned with BISE and University standards, modern pedagogy, and career-oriented educational pathways.
+          </p>
         </div>
       </section>
 

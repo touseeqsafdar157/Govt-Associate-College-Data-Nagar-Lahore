@@ -20,7 +20,9 @@ export function AboutPage() {
           <h1 className="text-5xl font-bold mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>
             About Us
           </h1>
-          <p className="text-xl text-[#C8A951]">Learn about our history, mission, values & sports legacy</p>
+          <p className="text-xl text-[#C8A951] max-w-3xl leading-relaxed">
+            Discover our rich history since 1981, core educational values, enduring commitment to women empowerment, modern academic excellence, and proud athletic & sports legacy.
+          </p>
         </div>
       </section>
 

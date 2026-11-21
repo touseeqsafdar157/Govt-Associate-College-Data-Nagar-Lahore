@@ -16,6 +16,7 @@ export interface NewsItem {
 export interface EventItem {
   id: string;
   date: string;
+  dateISO?: string;
   month: string;
   day: string;
   title: string;

@@ -38,12 +38,21 @@ export function Footer() {
                 <p className="text-sky-100 text-sm">Last date to apply: {settings.lastDateAdmission}</p>
               )}
             </div>
-            <Link
-              to="/admissions"
-              className="bg-[#C8A951] hover:bg-[#b89841] text-[#082F49] px-6 py-2.5 rounded-lg font-semibold transition-colors flex items-center gap-2 text-sm shadow-md"
-            >
-              Apply Now <ArrowRight className="w-4 h-4" />
-            </Link>
+            {settings.admissionsOpen ? (
+              <Link
+                to="/admissions"
+                className="bg-[#C8A951] hover:bg-[#b89841] text-[#082F49] px-6 py-2.5 rounded-lg font-semibold transition-colors flex items-center gap-2 text-sm shadow-md"
+              >
+                Apply Now <ArrowRight className="w-4 h-4" />
+              </Link>
+            ) : (
+              <Link
+                to="/admissions"
+                className="bg-white/10 hover:bg-white/20 text-white border border-white/30 px-6 py-2.5 rounded-lg font-semibold transition-colors flex items-center gap-2 text-sm shadow-md"
+              >
+                Admission Criteria <ArrowRight className="w-4 h-4" />
+              </Link>
+            )}
           </div>
         </div>
       </div>

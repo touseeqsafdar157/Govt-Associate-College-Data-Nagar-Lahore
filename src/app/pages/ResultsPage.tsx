@@ -46,7 +46,9 @@ export function ResultsPage() {
       <section className="bg-gradient-to-r from-[#0284C7] to-[#0369A1] text-white py-16 shadow-md">
         <div className="container mx-auto px-4">
           <h1 className="text-5xl font-bold mb-4" style={{ fontFamily: "Playfair Display,serif" }}>Examination Results</h1>
-          <p className="text-xl text-[#C8A951]">Govt. Associate College for Women (GACW) Data Nagar Lahore</p>
+          <p className="text-xl text-[#C8A951] max-w-3xl leading-relaxed">
+            Access college term evaluations, BISE Lahore intermediate board examinations, and Punjab University annual results showcasing academic excellence.
+          </p>
         </div>
       </section>
 

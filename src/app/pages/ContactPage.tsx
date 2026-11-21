@@ -78,7 +78,9 @@ export function ContactPage() {
           <h1 className="text-5xl font-bold mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>
             Contact Us
           </h1>
-          <p className="text-xl text-[#C8A951]">Govt. Associate College for Women (GACW) Data Nagar Lahore</p>
+          <p className="text-xl text-[#C8A951] max-w-3xl leading-relaxed">
+            Get in touch with our administration, faculty, and admissions desk — we are here to assist prospective students, parents, and community members with any inquiries.
+          </p>
         </div>
       </section>
 

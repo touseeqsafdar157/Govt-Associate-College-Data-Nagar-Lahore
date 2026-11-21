@@ -33,8 +33,8 @@ export function LabsPage() {
         <h1 className="text-4xl md:text-5xl font-bold text-white mb-4" style={{ fontFamily: "Playfair Display, serif" }}>
           Campus Facilities
         </h1>
-        <p className="text-[#C8A951] text-lg max-w-2xl mx-auto">
-          State-of-the-art infrastructure to support academic excellence and physical well-being.
+        <p className="text-[#C8A951] text-base md:text-lg max-w-3xl mx-auto leading-relaxed">
+          State-of-the-art infrastructure featuring modern science & computer laboratories, a comprehensive digital library, dedicated sports arenas, and secure academic spaces designed to empower student learning and physical well-being.
         </p>
       </div>
 

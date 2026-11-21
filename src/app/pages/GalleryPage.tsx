@@ -43,7 +43,9 @@ export function GalleryPage() {
           <h1 className="text-4xl sm:text-5xl font-bold mt-2" style={{ fontFamily: "Playfair Display, serif" }}>
             Photo Gallery
           </h1>
-          <p className="text-sky-100 mt-2">Govt. Associate College for Women (GACW) Data Nagar Lahore</p>
+          <p className="text-sky-100 mt-2 text-base max-w-3xl leading-relaxed">
+            A visual chronicle capturing memorable campus events, sports tournaments, laboratory work, annual convocation, and student achievements at GACW Data Nagar Lahore.
+          </p>
         </div>
       </section>
 

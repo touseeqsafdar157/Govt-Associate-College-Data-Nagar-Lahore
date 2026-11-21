@@ -463,6 +463,7 @@ import {
   Calendar, ArrowRight, Phone, Mail, Star, Shield, Clock,
 } from "lucide-react";
 import { useAdmin } from "../context/AdminContext";
+import { getDisplayEventDate } from "./admin/AdminEvents";
 import gatePhoto from "../../imports/WhatsApp_Image_2026-04-07_at_11.52.03_AM_(1).jpeg";
 import courtyardPhoto from "../../imports/WhatsApp_Image_2026-04-07_at_11.52.03_AM.jpeg";
 import sliderCampus1 from "../../imports/slider_campus_1.jpg";
@@ -586,13 +587,15 @@ export function HomePage() {
               </h1>
               <p className="text-base sm:text-lg text-sky-100 mb-8 leading-relaxed drop-shadow-sm">{slide?.tagline}</p>
               <div className="flex flex-wrap gap-3">
-                {(!admissionOpen && slide?.cta?.label === "Apply Now") ? (
-                  <Link
-                    to="/admissions"
-                    className="bg-white/10 hover:bg-white/20 border border-white/40 text-white px-7 py-3 rounded-lg font-semibold transition-all backdrop-blur-sm text-sm"
-                  >
-                    View Admission Criteria
-                  </Link>
+                {slide?.cta?.label === "Apply Now" ? (
+                  admissionOpen ? (
+                    <Link
+                      to={slide?.cta?.to}
+                      className="bg-[#C8A951] hover:bg-[#b89841] text-[#082F49] px-7 py-3 rounded-lg font-bold transition-all hover:shadow-lg hover:-translate-y-0.5 text-sm"
+                    >
+                      {slide?.cta?.label}
+                    </Link>
+                  ) : null
                 ) : (
                   <Link
                     to={slide?.cta?.to}
@@ -601,12 +604,14 @@ export function HomePage() {
                     {slide?.cta?.label}
                   </Link>
                 )}
-                <Link
-                  to={slide?.cta2?.to}
-                  className="bg-white/10 hover:bg-white/20 border border-white/40 text-white px-7 py-3 rounded-lg font-semibold transition-all backdrop-blur-sm text-sm"
-                >
-                  {slide?.cta2?.label}
-                </Link>
+                {slide?.cta2 && (
+                  <Link
+                    to={slide?.cta2?.to}
+                    className="bg-white/10 hover:bg-white/20 border border-white/40 text-white px-7 py-3 rounded-lg font-semibold transition-all backdrop-blur-sm text-sm"
+                  >
+                    {slide?.cta2?.label}
+                  </Link>
+                )}
               </div>
             </div>
           </div>
@@ -800,25 +805,32 @@ export function HomePage() {
                 </Link>
               </div>
               <div className="space-y-3">
-                {events?.slice(0, 4)?.map((event) => (
-                  <div
-                    key={event?.id}
-                    className="group flex gap-4 bg-white hover:bg-[#F0F9FF] p-4 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-100"
-                  >
-                    <div className="shrink-0 bg-gradient-to-br from-[#0284C7] to-[#0369A1] text-white text-center p-3 rounded-xl min-w-[52px]">
-                      <p className="text-xl font-bold leading-none">{event?.day}</p>
-                      <p className="text-[10px] font-semibold mt-0.5 opacity-80">{event?.month}</p>
-                    </div>
-                    <div>
-                      <p className="font-semibold text-gray-800 text-sm group-hover:text-[#0284C7] transition-colors">{event?.title}</p>
-                      <div className="flex items-center gap-3 mt-1">
-                        <span className="flex items-center gap-1 text-xs text-gray-500"><Clock className="w-3 h-3" />{event?.time}</span>
-                        <span className="text-gray-300">|</span>
-                        <span className="text-xs text-gray-500">{event?.location}</span>
+                {events?.slice(0, 4)?.map((event) => {
+                  const { day, month, fullDate } = getDisplayEventDate(event);
+                  return (
+                    <div
+                      key={event?.id}
+                      className="group flex gap-4 bg-white hover:bg-[#F0F9FF] p-4 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-100"
+                    >
+                      <div className="shrink-0 bg-gradient-to-br from-[#0284C7] to-[#0369A1] text-white text-center p-3 rounded-xl min-w-[56px]">
+                        <p className="text-xl font-bold leading-none">{day}</p>
+                        <p className="text-[10px] font-semibold mt-0.5 opacity-80">{month}</p>
+                      </div>
+                      <div>
+                        <p className="font-semibold text-gray-800 text-sm group-hover:text-[#0284C7] transition-colors">{event?.title}</p>
+                        <div className="flex flex-wrap items-center gap-3 mt-1">
+                          {fullDate && <span className="text-xs text-[#0284C7] font-medium">{fullDate}</span>}
+                          {event?.time && (
+                            <span className="flex items-center gap-1 text-xs text-gray-500"><Clock className="w-3 h-3 text-[#0284C7]" />{event?.time}</span>
+                          )}
+                          {event?.location && (
+                            <span className="text-xs text-gray-500">{event?.location}</span>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>

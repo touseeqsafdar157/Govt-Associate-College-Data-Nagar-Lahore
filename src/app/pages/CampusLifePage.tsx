@@ -36,7 +36,9 @@ export function CampusLifePage() {
           <h1 className="text-5xl font-bold mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>
             Campus Life & Sports
           </h1>
-          <p className="text-xl text-[#C8A951]">Sports, Badminton, Athletics, Table Games & Student Societies</p>
+          <p className="text-xl text-[#C8A951] max-w-3xl leading-relaxed">
+            Experience a vibrant campus atmosphere enriched with championship badminton courts, competitive athletics, table games, creative student societies, and cultural festivities.
+          </p>
         </div>
       </section>
 

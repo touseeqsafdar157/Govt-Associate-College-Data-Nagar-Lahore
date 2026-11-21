@@ -3,6 +3,7 @@ import { FileDown, Bell, Award, Clock, MapPin } from "lucide-react";
 import { useAdmin } from "../context/AdminContext";
 import { Skeleton } from "../components/ui/skeleton";
 import { Helmet } from "react-helmet-async";
+import { getDisplayEventDate } from "./admin/AdminEvents";
 
 const CATEGORIES = ["All", "Admissions", "Results", "Sports", "Events", "Academic", "General"];
 
@@ -11,7 +12,12 @@ export function NewsPage() {
   const [activeCategory, setActiveCategory] = useState("All");
   const collegeName = settings?.collegeName || "Govt. Associate College for Women (GACW) Data Nagar Lahore";
 
-  const filtered = activeCategory === "All" ? (news || []) : news?.filter((n) => n?.category === activeCategory);
+  const filtered = activeCategory === "All"
+    ? (news || [])
+    : (news || []).filter((n) => {
+        const cat = (n?.category || "General").trim().toLowerCase();
+        return cat === activeCategory.trim().toLowerCase();
+      });
   const docs = news?.filter(n => n?.fileUrl) || [];
 
   return (
@@ -30,7 +36,9 @@ export function NewsPage() {
           <h1 className="text-4xl sm:text-5xl font-bold mt-2" style={{ fontFamily: "Playfair Display, serif" }}>
             News & Events
           </h1>
-          <p className="text-sky-100 mt-2">Latest announcements, badminton & sports matches, and college notices</p>
+          <p className="text-sky-100 mt-2 text-base max-w-3xl leading-relaxed">
+            Stay up to date with official college notices, sports fixtures, academic deadlines, departmental announcements, and upcoming events at GACW Data Nagar.
+          </p>
         </div>
       </section>
 
@@ -133,28 +141,34 @@ export function NewsPage() {
                 ) : events.length === 0 ? (
                   <p className="text-sm text-gray-500 text-center py-2">No upcoming events.</p>
                 ) : (
-                  events.map((event) => (
-                    <div key={event.id} className="flex gap-3 pb-3 border-b border-gray-50 last:border-0 last:pb-0">
-                      {/* Previous green: from-[#006B3F] to-[#003D1F] -> from-[#0284C7] to-[#0369A1] */}
-                      <div className="bg-gradient-to-br from-[#0284C7] to-[#0369A1] text-white text-center p-2 rounded-lg min-w-[44px] shrink-0">
-                        <p className="text-base font-bold leading-none">{event.day}</p>
-                        <p className="text-[9px] mt-0.5 opacity-80">{event.month}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold text-gray-800 leading-tight">{event.title}</p>
-                        <div className="flex flex-wrap gap-2 mt-0.5">
-                          <span className="flex items-center gap-0.5 text-xs text-gray-500">
-                            <Clock className="w-3 h-3 text-[#0284C7]" /> {event.time}
-                          </span>
-                          {event.location && event.location !== "–" && (
-                            <span className="flex items-center gap-0.5 text-xs text-gray-500">
-                              <MapPin className="w-3 h-3 text-[#0284C7]" /> {event.location}
-                            </span>
-                          )}
+                  events.map((event) => {
+                    const { day, month, fullDate } = getDisplayEventDate(event);
+                    return (
+                      <div key={event.id} className="flex gap-3 pb-3 border-b border-gray-50 last:border-0 last:pb-0">
+                        {/* Previous green: from-[#006B3F] to-[#003D1F] -> from-[#0284C7] to-[#0369A1] */}
+                        <div className="bg-gradient-to-br from-[#0284C7] to-[#0369A1] text-white text-center p-2 rounded-lg min-w-[48px] shrink-0">
+                          <p className="text-base font-bold leading-none">{day}</p>
+                          <p className="text-[9px] mt-0.5 opacity-80">{month}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold text-gray-800 leading-tight">{event.title}</p>
+                          {fullDate && <p className="text-xs text-[#0284C7] font-medium mt-0.5">{fullDate}</p>}
+                          <div className="flex flex-wrap gap-2 mt-0.5">
+                            {event.time && (
+                              <span className="flex items-center gap-0.5 text-xs text-gray-500">
+                                <Clock className="w-3 h-3 text-[#0284C7]" /> {event.time}
+                              </span>
+                            )}
+                            {event.location && event.location !== "–" && (
+                              <span className="flex items-center gap-0.5 text-xs text-gray-500">
+                                <MapPin className="w-3 h-3 text-[#0284C7]" /> {event.location}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))
+                    );
+                  })
                 )}
               </div>
             </div>

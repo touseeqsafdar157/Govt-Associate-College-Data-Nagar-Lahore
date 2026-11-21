@@ -109,7 +109,7 @@ export function AdminApplications() {
             {apps.length===0 && (
               <div className="text-center py-12 text-gray-400">
                 <ClipboardList className="w-12 h-12 mx-auto mb-3 opacity-30"/>
-                <p className="text-sm">Koi application nahi mili.</p>
+                <p className="text-sm">No applications found.</p>
               </div>
             )}
           </>
@@ -141,7 +141,7 @@ export function AdminApplications() {
 
               {/* Change Status */}
               <div className="bg-[#F8F9FA] rounded-xl p-4">
-                <p className="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wider">Status Update Karein</p>
+                <p className="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wider">Update Status</p>
                 <div className="flex flex-wrap gap-2">
                   {["Pending","Reviewed","Accepted","Rejected"].map(s => (
                     <button key={s} onClick={() => updateStatus(viewApp._id, s)}

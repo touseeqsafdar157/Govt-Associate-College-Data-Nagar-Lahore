@@ -47,7 +47,9 @@ export function FacultyPage() {
       {/* Page Header */}
       <div className="bg-gradient-to-r from-[#0284c7] to-[#0369a1] py-20 px-4 text-center">
         <h1 className="text-4xl md:text-5xl font-bold text-white mb-4" style={{fontFamily:"Playfair Display,serif"}}>Faculty & Staff</h1>
-        <p className="text-[#C8A951] text-lg max-w-2xl mx-auto">Meet the dedicated professionals committed to your academic and personal growth.</p>
+        <p className="text-[#C8A951] text-base md:text-lg max-w-3xl mx-auto leading-relaxed">
+          Meet our highly qualified, inspiring educators and devoted administrative staff committed to academic distinction, student mentorship, and holistic personal growth.
+        </p>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-12">
