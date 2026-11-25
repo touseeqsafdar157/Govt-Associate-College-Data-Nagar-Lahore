@@ -888,15 +888,20 @@ export function HomePage() {
       <section className="py-12 bg-[#F0F9FF]/60 border-t border-sky-100">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            <div className="flex items-center gap-4 bg-white p-5 rounded-xl shadow-sm border border-sky-100">
-              <div className="w-12 h-12 bg-[#0284C7]/10 rounded-xl flex items-center justify-center shrink-0">
-                <Phone className="w-5 h-5 text-[#0284C7]" />
+            <a
+              href="https://wa.me/923197030016"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-4 bg-white p-5 rounded-xl shadow-sm border border-sky-100 hover:border-green-300 transition-colors"
+            >
+              <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center shrink-0">
+                <Phone className="w-5 h-5 text-green-600" />
               </div>
               <div>
-                <p className="text-xs text-gray-500 mb-0.5">Call / WhatsApp</p>
-                <p className="font-bold text-[#082F49] text-sm">{settings?.phone || "042-37602172"}</p>
+                <p className="text-xs text-gray-500 mb-0.5">WhatsApp Helpline</p>
+                <p className="font-bold text-[#082F49] text-sm">0319-7030016</p>
               </div>
-            </div>
+            </a>
             <div className="flex items-center gap-4 bg-white p-5 rounded-xl shadow-sm border border-sky-100">
               <div className="w-12 h-12 bg-[#0369A1]/10 rounded-xl flex items-center justify-center shrink-0">
                 <Mail className="w-5 h-5 text-[#0369A1]" />

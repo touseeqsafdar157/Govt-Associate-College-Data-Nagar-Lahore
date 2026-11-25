@@ -275,7 +275,7 @@ export function AdmissionsPage() {
                 </div>
                 <p className="text-sm text-sky-100 leading-relaxed">
                   Direct Inquiries: <a href="tel:04237602172" className="text-white font-semibold underline hover:text-[#C8A951]">042-37602172</a><br />
-                  WhatsApp Helpline: <a href="https://wa.me/924237602172" target="_blank" rel="noopener noreferrer" className="text-white font-semibold underline hover:text-[#C8A951]">042-37602172</a><br />
+                  WhatsApp Helpline: <a href="https://wa.me/923197030016" target="_blank" rel="noopener noreferrer" className="text-white font-semibold underline hover:text-[#C8A951]">0319-7030016</a><br />
                   Email: <a href="mailto:datanagargacw@gmail.com" className="text-white font-semibold underline hover:text-[#C8A951]">datanagargacw@gmail.com</a>
                 </p>
               </div>

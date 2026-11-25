@@ -102,7 +102,10 @@ export interface SiteSettings {
   principalName: string;
   principalMessage: string;
   phone: string;
+  whatsapp?: string;
   email: string;
+  smtpEmail?: string;
+  smtpPassword?: string;
   address: string;
   tickerText: string;
   eligibilityCriteria: EligibilityRow[];
@@ -247,7 +250,10 @@ const defaultSettings: SiteSettings = {
   principalName: "Prof. Dr. Farzana Ashfaq",
   principalMessage: "Welcome to Government Associate College for Women (GACW), Data Nagar.",
   phone: "042-37602172",
+  whatsapp: "0319-7030016",
   email: "datanagargacw@gmail.com",
+  smtpEmail: "datanagargacw@gmail.com",
+  smtpPassword: "",
   address: "Ilahi Bakhsh Road Data Nagar, Lahore",
   tickerText: "Admissions Open 2026-27 | Last Date: May 31, 2026",
   eligibilityCriteria: [
@@ -613,11 +619,15 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     designation?: string;
   }) => {
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
       const res = await fetch(`${API_URL}/faculty/query`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
+        body: JSON.stringify(data),
+        signal: controller.signal
       });
+      clearTimeout(timeoutId);
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
         throw new Error(errorData.message || 'Request failed');
@@ -641,6 +651,9 @@ export function AdminProvider({ children }: { children: ReactNode }) {
       return resData;
     } catch (err: any) {
       console.error("sendFacultyQuery error:", err);
+      if (err.name === 'AbortError') {
+        throw new Error('Server took too long to respond. Please try again.');
+      }
       throw err;
     }
   };

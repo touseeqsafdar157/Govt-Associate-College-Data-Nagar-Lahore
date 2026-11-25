@@ -7,7 +7,7 @@ export function ContactPage() {
   const { settings, addMessage } = useAdmin();
   const collegeName = settings?.collegeName || "Govt. Associate College for Women (GACW) Data Nagar Lahore";
   const phoneNumber = settings?.phone || "042-37602172";
-  const whatsappUrl = "https://wa.me/924237602172";
+  const whatsappUrl = "https://wa.me/923197030016";
   const youtubeUrl = "https://www.youtube.com/@datanagarcollege5538";
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -109,7 +109,10 @@ export function ContactPage() {
               </div>
               <h3 className="font-bold text-[#082F49] mb-2">Phone & WhatsApp</h3>
               <p className="text-gray-700 text-sm font-semibold">
-                {phoneNumber}
+                Phone: {phoneNumber}
+              </p>
+              <p className="text-gray-600 text-xs mt-1 font-medium">
+                WhatsApp: 0319-7030016
               </p>
               <a
                 href={whatsappUrl}
@@ -117,7 +120,7 @@ export function ContactPage() {
                 rel="noopener noreferrer"
                 className="inline-block mt-2 text-xs font-bold text-sky-600 hover:text-sky-800 bg-sky-50 px-2.5 py-1 rounded-full border border-sky-200"
               >
-                Chat on WhatsApp
+                Chat on WhatsApp (0319-7030016)
               </a>
             </div>
 
