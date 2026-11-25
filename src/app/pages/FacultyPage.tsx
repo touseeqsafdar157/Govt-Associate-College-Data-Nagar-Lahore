@@ -185,14 +185,14 @@ export function FacultyPage() {
                         <div className="p-6">
                           <div className="flex items-start justify-between gap-2 mb-2">
                             <span className="text-xs font-bold text-[#C8A951] uppercase tracking-wider block">{formatDept(hod.dept)}</span>
-                            <button
+                            {/* <button
                               type="button"
                               onClick={() => openEmailModal(hod)}
                               className="p-1.5 text-[#0284c7] hover:bg-[#0284c7]/10 rounded-lg transition-colors cursor-pointer"
                               title={`Send email to ${hod.name}`}
                             >
                               <Mail className="w-4 h-4" />
-                            </button>
+                            </button> */}
                           </div>
                           <h3 className="text-xl font-bold text-gray-800 mb-1">{hod.name}</h3>
                           <p className="text-[#0284c7] font-medium mb-3">{hod.designation}</p>
@@ -244,14 +244,14 @@ export function FacultyPage() {
                             <h4 className="font-bold text-lg text-gray-800">{member.name}</h4>
                             <p className="text-[#0284c7] text-sm font-medium">{member.designation}</p>
                           </div>
-                          <button
+                         {/* <button
                             type="button"
                             onClick={() => openEmailModal(member)}
                             className="p-2 text-[#0284c7] bg-sky-50 hover:bg-[#0284c7] hover:text-white rounded-lg transition-colors shrink-0 cursor-pointer"
                             title={`Send query to ${member.name}`}
                           >
                             <Mail className="w-4 h-4" />
-                          </button>
+                          </button>*/}
                         </div>
                         {/* Subject Badge */}
                         {(member.subject || member.dept) && (
@@ -304,14 +304,14 @@ export function FacultyPage() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
                         <h4 className="font-bold text-lg text-gray-800 mb-0.5">{staff.name}</h4>
-                        <button
+                        {/* <button
                           type="button"
                           onClick={() => openEmailModal(staff)}
                           className="p-1.5 text-[#0284c7] hover:bg-sky-50 rounded-lg transition-colors cursor-pointer shrink-0"
                           title={`Send query to ${staff.name}`}
                         >
                           <Mail className="w-4 h-4" />
-                        </button>
+                        </button> */}
                       </div>
                       <p className="text-[#C8A951] text-sm font-medium mb-2">{staff.designation}</p>
                       {staff.experience && <p className="text-xs text-gray-500">Experience: {staff.experience}</p>}

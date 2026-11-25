@@ -157,7 +157,7 @@ export function AdminSettings() {
           </SectionCard>
 
           {/* Email / SMTP Configuration */}
-          <SectionCard title="Faculty Email / SMTP Configuration">
+          {/* <SectionCard title="Faculty Email / SMTP Configuration">
             <div className="bg-sky-50 border border-sky-200 rounded-lg p-3.5 mb-4 text-xs text-sky-900 leading-relaxed">
               <p className="font-semibold mb-1">How direct email delivery works:</p>
               <p>When a visitor or student submits a query on the Faculty page, an email is automatically sent to that teacher. To send via Gmail, enter your Gmail and a 16-character <strong>Google App Password</strong> below (from Google Account &gt; Security &gt; 2-Step Verification &gt; App Passwords).</p>
@@ -166,7 +166,7 @@ export function AdminSettings() {
               {field("Sender Gmail Address", "smtpEmail", "email", "datanagargacw@gmail.com")}
               {field("Google App Password (16 characters)", "smtpPassword", "password", "abcd efgh ijkl mnop")}
             </div>
-          </SectionCard>
+          </SectionCard> */}
 
           {/* Office Hours */}
           <SectionCard title="Office Hours">
