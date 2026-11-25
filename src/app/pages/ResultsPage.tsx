@@ -33,6 +33,364 @@ export function ResultsPage() {
 
   const topThree = [...(results || [])]?.filter(r => r?.position)?.slice(0, 3);
 
+  const handleDownloadCSV = () => {
+    const list = results?.length > 0 ? results : filtered;
+    if (!list || list.length === 0) return;
+
+    const headers = ["Sr #", "Roll Number", "Student Name", "Class", "Year", "Marks Obtained", "Total Marks", "Percentage", "Grade", "Position", "Status"];
+    const rows = list.map((r, i) => [
+      i + 1,
+      `"${(r.rollNumber || "").replace(/"/g, '""')}"`,
+      `"${(r.name || "").replace(/"/g, '""')}"`,
+      `"${(r.class || filterClass).replace(/"/g, '""')}"`,
+      `"${(r.year || filterYear).replace(/"/g, '""')}"`,
+      r.marks ?? "",
+      r.totalMarks ?? 1100,
+      r.marks && r.totalMarks ? ((Number(r.marks) / Number(r.totalMarks)) * 100).toFixed(1) + "%" : "",
+      `"${(r.grade || "").replace(/"/g, '""')}"`,
+      `"${(r.position || "-").replace(/"/g, '""')}"`,
+      `"${(r.status || "Pass").replace(/"/g, '""')}"`
+    ]);
+
+    const csvContent = "\uFEFF" + [headers.join(","), ...rows.map(e => e.join(","))].join("\r\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${filterClass.replace(/[^a-zA-Z0-9]/g, "_")}_Results_${filterYear}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleDownloadGazette = () => {
+    const list = results?.length > 0 ? results : filtered;
+    if (!list || list.length === 0) return;
+
+    const totalStudents = list.length;
+    const passedCount = list.filter(r => (r.status || "Pass").toLowerCase() === "pass").length;
+    const passPercentage = totalStudents > 0 ? ((passedCount / totalStudents) * 100).toFixed(1) : "0";
+    const logoUrl = window.location.origin + "/logo.jpg";
+    const currentDate = new Date().toLocaleDateString("en-PK", { day: "numeric", month: "long", year: "numeric" });
+
+    const rowsHtml = list.map((r, i) => {
+      const pct = r.marks && r.totalMarks ? ((Number(r.marks) / Number(r.totalMarks)) * 100).toFixed(1) + "%" : "-";
+      const isPass = (r.status || "Pass").toLowerCase() === "pass";
+      return `
+        <tr style="background-color: ${i % 2 === 0 ? "#ffffff" : "#f8fafc"};">
+          <td style="padding: 8px 10px; border: 1px solid #e2e8f0; text-align: center; font-weight: 600;">${i + 1}</td>
+          <td style="padding: 8px 10px; border: 1px solid #e2e8f0; font-family: monospace; font-weight: 700; color: #0369a1;">${r.rollNumber || "-"}</td>
+          <td style="padding: 8px 10px; border: 1px solid #e2e8f0; font-weight: 600; color: #1e293b;">${r.name || "-"}</td>
+          <td style="padding: 8px 10px; border: 1px solid #e2e8f0; text-align: center; font-weight: 700;">${r.marks ?? "-"}&nbsp;/&nbsp;${r.totalMarks ?? 1100}</td>
+          <td style="padding: 8px 10px; border: 1px solid #e2e8f0; text-align: center; font-weight: 600;">${pct}</td>
+          <td style="padding: 8px 10px; border: 1px solid #e2e8f0; text-align: center;"><span style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-weight: 700; background: #fef3c7; color: #92400e;">${r.grade || "-"}</span></td>
+          <td style="padding: 8px 10px; border: 1px solid #e2e8f0; text-align: center; font-weight: 700; color: #0284c7;">${r.position || "-"}</td>
+          <td style="padding: 8px 10px; border: 1px solid #e2e8f0; text-align: center;">
+            <span style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-weight: 700; font-size: 11px; text-transform: uppercase; ${isPass ? "background: #dcfce7; color: #15803d;" : "background: #fee2e2; color: #b91c1c;"}">
+              ${r.status || "Pass"}
+            </span>
+          </td>
+        </tr>
+      `;
+    }).join("");
+
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) {
+      alert("Pop-up blocked! Please allow pop-ups for this site to download the full result sheet.");
+      return;
+    }
+
+    const html = `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <title>Result Gazette - ${filterClass} (${filterYear}) - GACW Data Nagar</title>
+        <style>
+          @page {
+            size: A4;
+            margin: 12mm 10mm;
+          }
+          * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+          }
+          body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #0f172a;
+            background: #f1f5f9;
+            padding: 20px;
+          }
+          .gazette-container {
+            max-width: 950px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+          }
+          .action-bar {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e2e8f0;
+          }
+          .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+          }
+          .btn-primary {
+            background: #0284c7;
+            color: #ffffff;
+          }
+          .btn-primary:hover {
+            background: #0369a1;
+          }
+          .btn-close {
+            background: #f1f5f9;
+            color: #475569;
+          }
+          .btn-close:hover {
+            background: #e2e8f0;
+          }
+          .header-box {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding-bottom: 20px;
+            border-bottom: 3px double #0284c7;
+            margin-bottom: 20px;
+          }
+          .logo {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            border-radius: 50%;
+            border: 2px solid #0284c7;
+          }
+          .header-text {
+            flex: 1;
+            text-align: center;
+          }
+          .college-name {
+            font-size: 22px;
+            font-weight: 800;
+            color: #082f49;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+          }
+          .sub-title {
+            font-size: 13px;
+            color: #64748b;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+          }
+          .gazette-badge {
+            display: inline-block;
+            background: #0284c7;
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 4px 14px;
+            border-radius: 9999px;
+            letter-spacing: 0.5px;
+          }
+          .meta-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 24px;
+          }
+          .meta-item {
+            text-align: center;
+          }
+          .meta-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            color: #0369a1;
+            font-weight: 700;
+            margin-bottom: 2px;
+          }
+          .meta-val {
+            font-size: 15px;
+            font-weight: 800;
+            color: #0c4a6e;
+          }
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            margin-bottom: 30px;
+          }
+          th {
+            background: #0284c7;
+            color: #ffffff;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+            padding: 10px 8px;
+            border: 1px solid #0284c7;
+            text-align: center;
+          }
+          th.text-left {
+            text-align: left;
+            padding-left: 10px;
+          }
+          .footer-section {
+            margin-top: 40px;
+            padding-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+          }
+          .sign-block {
+            text-align: center;
+            width: 200px;
+          }
+          .sign-line {
+            border-top: 1px dashed #64748b;
+            margin-bottom: 6px;
+          }
+          .sign-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: #334155;
+            text-transform: uppercase;
+          }
+          .watermark-note {
+            font-size: 10px;
+            color: #94a3b8;
+            text-align: center;
+            margin-top: 20px;
+          }
+          @media print {
+            body {
+              background: #ffffff;
+              padding: 0;
+            }
+            .gazette-container {
+              box-shadow: none;
+              padding: 0;
+              max-width: 100%;
+            }
+            .no-print {
+              display: none !important;
+            }
+            tr {
+              page-break-inside: avoid;
+            }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="gazette-container">
+          <div class="action-bar no-print">
+            <button class="btn btn-primary" onclick="window.print()">🖨️ Print / Save as PDF</button>
+            <button class="btn btn-close" onclick="window.close()">✖️ Close Window</button>
+          </div>
+
+          <div class="header-box">
+            <img src="${logoUrl}" alt="College Logo" class="logo" onerror="this.style.display='none'" />
+            <div class="header-text">
+              <h1 class="college-name">Govt. Associate College for Women</h1>
+              <p class="sub-title">Data Nagar, Lahore · Affiliated with BISE Lahore</p>
+              <span class="gazette-badge">OFFICIAL EXAMINATION RESULT GAZETTE</span>
+            </div>
+          </div>
+
+          <div class="meta-grid">
+            <div class="meta-item">
+              <div class="meta-label">Class / Program</div>
+              <div class="meta-val">${filterClass}</div>
+            </div>
+            <div class="meta-item">
+              <div class="meta-label">Academic Session</div>
+              <div class="meta-val">${filterYear}</div>
+            </div>
+            <div class="meta-item">
+              <div class="meta-label">Total Appeared</div>
+              <div class="meta-val">${totalStudents} Candidates</div>
+            </div>
+            <div class="meta-item">
+              <div class="meta-label">Pass Percentage</div>
+              <div class="meta-val" style="color: #15803d;">${passPercentage}% (${passedCount} Passed)</div>
+            </div>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 45px;">#</th>
+                <th style="width: 120px;">Roll Number</th>
+                <th class="text-left">Student Name</th>
+                <th style="width: 130px;">Marks Obtained</th>
+                <th style="width: 80px;">%</th>
+                <th style="width: 70px;">Grade</th>
+                <th style="width: 80px;">Position</th>
+                <th style="width: 85px;">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rowsHtml}
+            </tbody>
+          </table>
+
+          <div class="footer-section">
+            <div class="sign-block">
+              <div class="sign-line"></div>
+              <div class="sign-title">Tabulator / Clerk</div>
+            </div>
+            <div class="sign-block">
+              <div class="sign-line"></div>
+              <div class="sign-title">Incharge Examination</div>
+            </div>
+            <div class="sign-block">
+              <div class="sign-line"></div>
+              <div class="sign-title">Principal GACW</div>
+            </div>
+          </div>
+
+          <p class="watermark-note">
+            Generated officially on ${currentDate} from GACW Data Nagar Portal. Any unauthorized alteration or erasure invalidates this gazette.
+          </p>
+        </div>
+
+        <script>
+          window.onload = function() {
+            setTimeout(function() {
+              window.print();
+            }, 400);
+          };
+        </script>
+      </body>
+      </html>
+    `;
+
+    printWindow.document.open();
+    printWindow.document.write(html);
+    printWindow.document.close();
+  };
+
   return (
     <div className="bg-white min-h-screen">
       <Helmet>
@@ -72,7 +430,7 @@ export function ResultsPage() {
             <div className="w-full md:w-2/4">
               <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Search Student</label>
               <div className="relative">
-                <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Roll Number ya Name likhen..." className="w-full border border-gray-300 rounded-xl px-3 py-2.5 pl-10 text-sm focus:outline-none focus:ring-2 focus:ring-[#0284C7] bg-white" />
+                <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search by Roll Number or Name..." className="w-full border border-gray-300 rounded-xl px-3 py-2.5 pl-10 text-sm focus:outline-none focus:ring-2 focus:ring-[#0284C7] bg-white" />
                 <Search className="absolute left-3.5 top-3 w-4 h-4 text-gray-400" />
               </div>
             </div>
@@ -161,10 +519,22 @@ export function ResultsPage() {
               <p className="text-gray-500 mt-1">Academic Session {filterYear} · GACW Data Nagar</p>
             </div>
             {!loading && filtered.length > 0 && (
-              /* Previous green: bg-[#006B3F] hover:bg-[#004d2d] -> bg-[#0284C7] hover:bg-[#0369A1] */
-              <button className="flex items-center gap-2 bg-[#0284C7] text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-[#0369A1] transition-all shadow-md">
-                <Download className="w-4 h-4" /> Download Full Result
-              </button>
+              <div className="flex flex-wrap items-center gap-3">
+                <button
+                  onClick={handleDownloadGazette}
+                  className="flex items-center gap-2 bg-[#0284C7] text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-[#0369A1] transition-all shadow-md active:scale-95"
+                  title="Open & Download Official PDF Result Gazette"
+                >
+                  <Download className="w-4 h-4" /> Download Full Result (PDF)
+                </button>
+                <button
+                  onClick={handleDownloadCSV}
+                  className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2.5 rounded-xl font-semibold hover:bg-emerald-700 transition-all shadow-md active:scale-95"
+                  title="Export results as Excel / CSV spreadsheet"
+                >
+                  <FileSpreadsheet className="w-4 h-4" /> Export CSV
+                </button>
+              </div>
             )}
           </div>
 
@@ -186,7 +556,7 @@ export function ResultsPage() {
             <div className="text-center py-24 bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200">
               <FileSpreadsheet className="w-16 h-16 mx-auto mb-4 text-gray-300" />
               <h3 className="text-xl font-bold text-gray-600">No Results Found</h3>
-              <p className="text-gray-400 mt-2 max-w-sm mx-auto">Is class ya year ke liye abhi koi result data available nahi hai. Admin panel se results upload karen.</p>
+              <p className="text-gray-400 mt-2 max-w-sm mx-auto">No examination results are currently available for the selected class and academic year.</p>
             </div>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
@@ -240,7 +610,7 @@ export function ResultsPage() {
             <Trophy className="w-8 h-8 text-[#C8A951]" />
           </div>
           <h2 className="text-3xl font-bold mb-4" style={{ fontFamily: "Playfair Display,serif" }}>Official BISE Lahore Results</h2>
-          <p className="text-sky-100 mb-8 text-lg">Govt. Associate College for Women (GACW) Data Nagar is affiliated with BISE Lahore. Board results ke liye official website visit karen.</p>
+          <p className="text-sky-100 mb-8 text-lg">Govt. Associate College for Women (GACW) Data Nagar is affiliated with BISE Lahore. Please visit the official BISE website to view board examination results.</p>
           <a href="https://www.biselahore.com" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 bg-[#0284C7] hover:bg-[#0369A1] text-white px-10 py-4 rounded-2xl font-bold transition-all shadow-xl hover:shadow-2xl">
             Visit BISE Website <Search className="w-5 h-5" />
           </a>

@@ -1,12 +1,64 @@
 import { useState, useMemo } from "react";
-import { Mail, GraduationCap, Building2 } from "lucide-react";
+import { Mail, GraduationCap, Building2, X, CheckCircle2, AlertCircle, Send } from "lucide-react";
 import { useAdmin } from "../context/AdminContext";
 import { Skeleton } from "../components/ui/skeleton";
 
 export function FacultyPage() {
-  const { faculty, loading } = useAdmin();
+  const { faculty, loading, addMessage, settings } = useAdmin();
   const [activeTab, setActiveTab] = useState<"Teaching" | "Non-Teaching">("Teaching");
   const [selectedDept, setSelectedDept] = useState("All");
+
+  // Query / Email modal state
+  const [selectedFaculty, setSelectedFaculty] = useState<any | null>(null);
+  const [queryForm, setQueryForm] = useState({ name: "", email: "", phone: "", subject: "", description: "" });
+  const [sending, setSending] = useState(false);
+  const [sendSuccess, setSendSuccess] = useState(false);
+  const [sendError, setSendError] = useState("");
+
+  const openEmailModal = (member: any) => {
+    setSelectedFaculty(member);
+    setQueryForm({ name: "", email: "", phone: "", subject: "", description: "" });
+    setSendSuccess(false);
+    setSendError("");
+  };
+
+  const handleSendQuery = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!queryForm.name.trim() || !queryForm.email.trim() || !queryForm.subject.trim() || !queryForm.description.trim()) {
+      setSendError("Please fill in all required fields.");
+      return;
+    }
+
+    setSending(true);
+    setSendError("");
+    try {
+      const facultyEmail = selectedFaculty?.email?.trim() || settings?.email || "datanagargacw@gmail.com";
+      
+      // 1. Save query in backend so administration & faculty have permanent record
+      await addMessage({
+        name: queryForm.name.trim(),
+        email: queryForm.email.trim(),
+        phone: queryForm.phone?.trim() || "",
+        subject: `Query for ${selectedFaculty?.name} (${selectedFaculty?.designation}): ${queryForm.subject.trim()}`,
+        message: `[FACULTY QUERY]\nRecipient: ${selectedFaculty?.name} (${selectedFaculty?.designation} - ${formatDept(selectedFaculty?.dept)})\nRecipient Email: ${facultyEmail}\nSender: ${queryForm.name.trim()} <${queryForm.email.trim()}>\nPhone: ${queryForm.phone?.trim() || "N/A"}\n\nSubject: ${queryForm.subject.trim()}\n\nDescription / Message:\n${queryForm.description.trim()}`
+      });
+
+      // 2. Open email client prefilled for the specific faculty member
+      if (facultyEmail) {
+        const mailSubject = encodeURIComponent(`[GACW Query] ${queryForm.subject.trim()}`);
+        const mailBody = encodeURIComponent(
+          `Dear ${selectedFaculty?.name},\n\nYou have received a student/visitor query via the GACW Data Nagar portal.\n\nSender: ${queryForm.name.trim()} (${queryForm.email.trim()})\nPhone: ${queryForm.phone?.trim() || "N/A"}\nDepartment: ${formatDept(selectedFaculty?.dept)}\n\nQuery Details:\n${queryForm.description.trim()}\n\n---\nGovt. Associate College for Women, Data Nagar Lahore`
+        );
+        window.open(`mailto:${facultyEmail}?subject=${mailSubject}&body=${mailBody}`, "_blank");
+      }
+
+      setSendSuccess(true);
+    } catch {
+      setSendError("Failed to deliver your query. Please check your network and try again.");
+    } finally {
+      setSending(false);
+    }
+  };
 
   const teachingStaff = useMemo(() => (faculty || [])?.filter(f => f?.staffType === "Teaching"), [faculty]);
   const nonTeachingStaff = useMemo(() => (faculty || [])?.filter(f => f?.staffType === "Non-Teaching"), [faculty]);
@@ -115,28 +167,46 @@ export function FacultyPage() {
                       </div>
                     ))
                   ) : filteredHods.map((hod, idx) => (
-                    <div key={idx} className="bg-gray-50 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow border border-gray-100 group">
-                      <div className="h-48 bg-[#0284c7]/10 flex items-center justify-center relative overflow-hidden">
-                        <GraduationCap className="w-20 h-20 text-[#0284c7]/20 group-hover:scale-110 transition-transform duration-500"/>
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
-                           {hod.email && <a href={`mailto:${hod.email}`} className="text-white flex items-center gap-2 hover:text-[#C8A951]"><Mail className="w-4 h-4"/> Contact</a>}
-                        </div>
-                      </div>
-                      <div className="p-6">
-                        <span className="text-xs font-bold text-[#C8A951] uppercase tracking-wider mb-2 block">{formatDept(hod.dept)}</span>
-                        <h3 className="text-xl font-bold text-gray-800 mb-1">{hod.name}</h3>
-                        <p className="text-[#0284c7] font-medium mb-3">{hod.designation}</p>
-                        {/* Subject Badge */}
-                        {(hod.subject || hod.dept) && (
-                          <div className="mb-3">
-                            <span className="inline-flex items-center gap-1 bg-[#0284c7] text-white text-xs font-semibold px-3 py-1 rounded-full">
-                              📚 {hod.subject || formatDept(hod.dept)}
-                            </span>
+                    <div key={idx} className="bg-gray-50 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow border border-gray-100 group flex flex-col justify-between">
+                      <div>
+                        <div className="h-48 bg-[#0284c7]/10 flex items-center justify-center relative overflow-hidden">
+                          <GraduationCap className="w-20 h-20 text-[#0284c7]/20 group-hover:scale-110 transition-transform duration-500"/>
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-between p-4">
+                            <button
+                              type="button"
+                              onClick={() => openEmailModal(hod)}
+                              className="text-white flex items-center gap-2 hover:text-[#C8A951] text-sm font-semibold transition-colors cursor-pointer bg-black/30 hover:bg-black/50 px-3 py-1.5 rounded-lg backdrop-blur-xs"
+                            >
+                              <Mail className="w-4 h-4"/> Contact {hod.name}
+                            </button>
                           </div>
-                        )}
-                        <div className="space-y-2 text-sm text-gray-600">
-                          <p><span className="font-semibold text-gray-800">Qualification:</span> {hod.qualification}</p>
-                          <p><span className="font-semibold text-gray-800">Experience:</span> {hod.experience}</p>
+                        </div>
+                        <div className="p-6">
+                          <div className="flex items-start justify-between gap-2 mb-2">
+                            <span className="text-xs font-bold text-[#C8A951] uppercase tracking-wider block">{formatDept(hod.dept)}</span>
+                            <button
+                              type="button"
+                              onClick={() => openEmailModal(hod)}
+                              className="p-1.5 text-[#0284c7] hover:bg-[#0284c7]/10 rounded-lg transition-colors cursor-pointer"
+                              title={`Send email to ${hod.name}`}
+                            >
+                              <Mail className="w-4 h-4" />
+                            </button>
+                          </div>
+                          <h3 className="text-xl font-bold text-gray-800 mb-1">{hod.name}</h3>
+                          <p className="text-[#0284c7] font-medium mb-3">{hod.designation}</p>
+                          {/* Subject Badge */}
+                          {(hod.subject || hod.dept) && (
+                            <div className="mb-3">
+                              <span className="inline-flex items-center gap-1 bg-[#0284c7] text-white text-xs font-semibold px-3 py-1 rounded-full">
+                                📚 {hod.subject || formatDept(hod.dept)}
+                              </span>
+                            </div>
+                          )}
+                          <div className="space-y-2 text-sm text-gray-600">
+                            <p><span className="font-semibold text-gray-800">Qualification:</span> {hod.qualification}</p>
+                            <p><span className="font-semibold text-gray-800">Experience:</span> {hod.experience}</p>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -166,21 +236,35 @@ export function FacultyPage() {
               ) : filteredTeachingStaff.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                   {filteredTeachingStaff.map((member, idx) => (
-                    <div key={idx} className="bg-white border border-gray-100 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
-                      <h4 className="font-bold text-lg text-gray-800 mb-1">{member.name}</h4>
-                      <p className="text-[#0284c7] text-sm font-medium mb-2">{member.designation}</p>
-                      {/* Subject Badge */}
-                      {(member.subject || member.dept) && (
-                        <div className="mb-3">
-                          <span className="inline-flex items-center gap-1 bg-green-50 text-green-700 text-xs font-semibold px-2.5 py-1 rounded-full border border-green-200">
-                            📚 {member.subject || formatDept(member.dept)}
-                          </span>
+                    <div key={idx} className="bg-white border border-gray-100 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
+                      <div>
+                        <div className="flex items-start justify-between gap-2 mb-1">
+                          <div>
+                            <h4 className="font-bold text-lg text-gray-800">{member.name}</h4>
+                            <p className="text-[#0284c7] text-sm font-medium">{member.designation}</p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => openEmailModal(member)}
+                            className="p-2 text-[#0284c7] bg-sky-50 hover:bg-[#0284c7] hover:text-white rounded-lg transition-colors shrink-0 cursor-pointer"
+                            title={`Send query to ${member.name}`}
+                          >
+                            <Mail className="w-4 h-4" />
+                          </button>
                         </div>
-                      )}
-                      <div className="space-y-1.5 text-xs text-gray-600">
-                        <p><span className="font-semibold text-gray-800">Department:</span> {formatDept(member.dept)}</p>
-                        <p><span className="font-semibold">Qualification:</span> {member.qualification}</p>
-                        <p><span className="font-semibold">Experience:</span> {member.experience}</p>
+                        {/* Subject Badge */}
+                        {(member.subject || member.dept) && (
+                          <div className="mb-3">
+                            <span className="inline-flex items-center gap-1 bg-green-50 text-green-700 text-xs font-semibold px-2.5 py-1 rounded-full border border-green-200">
+                              📚 {member.subject || formatDept(member.dept)}
+                            </span>
+                          </div>
+                        )}
+                        <div className="space-y-1.5 text-xs text-gray-600">
+                          <p><span className="font-semibold text-gray-800">Department:</span> {formatDept(member.dept)}</p>
+                          <p><span className="font-semibold">Qualification:</span> {member.qualification}</p>
+                          <p><span className="font-semibold">Experience:</span> {member.experience}</p>
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -216,8 +300,18 @@ export function FacultyPage() {
                     <div className="w-12 h-12 rounded-full bg-[#0284c7]/10 flex items-center justify-center shrink-0">
                       <Building2 className="w-6 h-6 text-[#0284c7]"/>
                     </div>
-                    <div>
-                      <h4 className="font-bold text-lg text-gray-800 mb-0.5">{staff.name}</h4>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2">
+                        <h4 className="font-bold text-lg text-gray-800 mb-0.5">{staff.name}</h4>
+                        <button
+                          type="button"
+                          onClick={() => openEmailModal(staff)}
+                          className="p-1.5 text-[#0284c7] hover:bg-sky-50 rounded-lg transition-colors cursor-pointer shrink-0"
+                          title={`Send query to ${staff.name}`}
+                        >
+                          <Mail className="w-4 h-4" />
+                        </button>
+                      </div>
                       <p className="text-[#C8A951] text-sm font-medium mb-2">{staff.designation}</p>
                       {staff.experience && <p className="text-xs text-gray-500">Experience: {staff.experience}</p>}
                     </div>
@@ -232,6 +326,152 @@ export function FacultyPage() {
           </section>
         )}
       </div>
+
+      {/* Contact / Query Modal */}
+      {selectedFaculty && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            {/* Modal Header */}
+            <div className="bg-gradient-to-r from-[#0284c7] to-[#0369a1] text-white p-5 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-white shrink-0">
+                  <Mail className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-lg text-white">Send Query to {selectedFaculty.name}</h3>
+                  <p className="text-xs text-sky-100">{selectedFaculty.designation} {selectedFaculty.dept ? `· ${formatDept(selectedFaculty.dept)}` : ""}</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedFaculty(null)}
+                className="p-1.5 hover:bg-white/20 rounded-lg text-white transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            {sendSuccess ? (
+              <div className="p-8 text-center space-y-4">
+                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto text-green-600">
+                  <CheckCircle2 className="w-8 h-8" />
+                </div>
+                <h4 className="text-xl font-bold text-gray-800">Query Sent Successfully!</h4>
+                <p className="text-sm text-gray-600 max-w-md mx-auto">
+                  Your query has been recorded and directed to <strong>{selectedFaculty.name}</strong>. College administration and the faculty member have been notified.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setSelectedFaculty(null)}
+                  className="bg-[#0284c7] hover:bg-[#0369a1] text-white px-8 py-2.5 rounded-xl font-semibold transition-colors shadow-md cursor-pointer"
+                >
+                  Close
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleSendQuery} className="p-6 space-y-4">
+                {sendError && (
+                  <div className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 rounded-lg p-3 text-xs">
+                    <AlertCircle className="w-4 h-4 shrink-0" />
+                    <span>{sendError}</span>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-700 mb-1">Your Name *</label>
+                    <input
+                      type="text"
+                      required
+                      value={queryForm.name}
+                      onChange={(e) => setQueryForm({ ...queryForm, name: e.target.value })}
+                      placeholder="Enter your full name"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0284c7]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-700 mb-1">Your Email *</label>
+                    <input
+                      type="email"
+                      required
+                      value={queryForm.email}
+                      onChange={(e) => setQueryForm({ ...queryForm, email: e.target.value })}
+                      placeholder="your.email@example.com"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0284c7]"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Phone Number (Optional)</label>
+                  <input
+                    type="tel"
+                    value={queryForm.phone}
+                    onChange={(e) => setQueryForm({ ...queryForm, phone: e.target.value })}
+                    placeholder="03XX-XXXXXXX"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0284c7]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Subject *</label>
+                  <input
+                    type="text"
+                    required
+                    value={queryForm.subject}
+                    onChange={(e) => setQueryForm({ ...queryForm, subject: e.target.value })}
+                    placeholder="e.g. Academic Inquiry / Course Guidance"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0284c7]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Description / Message *</label>
+                  <textarea
+                    required
+                    rows={4}
+                    value={queryForm.description}
+                    onChange={(e) => setQueryForm({ ...queryForm, description: e.target.value })}
+                    placeholder="Type your message or query for this faculty member here..."
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0284c7] resize-none"
+                  />
+                </div>
+
+                <div className="flex items-center gap-3 pt-2">
+                  <button
+                    type="submit"
+                    disabled={sending}
+                    className="flex-1 bg-[#0284c7] hover:bg-[#0369a1] text-white py-2.5 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50 flex items-center justify-center gap-2 shadow-md cursor-pointer"
+                  >
+                    {sending ? (
+                      <>
+                        <svg className="animate-spin w-4 h-4 text-white" viewBox="0 0 24 24" fill="none">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                        </svg>
+                        <span>Sending...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-4 h-4" />
+                        <span>Send Email / Query</span>
+                      </>
+                    )}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedFaculty(null)}
+                    className="px-5 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -138,7 +138,7 @@ export function AdminResults() {
                     </td>
                   </tr>
                 ))}
-                {results?.length===0 && <tr><td colSpan={8} className="text-center py-12 text-gray-400">Koi result nahi mila. Upar filter check karein ya Add karein.</td></tr>}
+                {results?.length===0 && <tr><td colSpan={8} className="text-center py-12 text-gray-400">No results found. Please check your filter criteria or add new results above.</td></tr>}
               </>
             )}
           </tbody>

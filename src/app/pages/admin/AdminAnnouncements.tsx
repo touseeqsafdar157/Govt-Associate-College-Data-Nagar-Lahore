@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, Trash2, Check, ToggleLeft, ToggleRight, Bell } from "lucide-react";
+import { Plus, Trash2, Check, ToggleLeft, ToggleRight, Bell, AlertCircle } from "lucide-react";
 import { useAdmin } from "../../context/AdminContext";
 import { Skeleton } from "../../components/ui/skeleton";
 
@@ -7,6 +7,7 @@ export function AdminAnnouncements() {
   const { announcements, addAnnouncement, updateAnnouncement, deleteAnnouncement, loading } = useAdmin();
   const [newText, setNewText] = useState("");
   const [saved, setSaved] = useState(false);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const handleAdd = async () => {
     if (!newText.trim()) return;
@@ -22,6 +23,7 @@ export function AdminAnnouncements() {
 
   const handleDelete = async (id: string) => {
     await deleteAnnouncement(id);
+    setDeleteId(null);
     showSaved();
   };
 
@@ -95,7 +97,7 @@ export function AdminAnnouncements() {
                         : <ToggleLeft className="w-5 h-5 text-gray-400" />
                       }
                     </button>
-                    <button onClick={() => handleDelete(item.id)} className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors">
+                    <button onClick={() => setDeleteId(item.id)} className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Delete Announcement">
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
@@ -111,6 +113,31 @@ export function AdminAnnouncements() {
           </>
         )}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {deleteId && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 text-center">
+            <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-3" />
+            <h3 className="font-bold text-gray-800 mb-1">Delete Announcement?</h3>
+            <p className="text-gray-500 text-sm mb-5">Are you sure you want to delete this announcement? This action cannot be undone.</p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => handleDelete(deleteId)}
+                className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg text-sm font-semibold transition-colors"
+              >
+                Delete
+              </button>
+              <button
+                onClick={() => setDeleteId(null)}
+                className="flex-1 border border-gray-300 py-2 rounded-lg text-sm hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

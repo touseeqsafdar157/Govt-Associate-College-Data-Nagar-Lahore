@@ -351,7 +351,7 @@ export function AdmissionsPage() {
               <div className="p-10 text-center">
                 <div className="w-16 h-16 bg-sky-100 rounded-full flex items-center justify-center mx-auto mb-4"><Check className="w-8 h-8 text-[#0284C7]"/></div>
                 <h3 className="text-xl font-bold text-gray-800 mb-2">Application Submitted!</h3>
-                <p className="text-gray-500 text-sm mb-6">Aapki application GACW college administration ko mil gayi hai. Notice board aur call k zariye jald mutla kia jaye ga.</p>
+                <p className="text-gray-500 text-sm mb-6">Your application has been received by GACW college administration. You will be notified shortly via the notice board and phone call.</p>
                 <button onClick={()=>setShowModal(false)} className="bg-[#0284C7] text-white px-8 py-2.5 rounded-lg font-semibold">Close</button>
               </div>
             ) : (
@@ -360,14 +360,14 @@ export function AdmissionsPage() {
                 {step===1 && (
                   <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
-                      <div className="col-span-2 md:col-span-1"><label className={labelCls}>Full Name *</label><input value={form.name} onChange={f("name")} placeholder="Apna poora naam" className={inputCls}/></div>
-                      <div className="col-span-2 md:col-span-1"><label className={labelCls}>Father Name *</label><input value={form.fatherName} onChange={f("fatherName")} placeholder="Walid ka naam" className={inputCls}/></div>
+                      <div className="col-span-2 md:col-span-1"><label className={labelCls}>Full Name *</label><input value={form.name} onChange={f("name")} placeholder="Enter your full name" className={inputCls}/></div>
+                      <div className="col-span-2 md:col-span-1"><label className={labelCls}>Father Name *</label><input value={form.fatherName} onChange={f("fatherName")} placeholder="Father's full name" className={inputCls}/></div>
                       <div><label className={labelCls}>CNIC / B-Form *</label><input value={form.cnic} onChange={f("cnic")} placeholder="00000-0000000-0" className={inputCls}/></div>
                       <div><label className={labelCls}>Date of Birth</label><input type="date" value={form.dob} onChange={f("dob")} className={inputCls}/></div>
                       <div><label className={labelCls}>Gender</label><select value={form.gender} onChange={f("gender")} className={inputCls}><option>Female</option><option>Male</option></select></div>
                       <div><label className={labelCls}>Phone *</label><input value={form.phone} onChange={f("phone")} placeholder="03XX-XXXXXXX" className={inputCls}/></div>
                       <div><label className={labelCls}>Email</label><input value={form.email} onChange={f("email")} placeholder="email@example.com" className={inputCls}/></div>
-                      <div><label className={labelCls}>Address</label><input value={form.address} onChange={f("address")} placeholder="Ghar ka address" className={inputCls}/></div>
+                      <div><label className={labelCls}>Address</label><input value={form.address} onChange={f("address")} placeholder="Residential address" className={inputCls}/></div>
                     </div>
                   </div>
                 )}
@@ -380,7 +380,7 @@ export function AdmissionsPage() {
                         {PROGRAMS.map(p=><option key={p}>{p}</option>)}
                       </select>
                     </div>
-                    <div><label className={labelCls}>Previous Institution</label><input value={form.previousInstitution} onChange={f("previousInstitution")} placeholder="School / College ka naam" className={inputCls}/></div>
+                    <div><label className={labelCls}>Previous Institution</label><input value={form.previousInstitution} onChange={f("previousInstitution")} placeholder="Previous school / college name" className={inputCls}/></div>
                     <div><label className={labelCls}>Previous Marks %</label><input value={form.previousMarks} onChange={f("previousMarks")} placeholder="e.g. 85%" className={inputCls}/></div>
                   </div>
                 )}
@@ -388,7 +388,7 @@ export function AdmissionsPage() {
                 {/* Step 3 */}
                 {step===3 && (
                   <div className="space-y-4">
-                    <p className="text-sm text-gray-500">Documents upload karein (JPG/PNG/PDF, max 5MB)</p>
+                    <p className="text-sm text-gray-500">Upload required documents (JPG, PNG, or PDF, max 5MB)</p>
                     {[
                       {key:"photo",label:"Passport Size Photo *"},
                       {key:"matricCert",label:"Matric Certificate"},
