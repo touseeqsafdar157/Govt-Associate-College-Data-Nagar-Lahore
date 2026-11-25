@@ -217,6 +217,18 @@ interface AdminContextType {
   addFaculty: (item: Omit<FacultyItem, "id">) => Promise<void>;
   updateFaculty: (id: string, item: Partial<FacultyItem>) => Promise<void>;
   deleteFaculty: (id: string) => Promise<void>;
+  sendFacultyQuery: (data: {
+    facultyId?: string;
+    facultyName: string;
+    facultyEmail: string;
+    senderName: string;
+    senderEmail: string;
+    senderPhone?: string;
+    subject: string;
+    message: string;
+    department?: string;
+    designation?: string;
+  }) => Promise<{ success: boolean; message: string; facultyEmail?: string; emailSent?: boolean; previewUrl?: string }>;
 
   facilities: FacilityItem[];
   addFacility: (item: Omit<FacilityItem, "id">) => Promise<void>;
@@ -588,6 +600,51 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     } catch { toast.error("Failed to delete faculty"); }
   };
 
+  const sendFacultyQuery = async (data: {
+    facultyId?: string;
+    facultyName: string;
+    facultyEmail: string;
+    senderName: string;
+    senderEmail: string;
+    senderPhone?: string;
+    subject: string;
+    message: string;
+    department?: string;
+    designation?: string;
+  }) => {
+    try {
+      const res = await fetch(`${API_URL}/faculty/query`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Request failed');
+      }
+      const resData = await res.json();
+      if (resData.contactId) {
+        setMessagesState(prev => [
+          ...prev,
+          {
+            id: resData.contactId,
+            name: data.senderName,
+            email: data.senderEmail,
+            phone: data.senderPhone || '',
+            subject: `Query for ${data.facultyName}: ${data.subject}`,
+            message: data.message,
+            status: 'unread',
+            createdAt: new Date().toISOString()
+          }
+        ]);
+      }
+      return resData;
+    } catch (err: any) {
+      console.error("sendFacultyQuery error:", err);
+      throw err;
+    }
+  };
+
   const addFacility = async (item: Omit<FacilityItem, "id">) => {
     try {
       const res = await fetch(`${API_URL}/facilities`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(item) });
@@ -624,7 +681,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
       settings, updateSettings, incrementVisitor,
       messages, addMessage, deleteMessage, markMessageRead,
       programs, addProgram, updateProgram, deleteProgram,
-      faculty, addFaculty, updateFaculty, deleteFaculty,
+      faculty, addFaculty, updateFaculty, deleteFaculty, sendFacultyQuery,
       facilities, addFacility, updateFacility, deleteFacility,
       adminUsers, fetchUsers, addUser, deleteUser
     }}>

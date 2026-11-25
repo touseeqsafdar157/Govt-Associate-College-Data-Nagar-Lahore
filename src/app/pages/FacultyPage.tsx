@@ -4,7 +4,7 @@ import { useAdmin } from "../context/AdminContext";
 import { Skeleton } from "../components/ui/skeleton";
 
 export function FacultyPage() {
-  const { faculty, loading, addMessage, settings } = useAdmin();
+  const { faculty, loading, sendFacultyQuery, settings } = useAdmin();
   const [activeTab, setActiveTab] = useState<"Teaching" | "Non-Teaching">("Teaching");
   const [selectedDept, setSelectedDept] = useState("All");
 
@@ -14,12 +14,14 @@ export function FacultyPage() {
   const [sending, setSending] = useState(false);
   const [sendSuccess, setSendSuccess] = useState(false);
   const [sendError, setSendError] = useState("");
+  const [sentRecipient, setSentRecipient] = useState({ name: "", email: "" });
 
   const openEmailModal = (member: any) => {
     setSelectedFaculty(member);
     setQueryForm({ name: "", email: "", phone: "", subject: "", description: "" });
     setSendSuccess(false);
     setSendError("");
+    setSentRecipient({ name: "", email: "" });
   };
 
   const handleSendQuery = async (e: React.FormEvent) => {
@@ -32,29 +34,28 @@ export function FacultyPage() {
     setSending(true);
     setSendError("");
     try {
-      const facultyEmail = selectedFaculty?.email?.trim() || settings?.email || "datanagargacw@gmail.com";
+      const targetEmail = selectedFaculty?.email?.trim() || settings?.email || "datanagargacw@gmail.com";
       
-      // 1. Save query in backend so administration & faculty have permanent record
-      await addMessage({
-        name: queryForm.name.trim(),
-        email: queryForm.email.trim(),
-        phone: queryForm.phone?.trim() || "",
-        subject: `Query for ${selectedFaculty?.name} (${selectedFaculty?.designation}): ${queryForm.subject.trim()}`,
-        message: `[FACULTY QUERY]\nRecipient: ${selectedFaculty?.name} (${selectedFaculty?.designation} - ${formatDept(selectedFaculty?.dept)})\nRecipient Email: ${facultyEmail}\nSender: ${queryForm.name.trim()} <${queryForm.email.trim()}>\nPhone: ${queryForm.phone?.trim() || "N/A"}\n\nSubject: ${queryForm.subject.trim()}\n\nDescription / Message:\n${queryForm.description.trim()}`
+      const res = await sendFacultyQuery({
+        facultyId: selectedFaculty?.id,
+        facultyName: selectedFaculty?.name,
+        facultyEmail: targetEmail,
+        senderName: queryForm.name.trim(),
+        senderEmail: queryForm.email.trim(),
+        senderPhone: queryForm.phone?.trim() || "",
+        subject: queryForm.subject.trim(),
+        message: queryForm.description.trim(),
+        department: formatDept(selectedFaculty?.dept),
+        designation: selectedFaculty?.designation
       });
 
-      // 2. Open email client prefilled for the specific faculty member
-      if (facultyEmail) {
-        const mailSubject = encodeURIComponent(`[GACW Query] ${queryForm.subject.trim()}`);
-        const mailBody = encodeURIComponent(
-          `Dear ${selectedFaculty?.name},\n\nYou have received a student/visitor query via the GACW Data Nagar portal.\n\nSender: ${queryForm.name.trim()} (${queryForm.email.trim()})\nPhone: ${queryForm.phone?.trim() || "N/A"}\nDepartment: ${formatDept(selectedFaculty?.dept)}\n\nQuery Details:\n${queryForm.description.trim()}\n\n---\nGovt. Associate College for Women, Data Nagar Lahore`
-        );
-        window.open(`mailto:${facultyEmail}?subject=${mailSubject}&body=${mailBody}`, "_blank");
-      }
-
+      setSentRecipient({
+        name: selectedFaculty?.name,
+        email: res?.facultyEmail || targetEmail
+      });
       setSendSuccess(true);
-    } catch {
-      setSendError("Failed to deliver your query. Please check your network and try again.");
+    } catch (err: any) {
+      setSendError(err?.message || "Failed to deliver your email and query. Please check your network and try again.");
     } finally {
       setSending(false);
     }
@@ -357,17 +358,30 @@ export function FacultyPage() {
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto text-green-600">
                   <CheckCircle2 className="w-8 h-8" />
                 </div>
-                <h4 className="text-xl font-bold text-gray-800">Query Sent Successfully!</h4>
+                <h4 className="text-xl font-bold text-gray-800">Email & Query Sent!</h4>
                 <p className="text-sm text-gray-600 max-w-md mx-auto">
-                  Your query has been recorded and directed to <strong>{selectedFaculty.name}</strong>. College administration and the faculty member have been notified.
+                  Your query and email have been sent directly to <strong>{sentRecipient.name || selectedFaculty.name}</strong> at <span className="font-semibold text-gray-800 underline">{sentRecipient.email || selectedFaculty.email || 'datanagargacw@gmail.com'}</span>.
                 </p>
-                <button
-                  type="button"
-                  onClick={() => setSelectedFaculty(null)}
-                  className="bg-[#0284c7] hover:bg-[#0369a1] text-white px-8 py-2.5 rounded-xl font-semibold transition-colors shadow-md cursor-pointer"
-                >
-                  Close
-                </button>
+                <div className="bg-sky-50 border border-sky-100 rounded-xl p-3 text-xs text-sky-800 text-left space-y-1">
+                  <p><strong>Status:</strong> The faculty member will receive this inquiry directly in their inbox. They can reply to your provided email address ({queryForm.email}). A copy is also saved in the college administration records.</p>
+                </div>
+                <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedFaculty(null)}
+                    className="w-full sm:w-auto bg-[#0284c7] hover:bg-[#0369a1] text-white px-8 py-2.5 rounded-xl font-semibold transition-colors shadow-md cursor-pointer"
+                  >
+                    Done
+                  </button>
+                  <a
+                    href={`mailto:${sentRecipient.email || selectedFaculty.email || 'datanagargacw@gmail.com'}?subject=${encodeURIComponent('[GACW Query] ' + queryForm.subject.trim())}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="w-full sm:w-auto text-xs text-gray-500 hover:text-gray-700 underline text-center"
+                  >
+                    Also open in local mail client
+                  </a>
+                </div>
               </div>
             ) : (
               <form onSubmit={handleSendQuery} className="p-6 space-y-4">
